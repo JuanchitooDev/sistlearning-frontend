@@ -6,7 +6,7 @@
     <div class="modal bg-white rounded-lg shadow-lg p-8 w-1/2">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-semibold">
-          {{ alumno.id ? 'Editar alumno' : 'Nuevo alumno' }}
+          {{ evento.id ? 'Editar evento' : 'Nuevo evento' }}
         </h2>
         <button @click="closeModal" class="text-gray-600 hover:text-gray-800">
           <svg
@@ -28,104 +28,71 @@
       <form @submit.prevent="submitForm">
         <div class="mb-4">
           <label
-            for="id_tipodocumento"
+            for="id_tipoevento"
             class="block text-sm font-medium text-gray-700"
-            >Tipo de documento:</label
+            >Tipo de evento:</label
           >
           <select
-            name="id_tipodocumento"
-            id="id_tipodocumento"
-            v-model="alumno.id_tipodocumento"
+            name="id_tipoevento"
+            id="id_tipoevento"
+            v-model="evento.id_tipoevento"
             class="mt-1 p-2 border border-gray-300 rounded w-full"
           >
             <option v-for="tipo in tipos" :value="tipo.id" :key="tipo.id">
-              {{ tipo.abreviatura }}
+              {{ tipo.nombre }}
             </option>
           </select>
         </div>
         <div class="mb-4">
-          <label
-            for="apellido_paterno"
-            class="block text-sm font-medium text-gray-700"
-            >Apellido paterno:</label
+          <label for="titulo" class="block text-sm font-medium text-gray-700"
+            >Nombre:</label
           >
           <input
-            v-model="alumno.apellido_paterno"
+            v-model="evento.titulo"
             type="text"
-            id="apellido_paterno"
+            id="titulo"
             autocomplete="off"
             required
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
           />
         </div>
         <div class="mb-4">
-          <label
-            for="apellido_materno"
-            class="block text-sm font-medium text-gray-700"
-            >Apellido materno:</label
+          <label for="temario" class="block text-sm font-medium text-gray-700"
+            >Temario:</label
           >
-          <input
-            v-model="alumno.apellido_materno"
-            type="text"
-            id="apellido_materno"
+          <textarea
+            v-model="evento.temario"
+            id="temario"
             autocomplete="off"
             required
-            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
-          />
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 h-32"
+          ></textarea>
         </div>
         <div class="mb-4">
-          <label for="nombres" class="block text-sm font-medium text-gray-700"
-            >Nombres:</label
+          <label for="fecha" class="block text-sm font-medium text-gray-700"
+            >Fecha:</label
           >
           <input
-            v-model="alumno.nombres"
-            type="text"
-            id="nombres"
-            autocomplete="off"
-            required
-            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
-          />
-        </div>
-        <div class="mb-4">
-          <label for="telefono" class="block text-sm font-medium text-gray-700"
-            >Teléfono:</label
-          >
-          <input
-            v-model="alumno.telefono"
-            type="text"
-            id="telefono"
-            autocomplete="off"
-            required
-            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
-          />
-        </div>
-        <div class="mb-4">
-          <label
-            for="fecha_nacimiento"
-            class="block text-sm font-medium text-gray-700"
-            >Fecha de Nacimiento:</label
-          >
-          <input
-            v-model="alumno.fecha_nacimiento"
+            v-model="evento.fecha"
             type="date"
-            id="fecha_nacimiento"
+            id="fecha"
             autocomplete="off"
             required
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
           />
         </div>
         <div class="mb-4">
-          <label for="sexo" class="block text-sm font-medium text-gray-700"
-            >Sexo:</label
+          <label for="modalidad" class="block text-sm font-medium text-gray-700"
+            >Modalidad:</label
           >
           <select
-            name="sexo"
-            id="sexo"
-            v-model="alumno.sexo"
+            name="modalidad"
+            id="modalidad"
+            v-model="evento.modalidad"
             class="mt-1 p-2 border border-gray-300 rounded w-full"
           >
-            <option value="M">Masculino</option>
-            <option value="F">Femenino</option>
+            <option value="PRESENCIAL">Presencial</option>
+            <option value="VIRTUAL">Virtual</option>
           </select>
         </div>
         <div class="flex justify-between">
@@ -147,7 +114,7 @@
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            {{ alumno.id ? 'Actualizar' : 'Registrar' }}
+            {{ evento.id ? 'Actualizar' : 'Registrar' }}
           </button>
           <button
             type="button"
@@ -178,8 +145,8 @@
 
 <script>
 import { onMounted, ref, watch, computed } from 'vue';
-import { useAlumnoStore } from '@/stores/alumnoStore';
-import { useTipoDocumentoStore } from '@/stores/tipoDocumentoStore';
+import { useEventoStore } from '@/stores/eventoStore';
+import { useTipoEventoStore } from '@/stores/tipoEventoStore';
 
 export default {
   props: {
@@ -191,60 +158,57 @@ export default {
       type: Function,
       required: true,
     },
-    alumno: {
+    evento: {
       type: Object,
       default: () => ({
         id: null,
-        id_tipodocumento: '',
-        apellido_paterno: '',
-        apellido_materno: '',
-        nombres: '',
-        telefono: '',
-        fecha_nacimiento: null,
-        sexo: '',
+        titulo: '',
+        id_tipoevento: '',
+        temario: '',
+        fecha: null,
+        modalidad: 'VIRTUAL',
       }),
     },
   },
-  emits: ['alumnoCreated', 'alumnoUpdated'],
+  emits: ['EventoCreated', 'eventoUpdated'],
   setup(props, { emit }) {
-    const alumno = ref(props.alumno);
-    const storeAlumno = useAlumnoStore();
-    const storeTipoDocumento = useTipoDocumentoStore();
-    const tipos = computed(() => storeTipoDocumento.tipos);
+    const evento = ref(props.evento);
+    const store = useEventoStore();
+    const storeTipoEvento = useTipoEventoStore();
+    const tipos = computed(() => storeTipoEvento.tipos);
 
     watch(
-      () => props.alumno,
+      () => props.evento,
       (newValue) => {
-        alumno.value = newValue;
-      }
+        evento.value = newValue;
+      },
+      { immediate: true }
     );
 
     const submitForm = async () => {
       try {
-        if (alumno.value.id) {
-          await storeAlumno.updateAlumno(alumno.value.id, alumno.value);
-          emit('alumnoUpdated');
+        if (evento.value.id) {
+          await store.updateEvento(evento.value.id, evento.value);
+          emit('eventoUpdated');
         } else {
-          await storeAlumno.createAlumno(alumno.value);
-          emit('alumnoCreated');
+          await store.createEvento(evento.value);
+          emit('eventoCreated');
         }
         resetForm();
         props.onClose();
       } catch (error) {
-        console.log('error creating alumno', error);
+        console.log('error creating evento', error);
       }
     };
 
     const resetForm = () => {
-      alumno.value = {
+      evento.value = {
         id: null,
-        id_tipodocumento: '',
-        apellido_paterno: '',
-        apellido_materno: '',
-        nombres: '',
-        telefono: '',
-        fecha_nacimiento: null,
-        sexo: '',
+        id_tipoevento: '',
+        titulo: '',
+        temario: '',
+        fecha: null,
+        modalidad: 'VIRTUAL',
       };
     };
 
@@ -254,12 +218,12 @@ export default {
     };
 
     onMounted(() => {
-      storeTipoDocumento.fetchTiposPorCategoria('persona');
+      storeTipoEvento.fetchTipoEventos(true);
     });
 
     return {
       tipos,
-      alumno,
+      evento,
       submitForm,
       closeModal,
     };

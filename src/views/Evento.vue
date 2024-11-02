@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import EventoTable from '../components/EventoTable.vue'
+import EventoTable from '../components/sistema/EventoTable.vue'
 
 export default {
     components: {

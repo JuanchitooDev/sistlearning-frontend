@@ -36,6 +36,7 @@
             id="nombre"
             autocomplete="off"
             required
+            placeholder="Ejm: Capacitación"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
           />
         </div>
@@ -48,6 +49,7 @@
           <textarea
             v-model="tipoEvento.descripcion"
             id="descripcion"
+            placeholder="Ejm: Tipo de eventos de corta duración"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
           ></textarea>
         </div>
@@ -147,23 +149,23 @@ export default {
     };
 
     const resetForm = () => {
-        tipoEvento.value = {
-            id: null,
-            nombre: '',
-            descripcion: ''
-        }
-    }
+      tipoEvento.value = {
+        id: null,
+        nombre: '',
+        descripcion: '',
+      };
+    };
 
     const closeModal = () => {
-        resetForm()
-        props.onClose()
-    }
+      resetForm();
+      props.onClose();
+    };
 
     return {
-        tipoEvento,
-        submitForm,
-        closeModal
-    }
+      tipoEvento,
+      submitForm,
+      closeModal,
+    };
   },
 };
 </script>

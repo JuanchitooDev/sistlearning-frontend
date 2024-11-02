@@ -1,3 +1,5 @@
+import { ITipoEvento } from "./tipoEventoInterface"
+
 export interface IEvento {
     id?: number
     id_parent?: number
@@ -5,11 +7,15 @@ export interface IEvento {
     id_trabajador?: number
     titulo?: string
     titulo_url?: string
-    precio?: number
     descripcion?: string
+    temario?: string
+    plantilla_certificado?: string
+    fecha?: Date
     modalidad?: string
+    precio?: number
     user_crea?: string
     user_actualiza?: string
     user_elimina?: string
     estado?: boolean
+    tipoEvento?: ITipoEvento
 }

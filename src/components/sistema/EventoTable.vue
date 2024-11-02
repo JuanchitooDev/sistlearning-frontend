@@ -29,16 +29,23 @@
           <th class="border px-4 py-2">Título</th>
           <th class="border px-4 py-2">Tipo de evento</th>
           <th class="border px-4 py-2">Modalidad</th>
+          <th class="border px-4 py-2">Fecha</th>
           <th class="border px-4 py-2">Estado</th>
           <th class="border px-4 py-2">Acciones</th>
         </tr>
       </thead>
       <tbody>
+        <tr v-if="eventos.length === 0">
+          <td colspan="7" class="text-center pt-2 pb-2">Eventos no registrados</td>
+        </tr>
         <tr v-for="evento in eventos" :key="evento.id">
           <td class="border px-4 py-2">{{ evento.id }}</td>
           <td class="border px-4 py-2">{{ evento.titulo }}</td>
-          <td class="border px-4 py-2">{{ evento.TipoEvento.nombre }}</td>
+          <td class="border px-4 py-2">
+            {{ evento.TipoEvento ? evento.TipoEvento.nombre : 'Sin Tipo' }}
+          </td>
           <td class="border px-4 py-2">{{ evento.modalidad }}</td>
+          <td class="border px-4 py-2">{{ formatDate(evento.fecha) }}</td>
           <td class="border px-4 py-2">
             <svg
               v-if="evento.estado"
@@ -135,9 +142,10 @@
 
 <script>
 import { computed, ref, onMounted } from 'vue';
-import { useEventoStore } from '../stores/eventoStore';
+import { useEventoStore } from '../../stores/eventoStore';
 import EventoForm from './EventoForm.vue';
-import ConfirmDialog from './common/ConfirmDialog.vue';
+import ConfirmDialog from '../common/ConfirmDialog.vue';
+import { formatDate } from '@/utils/date.utils';
 
 export default {
   components: {
@@ -148,13 +156,23 @@ export default {
     const isConfirmVisible = ref(false);
     const eventoStore = useEventoStore();
     const isModalOpen = ref(false);
-    const evento = ref({ id: null, id_tipoevento: '', titulo: '', modalidad: '' });
+    const evento = ref({
+      id: null,
+      id_tipoevento: '',
+      titulo: '',
+      modalidad: '',
+    });
     const eventoToDelete = ref(null);
 
     const eventos = computed(() => eventoStore.eventos);
 
     const openModal = () => {
-      evento.value = { id: null, id_tipoevento: '', titulo: '', modalidad: '' }; // Resetea el formulario
+      evento.value = {
+        id: null,
+        id_tipoevento: '',
+        titulo: '',
+        modalidad: '',
+      }; // Resetea el formulario
       isModalOpen.value = true;
     };
 
@@ -206,6 +224,7 @@ export default {
       deleteEvento,
       handleEventoCreated,
       handleEventoUpdated,
+      formatDate,
     };
   },
 };

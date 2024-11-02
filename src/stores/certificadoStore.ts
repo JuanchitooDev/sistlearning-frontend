@@ -1,23 +1,33 @@
 import { defineStore } from 'pinia'
 import api from '../utils/axios'
+import { ICertificado } from '../interfaces/certificadoInterface'
 
 export const useCertificadoStore = defineStore('certificadoStore', {
     state: () => ({
-        certificados: null,
+        certificados: [] as ICertificado[],
         certificado: null,
         loading: false,
         error: null as string | null
     }),
     actions: {
-        async createCertificado(alumno: String, curso: String) {
+        async fetchCertificados() {
+            this.loading = true
+            this.error = null
             try {
-                const response = await api.post('/certificado', {
-                    nombreAlumno: alumno,
-                    nombreCurso: curso
-                }, {
+                const response = await api.get('/certificado')
+                this.certificados = response.data.data
+            } catch (error) {
+                console.error('Error fetching certificados: ', error)
+            } finally {
+                this.loading = false
+            }
+        },
+        async createCertificado(certificado: ICertificado) {
+            try {
+                const response = await api.post('/certificado', certificado, {
                     responseType: 'blob'
                 })
-
+                this.certificados.push(response.data)
                 const url = window.URL.createObjectURL(new Blob([response.data]))
                 const link = document.createElement('a')
                 link.href = url
@@ -25,8 +35,37 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 document.body.appendChild(link)
                 link.click()
                 link.remove()
-            } catch(error) {
-                console.error('Error generando el certificado', error)
+            } catch (error) {
+                console.error('Error creating certificado', error)
+            }
+        },
+        async getCertificadoByCodigo(codigo: string) {
+            this.loading = true
+            this.error = null
+            try {
+                const urlApi = `/certificado/${codigo}`
+                const response = await api.get(urlApi)
+                this.certificado = response.data.data
+            } catch (error) {
+                console.error('Error al obtener el certificado: ', error)
+                this.error = 'Error al obtener el certificado'
+            }
+        },
+        async downloadCertificado(idCertificado: number) {
+            try {
+                const urlApi = `/certificado/${idCertificado}/download`
+                const response = await api.get(urlApi, {
+                    responseType: 'blob'
+                })
+                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', `certificado_${idCertificado}.pdf`);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            } catch (error) {
+                console.error('Error downloading certificado', error)
             }
         }
     }

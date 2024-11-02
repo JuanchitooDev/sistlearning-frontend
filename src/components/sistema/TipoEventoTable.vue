@@ -33,6 +33,11 @@
         </tr>
       </thead>
       <tbody>
+        <tr v-if="tipos.length === 0">
+          <td colspan="5" class="text-center pt-2 pb-2">
+            Tipo de eventos no registrados
+          </td>
+        </tr>
         <tr v-for="tipo in tipos" :key="tipo.id">
           <td class="border px-4 py-2">{{ tipo.id }}</td>
           <td class="border px-4 py-2">{{ tipo.nombre }}</td>
@@ -133,9 +138,9 @@
 
 <script>
 import { computed, ref, onMounted } from 'vue';
-import { useTipoEventoStore } from '../stores/tipoEventoStore';
+import { useTipoEventoStore } from '../../stores/tipoEventoStore';
 import TipoEventoForm from './TipoEventoForm.vue';
-import ConfirmDialog from './common/ConfirmDialog.vue';
+import ConfirmDialog from '../common/ConfirmDialog.vue';
 
 export default {
   components: {

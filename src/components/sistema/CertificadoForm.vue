@@ -6,7 +6,7 @@
     <div class="modal bg-white rounded-lg shadow-lg p-8 w-1/2">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-2xl font-semibold">
-          {{ evento.id ? 'Editar evento' : 'Nuevo evento' }}
+          {{ certificado.id ? 'Editar certificado' : 'Nuevo certificado' }}
         </h2>
         <button @click="closeModal" class="text-gray-600 hover:text-gray-800">
           <svg
@@ -27,44 +27,43 @@
       </div>
       <form @submit.prevent="submitForm">
         <div class="mb-4">
-          <label for="id_tipoevento" class="block text-sm font-medium text-gray-700"
-            >Tipo de evento:</label
+          <label for="id_alumno" class="block text-sm font-medium text-gray-700"
+            >Alumno:</label
           >
           <select
-              name="id_tipoevento"
-              id="id_tipoevento"
-              v-model="evento.id_tipoevento"
-              class="mt-1 p-2 border border-gray-300 rounded w-full"
-            >
-              <option v-for="tipo in tipos" :value="tipo.id" :key="tipo.id">{{ tipo.nombre }}</option>
-            </select>
-        </div>
-        <div class="mb-4">
-          <label for="titulo" class="block text-sm font-medium text-gray-700"
-            >Nombre:</label
+            name="id_alumno"
+            id="id_alumno"
+            v-model="certificado.id_alumno"
+            class="mt-1 p-2 border border-gray-300 rounded w-full"
           >
-          <input
-            v-model="evento.titulo"
-            type="text"
-            id="titulo"
-            autocomplete="off"
-            required
-            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
-          />
+            <option
+              v-for="alumno in alumnos"
+              :value="alumno.id"
+              :key="alumno.id"
+            >
+              {{ alumno.nombres }} {{ alumno.apellido_paterno }}
+              {{ alumno.apellido_materno }}
+            </option>
+          </select>
         </div>
         <div class="mb-4">
-          <label for="modalidad" class="block text-sm font-medium text-gray-700"
-            >Modalidad:</label
+          <label for="id_evento" class="block text-sm font-medium text-gray-700"
+            >Evento:</label
           >
           <select
-              name="modalidad"
-              id="modalidad"
-              v-model="evento.modalidad"
-              class="mt-1 p-2 border border-gray-300 rounded w-full"
+            name="id_evento"
+            id="id_evento"
+            v-model="certificado.id_evento"
+            class="mt-1 p-2 border border-gray-300 rounded w-full"
+          >
+            <option
+              v-for="evento in eventos"
+              :value="evento.id"
+              :key="evento.id"
             >
-              <option value="PRESENCIAL">Presencial</option>
-              <option value="VIRTUAL">Virtual</option>
-            </select>
+              {{ evento.titulo }}
+            </option>
+          </select>
         </div>
         <div class="flex justify-between">
           <button
@@ -85,7 +84,7 @@
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            {{ evento.id ? 'Actualizar' : 'Registrar' }}
+            {{ certificado.id ? 'Actualizar' : 'Registrar' }}
           </button>
           <button
             type="button"
@@ -113,11 +112,12 @@
     </div>
   </div>
 </template>
-
-<script>
+  
+  <script>
 import { onMounted, ref, watch, computed } from 'vue';
+import { useAlumnoStore } from '@/stores/alumnoStore';
 import { useEventoStore } from '@/stores/eventoStore';
-import { useTipoEventoStore } from '@/stores/tipoEventoStore'
+import { useCertificadoStore } from '@/stores/certificadoStore';
 
 export default {
   props: {
@@ -129,70 +129,79 @@ export default {
       type: Function,
       required: true,
     },
-    evento: {
+    certificado: {
       type: Object,
-      default: () => ({ id: null, titulo: '', id_tipoevento: '', modalidad: 'VIRTUAL' }),
+      default: () => ({
+        id: null,
+        id_alumno: '',
+        id_evento: '',
+      }),
     },
   },
-  emits: ['EventoCreated', 'eventoUpdated'],
+  emits: ['certificadoCreated', 'certificadoUpdated'],
   setup(props, { emit }) {
-    const evento = ref(props.evento);
-    const store = useEventoStore();
-    const storeTipoEvento = useTipoEventoStore();
-    const tipos = computed(() => storeTipoEvento.tipos)
+    const certificado = ref(props.certificado);
+    const store = useCertificadoStore();
+    const storeAlumno = useAlumnoStore();
+    const storeEvento = useEventoStore();
+
+    const alumnos = computed(() => storeAlumno.alumnos);
+    const eventos = computed(() => storeEvento.eventos);
 
     watch(
-      () => props.evento,
+      () => props.certificado,
       (newValue) => {
-        evento.value = newValue;
-      }
+        certificado.value = newValue;
+      },
+      { immediate: true }
     );
 
     const submitForm = async () => {
       try {
-        if (evento.value.id) {
-          await store.updateEvento(evento.value.id, evento.value);
-          emit('eventoUpdated');
+        if (certificado.value.id) {
+          //   await store.updateCertificado(certificado.value.id, certificado.value);
+          emit('certificadoUpdated');
         } else {
-          await store.createEvento(evento.value);
-          emit('eventoCreated');
+          await store.createCertificado(certificado.value);
+          emit('certificadoCreated');
         }
         resetForm();
         props.onClose();
       } catch (error) {
-        console.log('error creating evento', error);
+        console.log('error creating certificado', error);
       }
     };
 
     const resetForm = () => {
-        evento.value = {
-            id: null,
-            id_tipoevento: '',
-            titulo: '',
-            modalidad: 'VIRTUAL'
-        }
-    }
+      certificado.value = {
+        id: null,
+        id_alumno: '',
+        id_evento: '',
+      };
+    };
 
     const closeModal = () => {
-        resetForm()
-        props.onClose()
-    }
+      resetForm();
+      props.onClose();
+    };
 
     onMounted(() => {
-        storeTipoEvento.fetchTipoEventos(true)
-    })
+      storeAlumno.fetchAlumnos();
+      storeEvento.fetchEventos();
+    });
 
     return {
-        tipos,
-        evento,
-        submitForm,
-        closeModal
-    }
+      alumnos,
+      eventos,
+      certificado,
+      submitForm,
+      closeModal,
+    };
   },
 };
 </script>
-
-<style scoped>
+  
+  <style scoped>
 .modal-overlay {
   position: fixed;
   top: 0;

@@ -1,7 +1,7 @@
 <template>
   <div class="p-4">
     <div class="flex items-center justify-between mb-4">
-      <h1 class="text-2xl">Alumno</h1>
+      <h1 class="text-2xl">Certificado</h1>
       <button
         @click="openModal"
         class="bg-blue-500 text-white p-2 rounded flex items-center"
@@ -26,26 +26,32 @@
       <thead>
         <tr class="bg-gray-200">
           <th class="border px-4 py-2">ID</th>
-          <th class="border px-4 py-2">Tipo de documento</th>
-          <th class="border px-4 py-2">Apellidos</th>
-          <th class="border px-4 py-2">Nombres</th>
+          <th class="border px-4 py-2">Alumno</th>
+          <th class="border px-4 py-2">Evento</th>
+          <th class="border px-4 py-2">Fecha Registro</th>
           <th class="border px-4 py-2">Estado</th>
+          <th class="border px-4 py-2">Descargar</th>
           <th class="border px-4 py-2">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="alumno in alumnos" :key="alumno.id">
-          <td class="border px-4 py-2">{{ alumno.id }}</td>
+        <tr v-if="certificados.length === 0">
+          <td colspan="7" class="text-center pt-2 pb-2">Certificados no registrados</td>
+        </tr>
+        <tr v-for="certificado in certificados" :key="certificado.id">
+          <td class="border px-4 py-2">{{ certificado.id }}</td>
           <td class="border px-4 py-2">
-            {{ alumno.TipoDocumento.abreviatura }}
+            {{ certificado.Alumno ? certificado.Alumno.apellido_paterno : '' }}
+            {{ certificado.Alumno ? certificado.Alumno.apellido_materno : '' }}
+            {{ certificado.Alumno ? certificado.Alumno.nombres : '' }}
           </td>
           <td class="border px-4 py-2">
-            {{ alumno.apellido_paterno }} {{ alumno.apellido_materno }}
+            {{ certificado.Evento ? certificado.Evento.titulo : 'Sin Tipo' }}
           </td>
-          <td class="border px-4 py-2">{{ alumno.nombres }}</td>
+          <td class="border px-4 py-2">{{ formatDate(certificado.fecha_registro) }}</td>
           <td class="border px-4 py-2">
             <svg
-              v-if="alumno.estado"
+              v-if="certificado.estado"
               xmlns="http://www.w3.org/2000/svg"
               class="h-6 w-6 text-green-500"
               fill="none"
@@ -75,9 +81,30 @@
               />
             </svg>
           </td>
+          <td class="border px-4 py-2">
+            <button
+              @click="downloadCertificado(certificado)"
+              class="text-green-500 hover:text-green-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 14v4m0 0h-2a2 2 0 01-2-2v-4a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2zM12 4a8 8 0 018 8h-2a6 6 0 10-12 0H4a8 8 0 018-8z"
+                />
+              </svg>
+            </button>
+          </td>
           <td class="border px-4 py-2 flex space-x-2">
             <button
-              @click="editAlumno(alumno)"
+              @click="editCertificado(certificado)"
               class="text-blue-500 hover:text-blue-700"
             >
               <svg
@@ -96,7 +123,7 @@
               </svg>
             </button>
             <button
-              @click="requestDeleteAlumno(alumno.id)"
+              @click="requestDeleteCertificado(certificado.id)"
               class="text-red-500 hover:text-red-700"
             >
               <svg
@@ -119,64 +146,55 @@
       </tbody>
     </table>
 
-    <AlumnoForm
+    <CertificadoForm
       :isVisible="isModalOpen"
       :onClose="closeModal"
-      :alumno="alumno"
-      @alumnoCreated="handleAlumnoCreated"
-      @alumnoUpdated="handleAlumnoUpdated"
+      :certificado="certificado"
+      @certificadoCreated="handleCertificadoCreated"
+      @certificadoUpdated="handleCertificadoUpdated"
     />
 
     <ConfirmDialog
       :isVisible="isConfirmVisible"
       title="Confirmar Eliminación"
-      message="¿Estás seguro de que deseas eliminar este alumno?"
-      @confirmed="deleteAlumno"
+      message="¿Estás seguro de que deseas eliminar este certificado?"
+      @confirmed="deleteCertificado"
       @canceled="isConfirmVisible = false"
     />
   </div>
 </template>
-
-<script>
+  
+  <script>
 import { computed, ref, onMounted } from 'vue';
-import { useAlumnoStore } from '../stores/alumnoStore';
-import AlumnoForm from './AlumnoForm.vue';
-import ConfirmDialog from './common/ConfirmDialog.vue';
+import { useCertificadoStore } from '../../stores/certificadoStore';
+import CertificadoForm from './CertificadoForm.vue';
+import ConfirmDialog from '../common/ConfirmDialog.vue';
+import { formatDate } from '../../utils/date.utils'
 
 export default {
   components: {
-    AlumnoForm,
+    CertificadoForm,
     ConfirmDialog,
   },
   setup() {
     const isConfirmVisible = ref(false);
-    const alumnoStore = useAlumnoStore();
+    const certificadoStore = useCertificadoStore();
     const isModalOpen = ref(false);
-    const alumno = ref({
+    const certificado = ref({
       id: null,
-      id_tipodocumento: '',
-      apellido_paterno: '',
-      apellido_materno: '',
-      nombres: '',
-      telefono: '',
-      fecha_nacimiento: null,
-      sexo: '',
+      id_alumno: '',
+      id_evento: '',
     });
-    const alumnoToDelete = ref(null);
+    const certificadoToDelete = ref(null);
 
-    const alumnos = computed(() => alumnoStore.alumnos);
+    const certificados = computed(() => certificadoStore.certificados);
 
     const openModal = () => {
-      alumno.value = {
+      certificado.value = {
         id: null,
-        id_tipodocumento: '',
-        apellido_paterno: '',
-        apellido_materno: '',
-        nombres: '',
-        telefono: '',
-        fecha_nacimiento: null,
-        sexo: '',
-      };
+        id_alumno: '',
+        id_evento: '',
+      }; // Resetea el formulario
       isModalOpen.value = true;
     };
 
@@ -184,56 +202,62 @@ export default {
       isModalOpen.value = false;
     };
 
-    const editAlumno = (alumno) => {
-      alumno.value = { ...alumno };
-    //   console.log('alumno.value un editAlumno', alumno.value)
+    const editCertificado = (certificado) => {
+      certificado.value = { ...certificado }; // Cargar los datos del tipo a editar
       isModalOpen.value = true;
     };
 
-    const requestDeleteAlumno = (id) => {
-      alumnoToDelete.value = id;
+    const requestDeleteCertificado = (id) => {
+      certificadoToDelete.value = id;
       isConfirmVisible.value = true;
     };
 
-    const deleteAlumno = async () => {
-      if (alumnoToDelete.value) {
-        await alumnoStore.deleteAlumno(alumnoToDelete.value);
+    const deleteCertificado = async () => {
+      if (certificadoToDelete.value) {
+        // await certificadoStore.deleteCertificado(certificadoToDelete.value);
         isConfirmVisible.value = false; // Cerrar el diálogo
-        alumnoToDelete.value = null; // Resetear el ID a eliminar
+        certificadoToDelete.value = null; // Resetear el ID a eliminar
       }
     };
 
-    const handleAlumnoCreated = () => {
+    const downloadCertificado = (certificado) => {
+        certificadoStore.downloadCertificado(certificado.id)
+    }
+
+    const handleCertificadoCreated = () => {
       isModalOpen.value = false;
-      alumnoStore.fetchAlumnos(); // Actualiza la lista después de crear
+      certificadoStore.fetchCertificados(); // Actualiza la lista después de crear
     };
 
-    const handleAlumnoUpdated = () => {
+    const handleCertificadoUpdated = () => {
       isModalOpen.value = false;
-      alumnoStore.fetchAlumnos(); // Actualiza la lista después de editar
+      certificadoStore.fetchCertificados(); // Actualiza la lista después de editar
     };
 
     onMounted(() => {
-      alumnoStore.fetchAlumnos();
+      certificadoStore.fetchCertificados();
     });
 
     return {
-      alumnos,
+      certificados,
       openModal,
       closeModal,
-      editAlumno,
+      editCertificado,
       isModalOpen,
-      alumno,
-      requestDeleteAlumno,
+      certificado,
+      requestDeleteCertificado,
       isConfirmVisible,
-      deleteAlumno,
-      handleAlumnoCreated,
-      handleAlumnoUpdated,
+      deleteCertificado,
+      downloadCertificado,
+      handleCertificadoCreated,
+      handleCertificadoUpdated,
+      formatDate
     };
   },
 };
 </script>
-
-<style scoped>
+  
+  <style scoped>
 /* Agrega tus estilos aquí si es necesario */
 </style>
+  
