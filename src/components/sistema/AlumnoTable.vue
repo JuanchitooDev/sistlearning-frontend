@@ -27,6 +27,7 @@
         <tr class="bg-gray-200">
           <th class="border px-4 py-2">ID</th>
           <th class="border px-4 py-2">Tipo de documento</th>
+          <th class="border px-4 py-2">Número de documento</th>
           <th class="border px-4 py-2">Apellidos</th>
           <th class="border px-4 py-2">Nombres</th>
           <th class="border px-4 py-2">Estado</th>
@@ -41,6 +42,9 @@
           <td class="border px-4 py-2">{{ alumno.id }}</td>
           <td class="border px-4 py-2">
             {{ alumno.TipoDocumento ? alumno.TipoDocumento.abreviatura : 'Sin Tipo Documento' }}
+          </td>
+          <td class="border px-4 py-2">
+            {{ alumno.numero_documento }}
           </td>
           <td class="border px-4 py-2">
             {{ alumno.apellido_paterno }} {{ alumno.apellido_materno }}
