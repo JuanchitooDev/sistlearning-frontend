@@ -224,7 +224,7 @@ export default {
 
     const deleteCertificado = async () => {
       if (certificadoToDelete.value) {
-        // await certificadoStore.deleteCertificado(certificadoToDelete.value);
+        await certificadoStore.deleteCertificado(certificadoToDelete.value)
         notificationMessage.value = 'Certificado eliminado correctamente'
         isConfirmVisible.value = false; // Cerrar el diálogo
         certificadoToDelete.value = null; // Resetear el ID a eliminar

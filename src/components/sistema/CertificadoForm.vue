@@ -65,6 +65,21 @@
             </option>
           </select>
         </div>
+        <div class="mb-4">
+          <label
+            for="fecha_envio"
+            class="block text-sm font-medium text-gray-700"
+            >Fecha impresión:</label
+          >
+          <input
+            v-model="certificado.fecha_envio"
+            type="date"
+            id="fecha_envio"
+            autocomplete="off"
+            required
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+          />
+        </div>
         <div class="flex justify-between">
           <button
             type="submit"
@@ -113,11 +128,12 @@
   </div>
 </template>
   
-  <script>
+<script>
 import { onMounted, ref, watch, computed } from 'vue';
 import { useAlumnoStore } from '@/stores/alumnoStore';
 import { useEventoStore } from '@/stores/eventoStore';
 import { useCertificadoStore } from '@/stores/certificadoStore';
+import { currentDate } from '@/utils/date.utils'
 
 export default {
   props: {
@@ -135,6 +151,7 @@ export default {
         id: null,
         id_alumno: '',
         id_evento: '',
+        fecha_envio: currentDate,
       }),
     },
   },
@@ -177,6 +194,7 @@ export default {
         id: null,
         id_alumno: '',
         id_evento: '',
+        fecha_envio: null,
       };
     };
 
@@ -186,6 +204,11 @@ export default {
     };
 
     onMounted(() => {
+      // // Establecer la fecha actual en el campo fecha_envio
+      // const today = new Date().toISOString().split('T')[0]; // Formatear la fecha
+      // // console.log('today', today)
+      // certificado.value.fecha_envio = today;
+
       storeAlumno.fetchAlumnos();
       storeEvento.fetchEventos();
     });
@@ -201,7 +224,7 @@ export default {
 };
 </script>
   
-  <style scoped>
+<style scoped>
 .modal-overlay {
   position: fixed;
   top: 0;

@@ -5,3 +5,8 @@ export const formatDate = (dateString: string) => {
     const year = date.getFullYear()
     return `${day}/${month}/${year}`
 }
+
+export const currentDate = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return today
+}

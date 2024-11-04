@@ -67,6 +67,25 @@ export const useCertificadoStore = defineStore('certificadoStore', {
             } catch (error) {
                 console.error('Error downloading certificado', error)
             }
+        },
+        async updateCertificado(idCertificado: number, certificado: ICertificado) {
+            try {
+                await api.put(`/certificado/${idCertificado}`, certificado)
+                const index = this.certificados.findIndex((c) => c.id === certificado.id)
+                if (index !== -1) {
+                    this.certificados[index] = certificado
+                }
+            } catch (error) {
+                console.error('Error updating certificado: ', error)
+            }
+        },
+        async deleteCertificado(idCertificado: number) {
+            try {
+                await api.delete(`/certificado/${idCertificado}`)
+                this.certificados = this.certificados.filter((c) => c.id !== idCertificado)
+            } catch (error) {
+                console.error('Error deleting certificado: ', error)
+            }
         }
     }
 })
