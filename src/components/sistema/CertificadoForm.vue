@@ -69,7 +69,7 @@
           <label
             for="fecha_envio"
             class="block text-sm font-medium text-gray-700"
-            >Fecha impresión:</label
+            >Fecha emisión:</label
           >
           <input
             v-model="certificado.fecha_envio"
@@ -133,7 +133,7 @@ import { onMounted, ref, watch, computed } from 'vue';
 import { useAlumnoStore } from '@/stores/alumnoStore';
 import { useEventoStore } from '@/stores/eventoStore';
 import { useCertificadoStore } from '@/stores/certificadoStore';
-import { currentDate } from '@/utils/date.utils'
+import { currentDate } from '@/utils/date.utils';
 
 export default {
   props: {
@@ -179,8 +179,18 @@ export default {
           //   await store.updateCertificado(certificado.value.id, certificado.value);
           emit('certificadoUpdated');
         } else {
-          await store.createCertificado(certificado.value);
-          emit('certificadoCreated');
+          const alumno = await storeAlumno.getAlumnoById(
+            certificado.value.id_alumno
+          );
+          if (alumno) {
+            console.log('alumno submitForm', alumno);
+            certificado.value.alumno = alumno;
+            console.log('certificado.value', certificado.value);
+            await store.createCertificado(certificado.value);
+            emit('certificadoCreated');
+          } else {
+            console.error('No se pudo obtener el alumno');
+          }
         }
         resetForm();
         props.onClose();

@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import api from '../utils/axios'
 import { ICertificado } from '../interfaces/certificadoInterface'
+import { sanitizeFileName } from '@/utils/string.utils'
+import { IAlumno } from '@/interfaces/alumnoInterface'
 
 export const useCertificadoStore = defineStore('certificadoStore', {
     state: () => ({
@@ -27,11 +29,19 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 const response = await api.post('/certificado', certificado, {
                     responseType: 'blob'
                 })
+
                 this.certificados.push(response.data)
+
+                const alumno = certificado.alumno as IAlumno
+                const nombreCompleto = alumno.nombre_capitalized as string
+                const sanitizedAlumno = sanitizeFileName(nombreCompleto)
+                const fileName = `certificado_${sanitizedAlumno}.pdf`
+                console.log('fileName', fileName)
+
                 const url = window.URL.createObjectURL(new Blob([response.data]))
                 const link = document.createElement('a')
                 link.href = url
-                link.setAttribute('download', 'certificado.pdf')
+                link.setAttribute('download', fileName)
                 document.body.appendChild(link)
                 link.click()
                 link.remove()
@@ -43,7 +53,7 @@ export const useCertificadoStore = defineStore('certificadoStore', {
             this.loading = true
             this.error = null
             try {
-                const urlApi = `/certificado/${codigo}`
+                const urlApi = `/certificado/codigo/${codigo}`
                 const response = await api.get(urlApi)
                 this.certificado = response.data.data
             } catch (error) {

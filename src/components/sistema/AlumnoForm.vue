@@ -157,7 +157,8 @@
         <div class="flex justify-between">
           <button
             type="submit"
-            class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            :disabled="isDuplicated"
+            class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" :class="{'opacity-50 cursor-not-allowed' : isDuplicated}"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -197,6 +198,7 @@
             Cancelar
           </button>
         </div>
+        <div v-if="isDuplicated" class="text-red-500 mt-2">El alumno ya existe</div> 
       </form>
     </div>
   </div>
@@ -240,6 +242,7 @@ export default {
     const storeTipoDocumento = useTipoDocumentoStore();
     const storePersona = usePersonaStore();
     const tipos = computed(() => storeTipoDocumento.tipos);
+    const isDuplicated = ref(false)
 
     watch(
       () => props.alumno,
@@ -254,8 +257,20 @@ export default {
       { immediate: true }
     );
 
+    const validarRegistro = () => {
+      isDuplicated.value = storeAlumno.alumnos.some(existAlumno =>
+        existAlumno.id_tipodocumento === alumno.value.id_tipodocumento &&
+        existAlumno.numero_documento === alumno.value.numero_documento
+      )
+    }
+
     const submitForm = async () => {
       try {
+        if (isDuplicated.value) {
+          console.error('El alumno ya existe')
+          return;
+        }
+        
         if (alumno.value.id) {
           await storeAlumno.updateAlumno(alumno.value.id, alumno.value);
           emit('alumnoUpdated');
@@ -288,6 +303,7 @@ export default {
           const persona = storePersona.persona;
           console.log('persona fetchPersona', persona);
           if (persona) {
+            validarRegistro()
             alumno.value.nombres = persona.nombres || '';
             alumno.value.apellido_paterno = persona.apellido_paterno || '';
             alumno.value.apellido_materno = persona.apellido_materno || '';
@@ -314,6 +330,7 @@ export default {
         fecha_nacimiento: null,
         sexo: '',
       };
+      isDuplicated.value = false
     };
 
     const closeModal = () => {
@@ -331,6 +348,8 @@ export default {
       submitForm,
       closeModal,
       fetchPersona,
+      isDuplicated,
+      validarRegistro
     };
   },
 };

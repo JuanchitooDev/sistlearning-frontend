@@ -26,12 +26,14 @@ export const useAlumnoStore = defineStore('alumnoStore', {
             try {
                 const response = await api.get(`/alumno/${id}`)
                 const alumno = response.data.data
+                console.log('alumno response', alumno)
                 const index = this.alumnos.findIndex((a) => a.id === alumno.id)
                 if (index !== -1) {
                     this.alumnos[index] = alumno
                 } else {
                     this.alumnos.push(alumno)
                 }
+                return alumno
             } catch (error) {
                 console.error(`Error al obtener el alumno: ${error}`)
                 this.error = error instanceof Error ? error.message : 'Error desconocido'
