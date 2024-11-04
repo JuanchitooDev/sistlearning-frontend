@@ -170,7 +170,7 @@ export default {
       }),
     },
   },
-  emits: ['EventoCreated', 'eventoUpdated'],
+  emits: ['eventoCreated', 'eventoUpdated'],
   setup(props, { emit }) {
     const evento = ref(props.evento);
     const store = useEventoStore();
@@ -225,7 +225,7 @@ export default {
       tipos,
       evento,
       submitForm,
-      closeModal,
+      closeModal
     };
   },
 };

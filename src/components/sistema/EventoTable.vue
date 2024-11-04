@@ -137,6 +137,13 @@
       @confirmed="deleteEvento"
       @canceled="isConfirmVisible = false"
     />
+
+    <Notification
+      v-if="notificationMessage"
+      :message="notificationMessage"
+      :duration="4000"
+      @hide="notificationMessage = ''"
+    ></Notification>
   </div>
 </template>
 
@@ -145,15 +152,18 @@ import { computed, ref, onMounted } from 'vue';
 import { useEventoStore } from '../../stores/eventoStore';
 import EventoForm from './EventoForm.vue';
 import ConfirmDialog from '../common/ConfirmDialog.vue';
+import Notification from '../common/Notification.vue'
 import { formatDate } from '@/utils/date.utils';
 
 export default {
   components: {
     EventoForm,
     ConfirmDialog,
+    Notification
   },
   setup() {
     const isConfirmVisible = ref(false);
+    const notificationMessage = ref('')
     const eventoStore = useEventoStore();
     const isModalOpen = ref(false);
     const evento = ref({
@@ -193,6 +203,7 @@ export default {
     const deleteEvento = async () => {
       if (eventoToDelete.value) {
         await eventoStore.deleteEvento(eventoToDelete.value);
+        notificationMessage.value = 'Evento eliminado correctamente'
         isConfirmVisible.value = false; // Cerrar el diálogo
         eventoToDelete.value = null; // Resetear el ID a eliminar
       }
@@ -200,11 +211,13 @@ export default {
 
     const handleEventoCreated = () => {
       isModalOpen.value = false;
+      notificationMessage.value = 'Evento creado correctamente'
       eventoStore.fetchEventos(); // Actualiza la lista después de crear
     };
 
     const handleEventoUpdated = () => {
       isModalOpen.value = false;
+      notificationMessage.value = 'Evento actualizado correctamente'
       eventoStore.fetchEventos(); // Actualiza la lista después de editar
     };
 
@@ -225,6 +238,7 @@ export default {
       handleEventoCreated,
       handleEventoUpdated,
       formatDate,
+      notificationMessage
     };
   },
 };

@@ -161,23 +161,33 @@
       @confirmed="deleteCertificado"
       @canceled="isConfirmVisible = false"
     />
+
+    <Notification
+      v-if="notificationMessage"
+      :message="notificationMessage"
+      :duration="4000"
+      @hide="notificationMessage = ''"
+    ></Notification>
   </div>
 </template>
   
-  <script>
+<script>
 import { computed, ref, onMounted } from 'vue';
 import { useCertificadoStore } from '../../stores/certificadoStore';
 import CertificadoForm from './CertificadoForm.vue';
 import ConfirmDialog from '../common/ConfirmDialog.vue';
+import Notification from '../common/Notification.vue'
 import { formatDate } from '../../utils/date.utils'
 
 export default {
   components: {
     CertificadoForm,
     ConfirmDialog,
+    Notification
   },
   setup() {
     const isConfirmVisible = ref(false);
+    const notificationMessage = ref('')
     const certificadoStore = useCertificadoStore();
     const isModalOpen = ref(false);
     const certificado = ref({
@@ -215,6 +225,7 @@ export default {
     const deleteCertificado = async () => {
       if (certificadoToDelete.value) {
         // await certificadoStore.deleteCertificado(certificadoToDelete.value);
+        notificationMessage.value = 'Certificado eliminado correctamente'
         isConfirmVisible.value = false; // Cerrar el diálogo
         certificadoToDelete.value = null; // Resetear el ID a eliminar
       }
@@ -226,11 +237,13 @@ export default {
 
     const handleCertificadoCreated = () => {
       isModalOpen.value = false;
+      notificationMessage.value = 'Certificado creado correctamente'
       certificadoStore.fetchCertificados(); // Actualiza la lista después de crear
     };
 
     const handleCertificadoUpdated = () => {
       isModalOpen.value = false;
+      notificationMessage.value = 'Certificado actualizado correctamente'
       certificadoStore.fetchCertificados(); // Actualiza la lista después de editar
     };
 
@@ -251,7 +264,8 @@ export default {
       downloadCertificado,
       handleCertificadoCreated,
       handleCertificadoUpdated,
-      formatDate
+      formatDate,
+      notificationMessage
     };
   },
 };

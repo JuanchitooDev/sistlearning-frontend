@@ -137,6 +137,13 @@
       @confirmed="deleteAlumno"
       @canceled="isConfirmVisible = false"
     />
+
+    <Notification
+      v-if="notificationMessage"
+      :message="notificationMessage"
+      :duration="4000"
+      @hide="notificationMessage = ''"
+    ></Notification>
   </div>
 </template>
 
@@ -145,14 +152,17 @@ import { computed, ref, onMounted } from 'vue';
 import { useAlumnoStore } from '../../stores/alumnoStore';
 import AlumnoForm from './AlumnoForm.vue';
 import ConfirmDialog from '../common/ConfirmDialog.vue';
+import Notification from '../common/Notification.vue'
 
 export default {
   components: {
     AlumnoForm,
     ConfirmDialog,
+    Notification
   },
   setup() {
     const isConfirmVisible = ref(false);
+    const notificationMessage = ref('')
     const alumnoStore = useAlumnoStore();
     const isModalOpen = ref(false);
     const alumno = ref({
@@ -202,6 +212,7 @@ export default {
     const deleteAlumno = async () => {
       if (alumnoToDelete.value) {
         await alumnoStore.deleteAlumno(alumnoToDelete.value);
+        notificationMessage.value = 'Alumno eliminado correctamente'
         isConfirmVisible.value = false; // Cerrar el diálogo
         alumnoToDelete.value = null; // Resetear el ID a eliminar
       }
@@ -209,11 +220,13 @@ export default {
 
     const handleAlumnoCreated = () => {
       isModalOpen.value = false;
+      notificationMessage.value = 'Alumno creado correctamente'
       alumnoStore.fetchAlumnos(); // Actualiza la lista después de crear
     };
 
     const handleAlumnoUpdated = () => {
       isModalOpen.value = false;
+      notificationMessage.value = 'Alumno actualizado correctamente'
       alumnoStore.fetchAlumnos(); // Actualiza la lista después de editar
     };
 
@@ -233,6 +246,7 @@ export default {
       deleteAlumno,
       handleAlumnoCreated,
       handleAlumnoUpdated,
+      notificationMessage
     };
   },
 };

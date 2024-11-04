@@ -53,7 +53,8 @@
             <input
               v-model="alumno.numero_documento"
               type="text"
-              id="apellido_paterno"
+              id="numero_documento"
+              @keydown.enter.prevent="fetchPersona"
               autocomplete="off"
               maxlength="13"
               required
@@ -205,6 +206,7 @@
 import { onMounted, ref, watch, computed } from 'vue';
 import { useAlumnoStore } from '@/stores/alumnoStore';
 import { useTipoDocumentoStore } from '@/stores/tipoDocumentoStore';
+import { usePersonaStore } from '@/stores/personaStore';
 
 export default {
   props: {
@@ -236,6 +238,7 @@ export default {
     const alumno = ref(props.alumno);
     const storeAlumno = useAlumnoStore();
     const storeTipoDocumento = useTipoDocumentoStore();
+    const storePersona = usePersonaStore();
     const tipos = computed(() => storeTipoDocumento.tipos);
 
     watch(
@@ -267,6 +270,38 @@ export default {
       }
     };
 
+    const fetchPersona = async () => {
+      if ((alumno.value.id_tipodocumento, alumno.value.numero_documento)) {
+        console.log(
+          'alumno.value.id_tipodocumento',
+          alumno.value.id_tipodocumento
+        );
+        console.log(
+          'alumno.value.numero_documento',
+          alumno.value.numero_documento
+        );
+        try {
+          await storePersona.getDocumentoInfo(
+            alumno.value.id_tipodocumento,
+            alumno.value.numero_documento
+          );
+          const persona = storePersona.persona;
+          console.log('persona fetchPersona', persona);
+          if (persona) {
+            alumno.value.nombres = persona.nombres || '';
+            alumno.value.apellido_paterno = persona.apellido_paterno || '';
+            alumno.value.apellido_materno = persona.apellido_materno || '';
+            alumno.value.fecha_nacimiento = persona.fecha_nacimiento
+              ? persona.fecha_nacimiento.slice(0, 10)
+              : null;
+            alumno.value.sexo = persona.sexo || '';
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+
     const resetForm = () => {
       alumno.value = {
         id: null,
@@ -295,6 +330,7 @@ export default {
       alumno,
       submitForm,
       closeModal,
+      fetchPersona,
     };
   },
 };

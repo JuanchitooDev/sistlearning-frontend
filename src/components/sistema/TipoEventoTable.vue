@@ -133,6 +133,13 @@
       @confirmed="deleteTipoEvento"
       @canceled="isConfirmVisible = false"
     />
+
+    <Notification
+      v-if="notificationMessage"
+      :message="notificationMessage"
+      :duration="4000"
+      @hide="notificationMessage = ''"
+    ></Notification>
   </div>
 </template>
 
@@ -141,14 +148,17 @@ import { computed, ref, onMounted } from 'vue';
 import { useTipoEventoStore } from '../../stores/tipoEventoStore';
 import TipoEventoForm from './TipoEventoForm.vue';
 import ConfirmDialog from '../common/ConfirmDialog.vue';
+import Notification from '../common/Notification.vue'
 
 export default {
   components: {
     TipoEventoForm,
     ConfirmDialog,
+    Notification
   },
   setup() {
     const isConfirmVisible = ref(false);
+    const notificationMessage = ref('')
     const tipoEventoStore = useTipoEventoStore();
     const isModalOpen = ref(false);
     const tipoEvento = ref({ id: null, nombre: '', descripcion: '' });
@@ -178,6 +188,7 @@ export default {
     const deleteTipoEvento = async () => {
       if (tipoEventoToDelete.value) {
         await tipoEventoStore.deleteTipoEvento(tipoEventoToDelete.value);
+        notificationMessage.value = 'Tipo de evento eliminado correctamente'
         isConfirmVisible.value = false; // Cerrar el diálogo
         tipoEventoToDelete.value = null; // Resetear el ID a eliminar
       }
@@ -185,11 +196,13 @@ export default {
 
     const handleTipoEventoCreated = () => {
       isModalOpen.value = false;
+      notificationMessage.value = 'Tipo de evento creado correctamente'
       tipoEventoStore.fetchTipoEventos(); // Actualiza la lista después de crear
     };
 
     const handleTipoEventoUpdated = () => {
       isModalOpen.value = false;
+      notificationMessage.value = 'Tipo de evento actualizado correctamente'
       tipoEventoStore.fetchTipoEventos(); // Actualiza la lista después de editar
     };
 
@@ -209,6 +222,7 @@ export default {
       deleteTipoEvento,
       handleTipoEventoCreated,
       handleTipoEventoUpdated,
+      notificationMessage
     };
   },
 };
