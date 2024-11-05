@@ -26,7 +26,6 @@ export const useAlumnoStore = defineStore('alumnoStore', {
             try {
                 const response = await api.get(`/alumno/${id}`)
                 const alumno = response.data.data
-                console.log('alumno response', alumno)
                 const index = this.alumnos.findIndex((a) => a.id === alumno.id)
                 if (index !== -1) {
                     this.alumnos[index] = alumno

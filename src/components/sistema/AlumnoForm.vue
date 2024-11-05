@@ -287,21 +287,12 @@ export default {
 
     const fetchPersona = async () => {
       if (alumno.value.id_tipodocumento && alumno.value.numero_documento) {
-        console.log(
-          'alumno.value.id_tipodocumento',
-          alumno.value.id_tipodocumento
-        );
-        console.log(
-          'alumno.value.numero_documento',
-          alumno.value.numero_documento
-        );
         try {
           await storePersona.getDocumentoInfo(
             alumno.value.id_tipodocumento,
             alumno.value.numero_documento
           );
           const persona = storePersona.persona;
-          console.log('persona fetchPersona', persona);
           if (persona) {
             validarRegistro()
             alumno.value.nombres = persona.nombres || '';

@@ -15,7 +15,6 @@ export const useTipoDocumentoStore = defineStore('tipoDocumentoStore', {
             this.error = null
             try {
                 const response = await api.get('/tipo-documento')
-                // console.log('response.data', response.data.data)
                 this.tipos = response.data.data
             } catch (error) {
                 console.error('Error fetching tipo documentos: ', error)
@@ -28,7 +27,6 @@ export const useTipoDocumentoStore = defineStore('tipoDocumentoStore', {
             this.error = null
             try {
                 const response = await api.get(`/tipo-documento/categoria/${categoria}`)
-                // console.log('response.data tipodocs', response.data.data)
                 this.tipos = response.data.data
                 return this.tipos
             } catch (error) {
@@ -41,7 +39,6 @@ export const useTipoDocumentoStore = defineStore('tipoDocumentoStore', {
         async getTipoDocumentoById(id: number) {
             try {
                 const response = await api.get(`/tipo-documento/${id}`)
-                // console.log('response evento by id', response.data.data)
                 this.tipos = response.data.data
             } catch (error) {
                 console.error('Error al obtener el tipo documento: ', error)

@@ -183,9 +183,7 @@ export default {
             certificado.value.id_alumno
           );
           if (alumno) {
-            console.log('alumno submitForm', alumno);
             certificado.value.alumno = alumno;
-            console.log('certificado.value', certificado.value);
             await store.createCertificado(certificado.value);
             emit('certificadoCreated');
           } else {
@@ -214,11 +212,6 @@ export default {
     };
 
     onMounted(() => {
-      // // Establecer la fecha actual en el campo fecha_envio
-      // const today = new Date().toISOString().split('T')[0]; // Formatear la fecha
-      // // console.log('today', today)
-      // certificado.value.fecha_envio = today;
-
       storeAlumno.fetchAlumnos();
       storeEvento.fetchEventos();
     });

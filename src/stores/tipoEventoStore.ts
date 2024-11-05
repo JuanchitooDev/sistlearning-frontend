@@ -15,8 +15,6 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
             this.error = null
             try {
                 const response = await api.get('/tipo-evento')
-                // console.log('response.data', response.data.data)
-                // this.tipos = response.data.data
                 const tipos = response.data.data
                 if (estado !== null) {
                     this.tipos = tipos.filter((tipo:ITipoEvento) => tipo.estado === estado)
@@ -32,7 +30,6 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
         async getTipoEventoById(id: number) {
             try {
                 const response = await api.get(`/tipo-evento/${id}`)
-                // console.log('response evento by id', response.data.data)
                 this.tipos = response.data.data
             } catch (error) {
                 console.error('Error al obtener el tipo evento: ', error)

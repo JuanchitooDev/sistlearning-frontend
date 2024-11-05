@@ -24,7 +24,6 @@ export default {
 
         const fetchCertificado = () => {
             const response = certificadoStore.getCertificadoByCodigo(codigo)
-            console.log('response certificado', response)
             certificado.value = response
         }
 

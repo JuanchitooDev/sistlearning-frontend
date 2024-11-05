@@ -14,7 +14,6 @@ export const usePersonaStore = defineStore('personaStore', {
             try {
                 const url = `/documento/infodoc/${idTipoDocumento}/numdoc/${numeroDocumento}`
                 const response = await api.get(`${url}`)
-                console.log('response data documento info', response)
                 const persona = response.data.data
 
                 // Actualiza la propiedad persona en el estado

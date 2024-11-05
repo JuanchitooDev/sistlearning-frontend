@@ -23,22 +23,8 @@ export const useEventoStore = defineStore('eventoStore', {
             }
         },
         async getEventoById(id: number) {
-            // try {
-            //     const response = await api.get(`/evento/${id}`)
-            //     const evento = response.data.data
-            //     const index = this.eventos.findIndex((e) => e.id === evento.id)
-            //     if (index !== -1) {
-            //         this.eventos[index] = evento
-            //     } else {
-            //         this.eventos.push(evento)
-            //     }
-            // } catch (error) {
-            //     console.error(`Error al obtener el evento: ${error}`)
-            //     this.error = error instanceof Error ? error.message : 'Error desconocido'
-            // }
             try {
                 const response = await api.get(`/evento/${id}`)
-                // console.log('response evento by id', response.data.data)
                 this.eventos = response.data.data
             } catch (error) {
                 console.error('Error al obtener el evento: ', error)

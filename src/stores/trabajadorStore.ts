@@ -15,7 +15,6 @@ export const useTrabajadorStore = defineStore('trabajadorStore', {
             this.error = null
             try {
                 const response = await api.get('/trabajador')
-                // console.log('response.data', response.data.data)
                 this.trabajadores = response.data.data
             } catch (error) {
                 console.error('Error fetching trabajadores: ', error)
@@ -26,7 +25,6 @@ export const useTrabajadorStore = defineStore('trabajadorStore', {
         async getTrabajadorById(id: number) {
             try {
                 const response = await api.get(`/trabajador/${id}`)
-                // console.log('response evento by id', response.data.data)
                 this.trabajadores = response.data.data
             } catch (error) {
                 console.error('Error al obtener el trabajador: ', error)
