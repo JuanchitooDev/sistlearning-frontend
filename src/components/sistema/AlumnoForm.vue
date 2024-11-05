@@ -286,7 +286,7 @@ export default {
     };
 
     const fetchPersona = async () => {
-      if ((alumno.value.id_tipodocumento, alumno.value.numero_documento)) {
+      if (alumno.value.id_tipodocumento && alumno.value.numero_documento) {
         console.log(
           'alumno.value.id_tipodocumento',
           alumno.value.id_tipodocumento
