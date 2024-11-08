@@ -180,7 +180,11 @@ export default {
     watch(
       () => props.evento,
       (newValue) => {
-        evento.value = newValue;
+        evento.value = {
+          ...newValue,
+          fecha: newValue.fecha ? newValue.fecha.slice(0, 10) : null,
+        };
+        // evento.value = newValue;
       },
       { immediate: true }
     );
@@ -225,7 +229,7 @@ export default {
       tipos,
       evento,
       submitForm,
-      closeModal
+      closeModal,
     };
   },
 };

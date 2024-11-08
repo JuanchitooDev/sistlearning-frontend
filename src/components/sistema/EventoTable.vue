@@ -22,6 +22,16 @@
       </button>
     </div>
 
+    <!-- Campo de búsqueda -->
+    <div class="mb-4">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Criterio de búsqueda"
+        class="p-2 border border-gray-300 rounded"
+      />
+    </div>
+
     <table class="min-w-full bg-white border border-gray-300">
       <thead>
         <tr class="bg-gray-200">
@@ -35,10 +45,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-if="eventos.length === 0">
-          <td colspan="7" class="text-center pt-2 pb-2">Eventos no registrados</td>
+        <tr v-if="paginatedEventos.length === 0">
+          <td colspan="7" class="text-center pt-2 pb-2">
+            Eventos no registrados
+          </td>
         </tr>
-        <tr v-for="evento in eventos" :key="evento.id">
+        <tr v-for="evento in paginatedEventos" :key="evento.id">
           <td class="border px-4 py-2">{{ evento.id }}</td>
           <td class="border px-4 py-2">{{ evento.titulo }}</td>
           <td class="border px-4 py-2">
@@ -122,6 +134,25 @@
       </tbody>
     </table>
 
+    <!-- Paginación -->
+    <div class="mt-4 flex justify-between items-center">
+      <button
+        @click="prevPage"
+        :disabled="currentPage === 1"
+        class="px-4 py-2 bg-gray-300 rounded"
+      >
+        Anterior
+      </button>
+      <span>Página {{ currentPage }} de {{ totalPages }}</span>
+      <button
+        @click="nextPage"
+        :disabled="currentPage === totalPages"
+        class="px-4 py-2 bg-gray-300 rounded"
+      >
+        Siguiente
+      </button>
+    </div>
+
     <EventoForm
       :isVisible="isModalOpen"
       :onClose="closeModal"
@@ -152,18 +183,18 @@ import { computed, ref, onMounted } from 'vue';
 import { useEventoStore } from '../../stores/eventoStore';
 import EventoForm from './EventoForm.vue';
 import ConfirmDialog from '../common/ConfirmDialog.vue';
-import Notification from '../common/Notification.vue'
+import Notification from '../common/Notification.vue';
 import { formatDate } from '@/utils/date.utils';
 
 export default {
   components: {
     EventoForm,
     ConfirmDialog,
-    Notification
+    Notification,
   },
   setup() {
     const isConfirmVisible = ref(false);
-    const notificationMessage = ref('')
+    const notificationMessage = ref('');
     const eventoStore = useEventoStore();
     const isModalOpen = ref(false);
     const evento = ref({
@@ -175,6 +206,39 @@ export default {
     const eventoToDelete = ref(null);
 
     const eventos = computed(() => eventoStore.eventos);
+
+    const searchQuery = ref('')
+
+    const currentPage = ref(1)
+
+    const perPage = 10;
+
+    const filteredEventos = computed(() => {
+      const query = searchQuery.value.toLowerCase()
+      return eventos.value.filter((evento) => {
+        return (
+          evento.titulo.toLowerCase().includes(query)
+        )
+      })
+    })
+
+    const totalPages = computed(() => {
+      return Math.ceil(filteredEventos.value.length / perPage)
+    })
+
+    const paginatedEventos = computed(() => {
+      const start = (currentPage.value - 1) * perPage
+      const end = start + perPage
+      return filteredEventos.value.slice(start, end)
+    })
+
+    const prevPage = () => {
+      if (currentPage.value > 1) currentPage.value--
+    }
+
+    const nextPage = () => {
+      if (currentPage.value < totalPages.value) currentPage.value++
+    }
 
     const openModal = () => {
       evento.value = {
@@ -203,7 +267,7 @@ export default {
     const deleteEvento = async () => {
       if (eventoToDelete.value) {
         await eventoStore.deleteEvento(eventoToDelete.value);
-        notificationMessage.value = 'Evento eliminado correctamente'
+        notificationMessage.value = 'Evento eliminado correctamente';
         isConfirmVisible.value = false; // Cerrar el diálogo
         eventoToDelete.value = null; // Resetear el ID a eliminar
       }
@@ -211,13 +275,13 @@ export default {
 
     const handleEventoCreated = () => {
       isModalOpen.value = false;
-      notificationMessage.value = 'Evento creado correctamente'
+      notificationMessage.value = 'Evento creado correctamente';
       eventoStore.fetchEventos(); // Actualiza la lista después de crear
     };
 
     const handleEventoUpdated = () => {
       isModalOpen.value = false;
-      notificationMessage.value = 'Evento actualizado correctamente'
+      notificationMessage.value = 'Evento actualizado correctamente';
       eventoStore.fetchEventos(); // Actualiza la lista después de editar
     };
 
@@ -227,6 +291,13 @@ export default {
 
     return {
       eventos,
+      searchQuery,
+      filteredEventos,
+      currentPage,
+      totalPages,
+      paginatedEventos,
+      prevPage,
+      nextPage,
       openModal,
       closeModal,
       editEvento,
@@ -238,7 +309,7 @@ export default {
       handleEventoCreated,
       handleEventoUpdated,
       formatDate,
-      notificationMessage
+      notificationMessage,
     };
   },
 };

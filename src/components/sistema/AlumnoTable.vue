@@ -21,7 +21,22 @@
         Agregar
       </button>
     </div>
-
+    <!-- Filtro por Tipo de Documento -->
+    <div class="mb-4 flex items-center space-x-4">
+      <label for="tipoDocumento" class="font-semibold"
+        >Tipo de Documento:</label
+      >
+      <select
+        v-model="selectedTipoDocumento"
+        id="tipoDocumento"
+        class="p-2 border border-gray-300 rounded"
+      >
+        <option value="">Todos</option>
+        <option v-for="tipo in tiposDocumentos" :key="tipo.id" :value="tipo.id">
+          {{ tipo.nombre }}
+        </option>
+      </select>
+    </div>
     <table class="min-w-full bg-white border border-gray-300">
       <thead>
         <tr class="bg-gray-200">
@@ -35,13 +50,19 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-if="alumnos.length === 0">
-          <td colspan="6" class="text-center pt-2 pb-2">Alumnos no registrados</td>
+        <tr v-if="paginatedAlumnos.length === 0">
+          <td colspan="7" class="text-center pt-2 pb-2">
+            Alumnos no registrados
+          </td>
         </tr>
-        <tr v-for="alumno in alumnos" :key="alumno.id">
+        <tr v-for="alumno in paginatedAlumnos" :key="alumno.id">
           <td class="border px-4 py-2">{{ alumno.id }}</td>
           <td class="border px-4 py-2">
-            {{ alumno.TipoDocumento ? alumno.TipoDocumento.abreviatura : 'Sin Tipo Documento' }}
+            {{
+              alumno.TipoDocumento
+                ? alumno.TipoDocumento.abreviatura
+                : 'Sin Tipo Documento'
+            }}
           </td>
           <td class="border px-4 py-2">
             {{ alumno.numero_documento }}
@@ -126,6 +147,25 @@
       </tbody>
     </table>
 
+    <!-- Paginación -->
+    <div class="mt-4 flex justify-between items-center">
+      <button
+        @click="prevPage"
+        :disabled="currentPage === 1"
+        class="px-4 py-2 bg-gray-300 rounded"
+      >
+        Anterior
+      </button>
+      <span>Página {{ currentPage }} de {{ totalPages }}</span>
+      <button
+        @click="nextPage"
+        :disabled="currentPage === totalPages"
+        class="px-4 py-2 bg-gray-300 rounded"
+      >
+        Siguiente
+      </button>
+    </div>
+
     <AlumnoForm
       :isVisible="isModalOpen"
       :onClose="closeModal"
@@ -156,18 +196,20 @@ import { computed, ref, onMounted } from 'vue';
 import { useAlumnoStore } from '../../stores/alumnoStore';
 import AlumnoForm from './AlumnoForm.vue';
 import ConfirmDialog from '../common/ConfirmDialog.vue';
-import Notification from '../common/Notification.vue'
+import Notification from '../common/Notification.vue';
+import { useTipoDocumentoStore } from '@/stores/tipoDocumentoStore';
 
 export default {
   components: {
     AlumnoForm,
     ConfirmDialog,
-    Notification
+    Notification,
   },
   setup() {
     const isConfirmVisible = ref(false);
-    const notificationMessage = ref('')
+    const notificationMessage = ref('');
     const alumnoStore = useAlumnoStore();
+    const tipoDocumentoStore = useTipoDocumentoStore();
     const isModalOpen = ref(false);
     const alumno = ref({
       id: null,
@@ -182,7 +224,40 @@ export default {
     });
     const alumnoToDelete = ref(null);
 
-    const alumnos = computed(() => alumnoStore.alumnos);
+    // Filtro de tipo de documento
+    const selectedTipoDocumento = ref('');
+    const tiposDocumentos = computed(() => tipoDocumentoStore.tipos);
+
+    // const alumnos = computed(() => alumnoStore.alumnos);
+    const alumnos = computed(() => {
+      let filtered = alumnoStore.alumnos;
+      if (selectedTipoDocumento.value) {
+        filtered = filtered.filter(
+          (alumno) => alumno.id_tipodocumento === selectedTipoDocumento.value
+        );
+      }
+      return filtered;
+    });
+
+    // Paginación
+    const currentPage = ref(1);
+    const perPage = 10;
+    const totalPages = computed(() =>
+      Math.ceil(alumnos.value.length / perPage)
+    );
+    const paginatedAlumnos = computed(() => {
+      const start = (currentPage.value - 1) * perPage;
+      const end = start + perPage;
+      return alumnos.value.slice(start, end);
+    });
+
+    const prevPage = () => {
+      if (currentPage.value > 1) currentPage.value--;
+    };
+
+    const nextPage = () => {
+      if (currentPage.value < totalPages.value) currentPage.value++;
+    };
 
     const openModal = () => {
       alumno.value = {
@@ -216,7 +291,7 @@ export default {
     const deleteAlumno = async () => {
       if (alumnoToDelete.value) {
         await alumnoStore.deleteAlumno(alumnoToDelete.value);
-        notificationMessage.value = 'Alumno eliminado correctamente'
+        notificationMessage.value = 'Alumno eliminado correctamente';
         isConfirmVisible.value = false; // Cerrar el diálogo
         alumnoToDelete.value = null; // Resetear el ID a eliminar
       }
@@ -224,22 +299,30 @@ export default {
 
     const handleAlumnoCreated = () => {
       isModalOpen.value = false;
-      notificationMessage.value = 'Alumno creado correctamente'
+      notificationMessage.value = 'Alumno creado correctamente';
       alumnoStore.fetchAlumnos(); // Actualiza la lista después de crear
     };
 
     const handleAlumnoUpdated = () => {
       isModalOpen.value = false;
-      notificationMessage.value = 'Alumno actualizado correctamente'
+      notificationMessage.value = 'Alumno actualizado correctamente';
       alumnoStore.fetchAlumnos(); // Actualiza la lista después de editar
     };
 
     onMounted(() => {
       alumnoStore.fetchAlumnos();
+      tipoDocumentoStore.fetchTipos();
     });
 
     return {
       alumnos,
+      selectedTipoDocumento,
+      tiposDocumentos,
+      currentPage,
+      totalPages,
+      paginatedAlumnos,
+      prevPage,
+      nextPage,
       openModal,
       closeModal,
       editAlumno,
@@ -250,7 +333,7 @@ export default {
       deleteAlumno,
       handleAlumnoCreated,
       handleAlumnoUpdated,
-      notificationMessage
+      notificationMessage,
     };
   },
 };

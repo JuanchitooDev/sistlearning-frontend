@@ -21,7 +21,22 @@
         Agregar
       </button>
     </div>
-
+    <!-- Filtro por eventos -->
+    <div class="mb-4 flex items-center space-x-4">
+      <label for="evento" class="font-semibold"
+        >Evento:</label
+      >
+      <select
+        v-model="selectedEvento"
+        id="evento"
+        class="p-2 border border-gray-300 rounded"
+      >
+        <option value="">Todos</option>
+        <option v-for="evento in eventos" :key="evento.id" :value="evento.id">
+          {{ evento.titulo }}
+        </option>
+      </select>
+    </div>
     <table class="min-w-full bg-white border border-gray-300">
       <thead>
         <tr class="bg-gray-200">
@@ -35,10 +50,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-if="certificados.length === 0">
+        <tr v-if="paginatedCertificados.length === 0">
           <td colspan="7" class="text-center pt-2 pb-2">Certificados no registrados</td>
         </tr>
-        <tr v-for="certificado in certificados" :key="certificado.id">
+        <tr v-for="certificado in paginatedCertificados" :key="certificado.id">
           <td class="border px-4 py-2">{{ certificado.id }}</td>
           <td class="border px-4 py-2">
             {{ certificado.Alumno ? certificado.Alumno.apellido_paterno : '' }}
@@ -178,6 +193,7 @@ import CertificadoForm from './CertificadoForm.vue';
 import ConfirmDialog from '../common/ConfirmDialog.vue';
 import Notification from '../common/Notification.vue'
 import { formatDate } from '../../utils/date.utils'
+import { useEventoStore } from '@/stores/eventoStore'
 
 export default {
   components: {
@@ -189,6 +205,7 @@ export default {
     const isConfirmVisible = ref(false);
     const notificationMessage = ref('')
     const certificadoStore = useCertificadoStore();
+    const eventoStore = useEventoStore()
     const isModalOpen = ref(false);
     const certificado = ref({
       id: null,
@@ -197,7 +214,40 @@ export default {
     });
     const certificadoToDelete = ref(null);
 
-    const certificados = computed(() => certificadoStore.certificados);
+    // Filtro por evento
+    const selectedEvento = ref('')
+    const eventos = computed(() => eventoStore.eventos)
+
+    // const certificados = computed(() => certificadoStore.certificados);
+    const certificados = computed(() => {
+      let filtered = certificadoStore.certificados
+      if (selectedEvento.value) {
+        filtered = filtered.filter(
+          (certificado) => certificado.id_evento === selectedEvento.value
+        )
+      }
+      return filtered
+    })
+
+    // Paginación
+    const currentPage = ref(1);
+    const perPage = 10;
+    const totalPages = computed(() =>
+      Math.ceil(alumnos.value.length / perPage)
+    );
+    const paginatedCertificados = computed(() => {
+      const start = (currentPage.value - 1) * perPage;
+      const end = start + perPage;
+      return certificados.value.slice(start, end);
+    });
+
+    const prevPage = () => {
+      if (currentPage.value > 1) currentPage.value--;
+    };
+
+    const nextPage = () => {
+      if (currentPage.value < totalPages.value) currentPage.value++;
+    };
 
     const openModal = () => {
       certificado.value = {
@@ -249,10 +299,18 @@ export default {
 
     onMounted(() => {
       certificadoStore.fetchCertificados();
+      eventoStore.fetchEventos()
     });
 
     return {
       certificados,
+      selectedEvento,
+      eventos,
+      currentPage,
+      totalPages,
+      paginatedCertificados,
+      prevPage,
+      nextPage,
       openModal,
       closeModal,
       editCertificado,
