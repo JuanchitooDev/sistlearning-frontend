@@ -48,6 +48,22 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 console.error('Error creating certificado', error)
             }
         },
+        async getCertificadoById(id: number) {
+            try {
+                const response = await api.get(`/certificado/${id}`)
+                const certificado = response.data.data
+                const index = this.certificados.findIndex((c) => c.id === certificado.id)
+                if (index !== -1) {
+                    this.certificados[index] = certificado
+                } else {
+                    this.certificados.push(certificado)
+                }
+                return certificado
+            } catch (error) {
+                console.error(`Error al obtener el certificado: ${error}`)
+                this.error = error instanceof Error ? error.message : 'Error desconocido'
+            }
+        },
         async getCertificadoByCodigo(codigo: string) {
             this.loading = true
             this.error = null
@@ -62,6 +78,11 @@ export const useCertificadoStore = defineStore('certificadoStore', {
         },
         async downloadCertificado(idCertificado: number) {
             try {
+                const certificado = await this.getCertificadoById(idCertificado) as ICertificado
+                const alumno = certificado.alumno
+                const nombreCompleto = alumno?.nombre_capitalized as string
+                const sanitizedAlumno = sanitizeFileName(nombreCompleto)
+                const fileName = `certificado_${sanitizedAlumno}.pdf`
                 const urlApi = `/certificado/${idCertificado}/download`
                 const response = await api.get(urlApi, {
                     responseType: 'blob'
@@ -69,7 +90,7 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 const url = window.URL.createObjectURL(new Blob([response.data]));
                 const link = document.createElement('a');
                 link.href = url;
-                link.setAttribute('download', `certificado_${idCertificado}.pdf`);
+                link.setAttribute('download', `${fileName}`);
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
