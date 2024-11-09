@@ -3,6 +3,7 @@ import api from '../utils/axios'
 import { ICertificado } from '../interfaces/certificadoInterface'
 import { sanitizeFileName } from '@/utils/string.utils'
 import { IAlumno } from '@/interfaces/alumnoInterface'
+import { useAlumnoStore } from './alumnoStore'
 
 export const useCertificadoStore = defineStore('certificadoStore', {
     state: () => ({
@@ -38,7 +39,7 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 const fileName = `certificado_${sanitizedAlumno}.pdf`
                 const url = window.URL.createObjectURL(new Blob([response.data]))
                 const link = document.createElement('a')
-                
+
                 link.href = url
                 link.setAttribute('download', fileName)
                 document.body.appendChild(link)
@@ -100,11 +101,24 @@ export const useCertificadoStore = defineStore('certificadoStore', {
         },
         async updateCertificado(idCertificado: number, certificado: ICertificado) {
             try {
-                await api.put(`/certificado/${idCertificado}`, certificado)
-                const index = this.certificados.findIndex((c) => c.id === certificado.id)
-                if (index !== -1) {
-                    this.certificados[index] = certificado
-                }
+                const alumno = await useAlumnoStore().getAlumnoById(certificado.id_alumno as number)
+                const response = await api.put(`/certificado/${idCertificado}`, certificado, {
+                    responseType: 'blob'
+                })
+
+                this.certificados.push(response.data)
+
+                const nombreCompleto = alumno.nombre_capitalized as string
+                const sanitizedAlumno = sanitizeFileName(nombreCompleto)
+                const fileName = `certificado_${sanitizedAlumno}.pdf`
+                const url = window.URL.createObjectURL(new Blob([response.data]))
+                const link = document.createElement('a')
+
+                link.href = url
+                link.setAttribute('download', fileName)
+                document.body.appendChild(link)
+                link.click()
+                link.remove()
             } catch (error) {
                 console.error('Error updating certificado: ', error)
             }

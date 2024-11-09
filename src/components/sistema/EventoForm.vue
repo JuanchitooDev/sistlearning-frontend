@@ -98,6 +98,35 @@
         <div class="flex justify-between">
           <button
             type="submit"
+            class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
+            :disabled="loading"
+          >
+            <!-- Spinner cuando está cargando -->
+            <svg
+              v-if="loading"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1 animate-spin"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+                fill="none"
+              />
+            </svg>
+            <!-- Texto del botón -->
+            <span v-if="!loading">{{
+              evento.id ? 'Actualizar' : 'Registrar'
+            }}</span>
+            <span v-else>Guardando...</span>
+          </button>
+          <!-- <button
+            type="submit"
             class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
             <svg
@@ -115,7 +144,7 @@
               />
             </svg>
             {{ evento.id ? 'Actualizar' : 'Registrar' }}
-          </button>
+          </button> -->
           <button
             type="button"
             @click="closeModal"
@@ -172,24 +201,36 @@ export default {
   },
   emits: ['eventoCreated', 'eventoUpdated'],
   setup(props, { emit }) {
-    const evento = ref(props.evento);
+    // const evento = ref(props.evento);
+    const evento = ref({
+      id: props.evento.id || null,
+      titulo: props.evento.titulo || '',
+      id_tipoevento: props.evento.id_tipoevento || '',
+      temario: props.evento.temario || '',
+      fecha: props.evento.fecha || null,
+      modalidad: props.evento.modalidad || 'VIRTUAL',
+    });
     const store = useEventoStore();
     const storeTipoEvento = useTipoEventoStore();
     const tipos = computed(() => storeTipoEvento.tipos);
+
+    // Estado de loading
+    const loading = ref(false);
 
     watch(
       () => props.evento,
       (newValue) => {
         evento.value = {
           ...newValue,
+          temario: newValue.titulo ? newValue.titulo : '',
           fecha: newValue.fecha ? newValue.fecha.slice(0, 10) : null,
         };
-        // evento.value = newValue;
       },
       { immediate: true }
     );
 
     const submitForm = async () => {
+      loading.value = true; // Activar el spinner
       try {
         if (evento.value.id) {
           await store.updateEvento(evento.value.id, evento.value);
@@ -202,6 +243,8 @@ export default {
         props.onClose();
       } catch (error) {
         console.log('error creating evento', error);
+      } finally {
+        loading.value = false; // Desactivar el spinner
       }
     };
 
@@ -230,6 +273,7 @@ export default {
       evento,
       submitForm,
       closeModal,
+      loading,
     };
   },
 };

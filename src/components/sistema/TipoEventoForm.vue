@@ -56,6 +56,37 @@
         <div class="flex justify-between">
           <button
             type="submit"
+            :disabled="loading"
+            class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
+          >
+            <!-- Spinner while loading -->
+            <svg
+              v-if="loading"
+              xmlns="http://www.w3.org/2000/svg"
+              class="animate-spin h-5 w-5 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+                fill="none"
+              />
+            </svg>
+            {{
+              loading
+                ? 'Cargando...'
+                : tipoEvento.id
+                ? 'Actualizar'
+                : 'Registrar'
+            }}
+          </button>
+          <!-- <button
+            type="submit"
             class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
             <svg
@@ -73,7 +104,7 @@
               />
             </svg>
             {{ tipoEvento.id ? 'Actualizar' : 'Registrar' }}
-          </button>
+          </button> -->
           <button
             type="button"
             @click="closeModal"
@@ -124,6 +155,7 @@ export default {
   setup(props, { emit }) {
     const tipoEvento = ref(props.tipoEvento);
     const store = useTipoEventoStore();
+    const loading = ref(false);
 
     watch(
       () => props.tipoEvento,
@@ -134,6 +166,7 @@ export default {
 
     const submitForm = async () => {
       try {
+        loading.value = true;
         if (tipoEvento.value.id) {
           await store.updateTipoEvento(tipoEvento.value.id, tipoEvento.value);
           emit('tipoEventoUpdated');
@@ -145,6 +178,8 @@ export default {
         props.onClose();
       } catch (error) {
         console.log('error creating tipo evento', error);
+      } finally {
+        loading.value = false;
       }
     };
 
@@ -163,6 +198,7 @@ export default {
 
     return {
       tipoEvento,
+      loading,
       submitForm,
       closeModal,
     };

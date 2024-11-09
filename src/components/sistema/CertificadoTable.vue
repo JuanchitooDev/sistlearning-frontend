@@ -43,7 +43,7 @@
           <th class="border px-4 py-2">ID</th>
           <th class="border px-4 py-2">Alumno</th>
           <th class="border px-4 py-2">Evento</th>
-          <th class="border px-4 py-2">Fecha Registro</th>
+          <th class="border px-4 py-2">Fecha Emisión</th>
           <th class="border px-4 py-2">Estado</th>
           <th class="border px-4 py-2">Descargar</th>
           <th class="border px-4 py-2">Acciones</th>
@@ -63,7 +63,7 @@
           <td class="border px-4 py-2">
             {{ certificado.Evento ? certificado.Evento.titulo : 'Sin Tipo' }}
           </td>
-          <td class="border px-4 py-2">{{ formatDate(certificado.fecha_registro) }}</td>
+          <td class="border px-4 py-2">{{ certificado.fecha_envio }}</td>
           <td class="border px-4 py-2">
             <svg
               v-if="certificado.estado"
@@ -192,7 +192,7 @@ import { useCertificadoStore } from '../../stores/certificadoStore';
 import CertificadoForm from './CertificadoForm.vue';
 import ConfirmDialog from '../common/ConfirmDialog.vue';
 import Notification from '../common/Notification.vue'
-import { formatDate } from '../../utils/date.utils'
+// import { formatDate } from '../../utils/date.utils'
 import { useEventoStore } from '@/stores/eventoStore'
 
 export default {
@@ -210,7 +210,9 @@ export default {
     const certificado = ref({
       id: null,
       id_alumno: '',
+      nombre_alumno_impresion: '',
       id_evento: '',
+      fecha_envio: null
     });
     const certificadoToDelete = ref(null);
 
@@ -253,7 +255,9 @@ export default {
       certificado.value = {
         id: null,
         id_alumno: '',
+        nombre_alumno_impresion: '',
         id_evento: '',
+        fecha_envio: null
       }; // Resetea el formulario
       isModalOpen.value = true;
     };
@@ -262,8 +266,20 @@ export default {
       isModalOpen.value = false;
     };
 
-    const editCertificado = (certificado) => {
-      certificado.value = { ...certificado }; // Cargar los datos del tipo a editar
+    const editCertificado = (certificadoEdit) => {
+      const alumno = certificadoEdit.Alumno
+      const nombreAlumno = `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`
+
+      certificado.value = { ...certificadoEdit };
+
+      certificado.value.nombre_alumno_impresion = certificado.value.nombre_alumno_impresion
+        ? certificado.value.nombre_alumno_impresion
+        : nombreAlumno
+
+      certificado.value.fecha_envio = certificadoEdit.fecha_envio
+        ? certificadoEdit.fecha_envio.slice(0, 10)
+        : null
+
       isModalOpen.value = true;
     };
 
@@ -322,7 +338,7 @@ export default {
       downloadCertificado,
       handleCertificadoCreated,
       handleCertificadoUpdated,
-      formatDate,
+      // formatDate,
       notificationMessage
     };
   },

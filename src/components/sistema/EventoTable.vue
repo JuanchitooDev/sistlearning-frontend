@@ -29,6 +29,7 @@
         type="text"
         placeholder="Criterio de búsqueda"
         class="p-2 border border-gray-300 rounded"
+        @keydown.enter="filteredEventos"
       />
     </div>
 
@@ -215,6 +216,7 @@ export default {
 
     const filteredEventos = computed(() => {
       const query = searchQuery.value.toLowerCase()
+      currentPage.value = 1
       return eventos.value.filter((evento) => {
         return (
           evento.titulo.toLowerCase().includes(query)

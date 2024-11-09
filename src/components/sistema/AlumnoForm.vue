@@ -157,10 +157,24 @@
         <div class="flex justify-between">
           <button
             type="submit"
-            :disabled="isDuplicated"
-            class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700" :class="{'opacity-50 cursor-not-allowed' : isDuplicated}"
+            :disabled="isDuplicated || loading"
+            class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
+            :class="{ 'opacity-50 cursor-not-allowed': isDuplicated }"
           >
-            <svg
+            <!-- Spinner para el estado de carga -->
+            <span v-if="loading" class="mr-2">
+              <svg
+                class="animate-spin h-5 w-5 border-t-2 border-white rounded-full"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="12" cy="12" r="10" stroke-width="4" />
+              </svg>
+            </span>
+            {{
+              loading ? 'Cargando...' : alumno.id ? 'Actualizar' : 'Registrar'
+            }}
+            <!-- <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-1"
               fill="none"
@@ -174,7 +188,7 @@
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            {{ alumno.id ? 'Actualizar' : 'Registrar' }}
+            {{ alumno.id ? 'Actualizar' : 'Registrar' }} -->
           </button>
           <button
             type="button"
@@ -198,7 +212,9 @@
             Cancelar
           </button>
         </div>
-        <div v-if="isDuplicated" class="text-red-500 mt-2">El alumno ya existe</div> 
+        <div v-if="isDuplicated" class="text-red-500 mt-2">
+          El alumno ya existe
+        </div>
       </form>
     </div>
   </div>
@@ -242,39 +258,43 @@ export default {
     const storeTipoDocumento = useTipoDocumentoStore();
     const storePersona = usePersonaStore();
     const tipos = computed(() => storeTipoDocumento.tipos);
-    const isDuplicated = ref(false)
+    const isDuplicated = ref(false);
+    const loading = ref(false);  // Estado de carga
 
     watch(
       () => props.alumno,
       (newValue) => {
         alumno.value = {
           ...newValue,
-          fecha_nacimiento: newValue.fecha_nacimiento
-            ? newValue.fecha_nacimiento.slice(0, 10)
-            : null,
+          fecha_nacimiento: newValue.fecha_nacimiento_str
+            ? newValue.fecha_nacimiento_str
+            : (newValue.fecha_nacimiento ? newValue.fecha_nacimiento.slice(0, 10) : null),
         };
       },
       { immediate: true }
     );
 
     const validarRegistro = () => {
-      isDuplicated.value = storeAlumno.alumnos.some(existAlumno =>
-        existAlumno.id_tipodocumento === alumno.value.id_tipodocumento &&
-        existAlumno.numero_documento === alumno.value.numero_documento
-      )
-    }
+      isDuplicated.value = storeAlumno.alumnos.some(
+        (existAlumno) =>
+          existAlumno.id_tipodocumento === alumno.value.id_tipodocumento &&
+          existAlumno.numero_documento === alumno.value.numero_documento
+      );
+    };
 
     const submitForm = async () => {
+      loading.value = true;  // Activa el estado de carga
       try {
         if (isDuplicated.value) {
-          console.error('El alumno ya existe')
+          console.error('El alumno ya existe');
           return;
         }
-        
+
         if (alumno.value.id) {
           await storeAlumno.updateAlumno(alumno.value.id, alumno.value);
           emit('alumnoUpdated');
         } else {
+          alumno.value.fecha_nacimiento_str = alumno.value.fecha_nacimiento
           await storeAlumno.createAlumno(alumno.value);
           emit('alumnoCreated');
         }
@@ -282,11 +302,14 @@ export default {
         props.onClose();
       } catch (error) {
         console.log('error creating alumno', error);
+      } finally {
+        loading.value = false;  // Desactiva el estado de carga
       }
     };
 
     const fetchPersona = async () => {
       if (alumno.value.id_tipodocumento && alumno.value.numero_documento) {
+        loading.value = true;  // Activa el estado de carga
         try {
           await storePersona.getDocumentoInfo(
             alumno.value.id_tipodocumento,
@@ -294,17 +317,22 @@ export default {
           );
           const persona = storePersona.persona;
           if (persona) {
-            validarRegistro()
+            validarRegistro();
+            let fechaNacimiento = ''
+            if (persona.fecha_nacimiento) {
+              const partsFechaNacimiento = persona.fecha_nacimiento.split("/")
+              fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`
+            }
             alumno.value.nombres = persona.nombres || '';
             alumno.value.apellido_paterno = persona.apellido_paterno || '';
             alumno.value.apellido_materno = persona.apellido_materno || '';
-            alumno.value.fecha_nacimiento = persona.fecha_nacimiento
-              ? persona.fecha_nacimiento.slice(0, 10)
-              : null;
+            alumno.value.fecha_nacimiento = fechaNacimiento
             alumno.value.sexo = persona.sexo || '';
           }
         } catch (error) {
           console.error(error);
+        } finally {
+          loading.value = false;  // Desactiva el estado de carga
         }
       }
     };
@@ -321,7 +349,7 @@ export default {
         fecha_nacimiento: null,
         sexo: '',
       };
-      isDuplicated.value = false
+      isDuplicated.value = false;
     };
 
     const closeModal = () => {
@@ -340,7 +368,8 @@ export default {
       closeModal,
       fetchPersona,
       isDuplicated,
-      validarRegistro
+      loading,
+      validarRegistro,
     };
   },
 };

@@ -35,6 +35,7 @@
             id="id_alumno"
             v-model="certificado.id_alumno"
             class="mt-1 p-2 border border-gray-300 rounded w-full"
+            @change="handleAlumnoSelect"
           >
             <option
               v-for="alumno in alumnos"
@@ -45,6 +46,23 @@
               {{ alumno.apellido_materno }}
             </option>
           </select>
+        </div>
+        <div class="mb-4">
+          <label
+            for="nombre_alumno_impresion"
+            class="block text-sm font-medium text-gray-700"
+            >Nombre alumno impresión:</label
+          >
+          <input
+            v-model="certificado.nombre_alumno_impresion"
+            type="text"
+            id="nombre_alumno_impresion"
+            autocomplete="off"
+            required
+            placeholder="Ejm: José Carlos Pérez Pérez"
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+            :disabled="isNombreAlumnoDisabled"
+          />
         </div>
         <div class="mb-4">
           <label for="id_evento" class="block text-sm font-medium text-gray-700"
@@ -83,9 +101,31 @@
         <div class="flex justify-between">
           <button
             type="submit"
-            class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
+            :disabled="loading"
           >
             <svg
+              v-if="loading"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 mr-1 animate-spin"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <circle
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+                fill="none"
+              ></circle>
+            </svg>
+            <span v-if="!loading">{{
+              certificado.id ? 'Actualizar' : 'Registrar'
+            }}</span>
+            <span v-else>Guardando...</span>
+            <!-- <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-1"
               fill="none"
@@ -99,7 +139,7 @@
                 d="M12 4v16m8-8H4"
               />
             </svg>
-            {{ certificado.id ? 'Actualizar' : 'Registrar' }}
+            {{ certificado.id ? 'Actualizar' : 'Registrar' }} -->
           </button>
           <button
             type="button"
@@ -150,6 +190,7 @@ export default {
       default: () => ({
         id: null,
         id_alumno: '',
+        nombre_alumno_impresion: '',
         id_evento: '',
         fecha_envio: currentDate,
       }),
@@ -165,18 +206,42 @@ export default {
     const alumnos = computed(() => storeAlumno.alumnos);
     const eventos = computed(() => storeEvento.eventos);
 
+    const loading = ref(false); // Estado de carga
+
+    // Nueva propiedad reactiva para habilitar/deshabilitar el campo
+    const isNombreAlumnoDisabled = ref(true);
+
     watch(
       () => props.certificado,
       (newValue) => {
         certificado.value = newValue;
+        isNombreAlumnoDisabled.value = false
       },
       { immediate: true }
     );
 
+    // Función para manejar el evento de selección del alumno
+    const handleAlumnoSelect = async () => {
+      const alumno = alumnos.value.find(
+        (a) => a.id === certificado.value.id_alumno
+      );
+      if (alumno) {
+        isNombreAlumnoDisabled.value = false;
+        certificado.value.nombre_alumno_impresion = `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`;
+      } else {
+        isNombreAlumnoDisabled.value = true;
+        certificado.value.nombre_alumno_impresion = ''; // Limpiar el campo si no hay alumno seleccionado
+      }
+    };
+
     const submitForm = async () => {
+      loading.value = true; // Activar el spinner
       try {
         if (certificado.value.id) {
-          //   await store.updateCertificado(certificado.value.id, certificado.value);
+          await store.updateCertificado(
+            certificado.value.id,
+            certificado.value
+          );
           emit('certificadoUpdated');
         } else {
           const alumno = await storeAlumno.getAlumnoById(
@@ -194,6 +259,8 @@ export default {
         props.onClose();
       } catch (error) {
         console.log('error creating certificado', error);
+      } finally {
+        loading.value = false; // Desactivar el spinner
       }
     };
 
@@ -201,9 +268,12 @@ export default {
       certificado.value = {
         id: null,
         id_alumno: '',
+        nombre_alumno_impresion: '',
         id_evento: '',
         fecha_envio: null,
       };
+      // Volver a deshabilitar el campo al resetear
+      isNombreAlumnoDisabled.value = true;
     };
 
     const closeModal = () => {
@@ -222,6 +292,9 @@ export default {
       certificado,
       submitForm,
       closeModal,
+      isNombreAlumnoDisabled,
+      loading,
+      handleAlumnoSelect,
     };
   },
 };
