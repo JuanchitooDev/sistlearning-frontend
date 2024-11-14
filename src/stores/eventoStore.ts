@@ -7,7 +7,8 @@ export const useEventoStore = defineStore('eventoStore', {
         eventos: [] as IEvento[],
         evento: null,
         loading: false,
-        error: null as string | null
+        error: null as string | null,
+        message: ''
     }),
     actions: {
         async fetchEventos() {
@@ -15,7 +16,10 @@ export const useEventoStore = defineStore('eventoStore', {
             this.error = null
             try {
                 const response = await api.get('/evento')
-                this.eventos = response.data.data
+                if (response.data.result) {
+                    const eventos = response.data.data
+                    this.eventos = eventos
+                }
             } catch (error) {
                 console.error('Error fetching eventos: ', error)
             } finally {
@@ -25,7 +29,15 @@ export const useEventoStore = defineStore('eventoStore', {
         async getEventoById(id: number) {
             try {
                 const response = await api.get(`/evento/${id}`)
-                this.eventos = response.data.data
+                if (response.data.result) {
+                    this.eventos = response.data.data
+                } else {
+                    if (response.data.message) {
+                        this.message = response.data.message
+                    } else {
+                        this.message = response.data.error
+                    }
+                }
             } catch (error) {
                 console.error('Error al obtener el evento: ', error)
             } finally {
@@ -35,17 +47,35 @@ export const useEventoStore = defineStore('eventoStore', {
         async createEvento(evento: IEvento) {
             try {
                 const response = await api.post('/evento', evento)
-                this.eventos.push(response.data)
+                if (response.data.result) {
+                    this.eventos.push(response.data.data)
+                    this.message = response.data.message
+                } else {
+                    if (response.data.message) {
+                        this.message = response.data.message
+                    } else {
+                        this.message = response.data.error
+                    }
+                }
             } catch (error) {
                 console.error('Error creating evento: ', error)
             }
         },
         async updateEvento(idEvento: number, evento: IEvento) {
             try {
-                await api.put(`/evento/${idEvento}`, evento)
-                const index = this.eventos.findIndex((ev) => ev.id === evento.id)
-                if (index !== -1) {
-                    this.eventos[index] = evento
+                const response = await api.put(`/evento/${idEvento}`, evento)
+                if (response.data.result) {
+                    const index = this.eventos.findIndex((ev) => ev.id === evento.id)
+                    if (index !== -1) {
+                        this.eventos[index] = evento
+                        this.message = response.data.message
+                    }
+                } else {
+                    if (response.data.message) {
+                        this.message = response.data.message
+                    } else {
+                        this.message = response.data.error
+                    }
                 }
             } catch (error) {
                 console.error('Error updating evento: ', error)
@@ -53,8 +83,17 @@ export const useEventoStore = defineStore('eventoStore', {
         },
         async deleteEvento(idEvento: number) {
             try {
-                await api.delete(`/evento/${idEvento}`)
-                this.eventos = this.eventos.filter((evento) => evento.id !== idEvento)
+                const response = await api.delete(`/evento/${idEvento}`)
+                if (response.data.result) {
+                    this.eventos = this.eventos.filter((ev) => ev.id !== idEvento)
+                    this.message = response.data.message
+                } else {
+                    if (response.data.message) {
+                        this.message = response.data.message
+                    } else {
+                        this.message = response.data.error
+                    }
+                }
             } catch (error) {
                 console.error('Error deleting evento: ', error)
             }

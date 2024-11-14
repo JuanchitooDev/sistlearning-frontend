@@ -85,26 +85,6 @@
                 : 'Registrar'
             }}
           </button>
-          <!-- <button
-            type="submit"
-            class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            {{ tipoEvento.id ? 'Actualizar' : 'Registrar' }}
-          </button> -->
           <button
             type="button"
             @click="closeModal"
@@ -133,7 +113,7 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useTipoEventoStore } from '@/stores/tipoEventoStore';
 
 export default {
@@ -157,6 +137,9 @@ export default {
     const store = useTipoEventoStore();
     const loading = ref(false);
 
+    // Computed para obtener el mensaje desde el store
+    const message = computed(() => store.message)
+
     watch(
       () => props.tipoEvento,
       (newValue) => {
@@ -169,10 +152,10 @@ export default {
         loading.value = true;
         if (tipoEvento.value.id) {
           await store.updateTipoEvento(tipoEvento.value.id, tipoEvento.value);
-          emit('tipoEventoUpdated');
+          emit('tipoEventoUpdated', store.message);
         } else {
           await store.createTipoEvento(tipoEvento.value);
-          emit('tipoEventoCreated');
+          emit('tipoEventoCreated', store.message);
         }
         resetForm();
         props.onClose();
@@ -199,6 +182,7 @@ export default {
     return {
       tipoEvento,
       loading,
+      message,
       submitForm,
       closeModal,
     };

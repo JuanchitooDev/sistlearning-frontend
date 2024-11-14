@@ -194,15 +194,15 @@ export default {
       }
     };
 
-    const handleTipoEventoCreated = () => {
+    const handleTipoEventoCreated = (message) => {
       isModalOpen.value = false;
-      notificationMessage.value = 'Tipo de evento creado correctamente'
+      notificationMessage.value = message
       tipoEventoStore.fetchTipoEventos(); // Actualiza la lista después de crear
     };
 
-    const handleTipoEventoUpdated = () => {
+    const handleTipoEventoUpdated = (message) => {
       isModalOpen.value = false;
-      notificationMessage.value = 'Tipo de evento actualizado correctamente'
+      notificationMessage.value = message
       tipoEventoStore.fetchTipoEventos(); // Actualiza la lista después de editar
     };
 

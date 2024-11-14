@@ -7,7 +7,8 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
         tipos: [] as ITipoEvento[],
         tipoEvento: null,
         loading: false,
-        error: null as string | null
+        error: null as string | null,
+        message: ''
     }),
     actions: {
         async fetchTipoEventos(estado: boolean | null = null) {
@@ -15,11 +16,13 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
             this.error = null
             try {
                 const response = await api.get('/tipo-evento')
-                const tipos = response.data.data
-                if (estado !== null) {
-                    this.tipos = tipos.filter((tipo:ITipoEvento) => tipo.estado === estado)
-                } else {
-                    this.tipos = tipos
+                if (response.data.result) {
+                    const tipos = response.data.data
+                    if (estado) {
+                        this.tipos = tipos.filter((tipo: ITipoEvento) => tipo.estado === estado)
+                    } else {
+                        this.tipos = tipos
+                    }
                 }
             } catch (error) {
                 console.error('Error fetching tipo eventos: ', error)
@@ -30,7 +33,15 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
         async getTipoEventoById(id: number) {
             try {
                 const response = await api.get(`/tipo-evento/${id}`)
-                this.tipos = response.data.data
+                if (response.data.result) {
+                    this.tipos = response.data.data
+                } else {
+                    if (response.data.message) {
+                        this.message = response.data.message
+                    } else {
+                        this.message = response.data.error
+                    }
+                }
             } catch (error) {
                 console.error('Error al obtener el tipo evento: ', error)
             } finally {
@@ -40,17 +51,35 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
         async createTipoEvento(tipoEvento: ITipoEvento) {
             try {
                 const response = await api.post('/tipo-evento', tipoEvento)
-                this.tipos.push(response.data)
+                if (response.data.result) {
+                    this.tipos.push(response.data.data)
+                    this.message = response.data.message
+                } else {
+                    if (response.data.message) {
+                        this.message = response.data.message
+                    } else {
+                        this.message = response.data.error
+                    }
+                }
             } catch (error) {
                 console.error('Error creating tipo evento: ', error)
             }
         },
         async updateTipoEvento(idTipoEvento: number, tipoEvento: ITipoEvento) {
             try {
-                await api.put(`/tipo-evento/${idTipoEvento}`, tipoEvento)
-                const index = this.tipos.findIndex((tipo) => tipo.id === tipoEvento.id)
-                if (index !== -1) {
-                    this.tipos[index] = tipoEvento
+                const response = await api.put(`/tipo-evento/${idTipoEvento}`, tipoEvento)
+                if (response.data.result) {
+                    const index = this.tipos.findIndex((tipo) => tipo.id === tipoEvento.id)
+                    if (index !== -1) {
+                        this.tipos[index] = tipoEvento
+                        this.message = response.data.message
+                    }
+                } else {
+                    if (response.data.message) {
+                        this.message = response.data.message
+                    } else {
+                        this.message = response.data.error
+                    }
                 }
             } catch (error) {
                 console.error('Error updating tipo evento: ', error)
@@ -58,8 +87,17 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
         },
         async deleteTipoEvento(idTipoEvento: number) {
             try {
-                await api.delete(`/tipo-evento/${idTipoEvento}`)
-                this.tipos = this.tipos.filter((tipo) => tipo.id !== idTipoEvento)
+                const response = await api.delete(`/tipo-evento/${idTipoEvento}`)
+                if (response.data.result) {
+                    this.tipos = this.tipos.filter((tipo) => tipo.id !== idTipoEvento)
+                    this.message = response.data.message
+                } else {
+                    if (response.data.message) {
+                        this.message = response.data.message
+                    } else {
+                        this.message = response.data.error
+                    }
+                }
             } catch (error) {
                 console.error('Error deleting tipo evento: ', error)
             }

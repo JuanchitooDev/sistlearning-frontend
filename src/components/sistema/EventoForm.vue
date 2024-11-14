@@ -125,26 +125,6 @@
             }}</span>
             <span v-else>Guardando...</span>
           </button>
-          <!-- <button
-            type="submit"
-            class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            {{ evento.id ? 'Actualizar' : 'Registrar' }}
-          </button> -->
           <button
             type="button"
             @click="closeModal"
@@ -217,12 +197,15 @@ export default {
     // Estado de loading
     const loading = ref(false);
 
+    // Computed para obtener el mensaje desde el store
+    const message = computed(() => store.message)
+
     watch(
       () => props.evento,
       (newValue) => {
         evento.value = {
           ...newValue,
-          temario: newValue.titulo ? newValue.titulo : '',
+          temario: newValue.temario ? newValue.temario : '',
           fecha: newValue.fecha ? newValue.fecha.slice(0, 10) : null,
         };
       },
@@ -234,10 +217,10 @@ export default {
       try {
         if (evento.value.id) {
           await store.updateEvento(evento.value.id, evento.value);
-          emit('eventoUpdated');
+          emit('eventoUpdated', store.message);
         } else {
           await store.createEvento(evento.value);
-          emit('eventoCreated');
+          emit('eventoCreated', store.message);
         }
         resetForm();
         props.onClose();
@@ -274,6 +257,7 @@ export default {
       submitForm,
       closeModal,
       loading,
+      message
     };
   },
 };

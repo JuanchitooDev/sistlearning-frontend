@@ -275,15 +275,15 @@ export default {
       }
     };
 
-    const handleEventoCreated = () => {
+    const handleEventoCreated = (message) => {
       isModalOpen.value = false;
-      notificationMessage.value = 'Evento creado correctamente';
+      notificationMessage.value = message;
       eventoStore.fetchEventos(); // Actualiza la lista después de crear
     };
 
-    const handleEventoUpdated = () => {
+    const handleEventoUpdated = (message) => {
       isModalOpen.value = false;
-      notificationMessage.value = 'Evento actualizado correctamente';
+      notificationMessage.value = message;
       eventoStore.fetchEventos(); // Actualiza la lista después de editar
     };
 
