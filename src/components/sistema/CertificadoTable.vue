@@ -301,15 +301,15 @@ export default {
         certificadoStore.downloadCertificado(certificado.id)
     }
 
-    const handleCertificadoCreated = () => {
+    const handleCertificadoCreated = (message) => {
       isModalOpen.value = false;
-      notificationMessage.value = 'Certificado creado correctamente'
+      notificationMessage.value = message
       certificadoStore.fetchCertificados(); // Actualiza la lista después de crear
     };
 
-    const handleCertificadoUpdated = () => {
+    const handleCertificadoUpdated = (message) => {
       isModalOpen.value = false;
-      notificationMessage.value = 'Certificado actualizado correctamente'
+      notificationMessage.value = message
       certificadoStore.fetchCertificados(); // Actualiza la lista después de editar
     };
 

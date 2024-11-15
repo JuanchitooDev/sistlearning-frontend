@@ -211,6 +211,9 @@ export default {
     // Nueva propiedad reactiva para habilitar/deshabilitar el campo
     const isNombreAlumnoDisabled = ref(true);
 
+    // Computed para obtener el mensaje desde el store
+    const message = computed(() => store.message)
+
     watch(
       () => props.certificado,
       (newValue) => {
@@ -242,7 +245,7 @@ export default {
             certificado.value.id,
             certificado.value
           );
-          emit('certificadoUpdated');
+          emit('certificadoUpdated', store.message);
         } else {
           const alumno = await storeAlumno.getAlumnoById(
             certificado.value.id_alumno
@@ -250,7 +253,7 @@ export default {
           if (alumno) {
             certificado.value.alumno = alumno;
             await store.createCertificado(certificado.value);
-            emit('certificadoCreated');
+            emit('certificadoCreated', store.message);
           } else {
             console.error('No se pudo obtener el alumno');
           }
@@ -295,6 +298,7 @@ export default {
       isNombreAlumnoDisabled,
       loading,
       handleAlumnoSelect,
+      message
     };
   },
 };

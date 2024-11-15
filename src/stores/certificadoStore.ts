@@ -36,6 +36,8 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     responseType: 'blob'
                 })
 
+                console.log('response createCertificado', response)
+
                 if (response.data.result) {
                     this.certificados.push(response.data.data)
 
