@@ -16,6 +16,10 @@ export const useEventoStore = defineStore('eventoStore', {
             this.error = null
             try {
                 const response = await api.get('/evento')
+                // if (response.data.result) {
+                //     const eventos = response.data.data
+                //     this.eventos = eventos
+                // }
                 if (response.data.result) {
                     const eventos = response.data.data
                     this.eventos = eventos
