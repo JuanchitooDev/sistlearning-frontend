@@ -138,7 +138,7 @@ export default {
     const loading = ref(false);
 
     // Computed para obtener el mensaje desde el store
-    const message = computed(() => store.message)
+    const message = computed(() => store.message);
 
     watch(
       () => props.tipoEvento,

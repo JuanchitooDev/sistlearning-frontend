@@ -36,6 +36,12 @@
           {{ tipo.nombre }}
         </option>
       </select>
+      <input
+        type="text"
+        v-model="searchQuery"
+        placeholder="Criterio de búsqueda"
+        class="p-2 border border-gray-300 rounded"
+      />
     </div>
     <table class="min-w-full bg-white border border-gray-300">
       <thead>
@@ -228,27 +234,59 @@ export default {
     const selectedTipoDocumento = ref('');
     const tiposDocumentos = computed(() => tipoDocumentoStore.tipos);
 
-    // const alumnos = computed(() => alumnoStore.alumnos);
-    const alumnos = computed(() => {
+    // Filtro de búsqueda
+    const searchQuery = ref('');
+
+    // Computed para obtener el mensaje desde el store
+    const message = computed(() => alumnoStore.message);
+
+    // Filtrar los alumnos
+    const filteredAlumnos = computed(() => {
       let filtered = alumnoStore.alumnos;
+
+      // Filtro por tipo de documento
       if (selectedTipoDocumento.value) {
         filtered = filtered.filter(
           (alumno) => alumno.id_tipodocumento === selectedTipoDocumento.value
         );
       }
+
+      // Filtro por búsqueda
+      if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        filtered = filtered.filter((alumno) => {
+          const fullName =
+            `${alumno.apellido_paterno} ${alumno.apellido_materno} ${alumno.nombres}`.toLowerCase();
+          return fullName.includes(query);
+        });
+      }
+
       return filtered;
     });
+
+    // const alumnos = computed(() => alumnoStore.alumnos);
+    // const alumnos = computed(() => {
+    //   let filtered = alumnoStore.alumnos;
+    //   if (selectedTipoDocumento.value) {
+    //     filtered = filtered.filter(
+    //       (alumno) => alumno.id_tipodocumento === selectedTipoDocumento.value
+    //     );
+    //   }
+    //   return filtered;
+    // });
 
     // Paginación
     const currentPage = ref(1);
     const perPage = 10;
     const totalPages = computed(() =>
-      Math.ceil(alumnos.value.length / perPage)
+      // Math.ceil(alumnos.value.length / perPage)
+      Math.ceil(filteredAlumnos.value.length / perPage)
     );
     const paginatedAlumnos = computed(() => {
       const start = (currentPage.value - 1) * perPage;
       const end = start + perPage;
-      return alumnos.value.slice(start, end);
+      // return alumnos.value.slice(start, end);
+      return filteredAlumnos.value.slice(start, end);
     });
 
     const prevPage = () => {
@@ -279,7 +317,14 @@ export default {
     };
 
     const editAlumno = (alumnoEdit) => {
+      const fechaNacimiento = alumnoEdit.fecha_nacimiento_str
+        ? alumnoEdit.fecha_nacimiento_str
+        : alumnoEdit.fecha_nacimiento
+        ? alumnoEdit.fecha_nacimiento.slice(0, 10)
+        : null;
+
       alumno.value = { ...alumnoEdit };
+      alumno.value.fecha_nacimiento = fechaNacimiento;
       isModalOpen.value = true;
     };
 
@@ -291,7 +336,8 @@ export default {
     const deleteAlumno = async () => {
       if (alumnoToDelete.value) {
         await alumnoStore.deleteAlumno(alumnoToDelete.value);
-        notificationMessage.value = 'Alumno eliminado correctamente';
+        // notificationMessage.value = 'Alumno eliminado correctamente';
+        notificationMessage.value = message;
         isConfirmVisible.value = false; // Cerrar el diálogo
         alumnoToDelete.value = null; // Resetear el ID a eliminar
       }
@@ -299,13 +345,13 @@ export default {
 
     const handleAlumnoCreated = () => {
       isModalOpen.value = false;
-      notificationMessage.value = 'Alumno creado correctamente';
+      notificationMessage.value = message;
       alumnoStore.fetchAlumnos(); // Actualiza la lista después de crear
     };
 
     const handleAlumnoUpdated = () => {
       isModalOpen.value = false;
-      notificationMessage.value = 'Alumno actualizado correctamente';
+      notificationMessage.value = message;
       alumnoStore.fetchAlumnos(); // Actualiza la lista después de editar
     };
 
@@ -315,7 +361,7 @@ export default {
     });
 
     return {
-      alumnos,
+      filteredAlumnos,
       selectedTipoDocumento,
       tiposDocumentos,
       currentPage,
@@ -334,6 +380,7 @@ export default {
       handleAlumnoCreated,
       handleAlumnoUpdated,
       notificationMessage,
+      searchQuery,
     };
   },
 };

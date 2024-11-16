@@ -208,39 +208,40 @@ export default {
 
     const eventos = computed(() => eventoStore.eventos);
 
-    const searchQuery = ref('')
+    // Computed para obtener el mensaje desde el store
+    const message = computed(() => eventoStore.message);
 
-    const currentPage = ref(1)
+    const searchQuery = ref('');
+
+    const currentPage = ref(1);
 
     const perPage = 10;
 
     const filteredEventos = computed(() => {
-      const query = searchQuery.value.toLowerCase()
-      currentPage.value = 1
+      const query = searchQuery.value.toLowerCase();
+      currentPage.value = 1;
       return eventos.value.filter((evento) => {
-        return (
-          evento.titulo.toLowerCase().includes(query)
-        )
-      })
-    })
+        return evento.titulo.toLowerCase().includes(query);
+      });
+    });
 
     const totalPages = computed(() => {
-      return Math.ceil(filteredEventos.value.length / perPage)
-    })
+      return Math.ceil(filteredEventos.value.length / perPage);
+    });
 
     const paginatedEventos = computed(() => {
-      const start = (currentPage.value - 1) * perPage
-      const end = start + perPage
-      return filteredEventos.value.slice(start, end)
-    })
+      const start = (currentPage.value - 1) * perPage;
+      const end = start + perPage;
+      return filteredEventos.value.slice(start, end);
+    });
 
     const prevPage = () => {
-      if (currentPage.value > 1) currentPage.value--
-    }
+      if (currentPage.value > 1) currentPage.value--;
+    };
 
     const nextPage = () => {
-      if (currentPage.value < totalPages.value) currentPage.value++
-    }
+      if (currentPage.value < totalPages.value) currentPage.value++;
+    };
 
     const openModal = () => {
       evento.value = {
@@ -256,8 +257,14 @@ export default {
       isModalOpen.value = false;
     };
 
-    const editEvento = (tipo) => {
-      evento.value = { ...tipo }; // Cargar los datos del tipo a editar
+    const editEvento = (tipoEvento) => {
+      const temario = tipoEvento.temario ? tipoEvento.temario : '';
+      const fecha = tipoEvento.fecha ? tipoEvento.fecha.slice(0, 10) : null;
+
+      evento.value = { ...tipoEvento }; // Cargar los datos del tipo a editar
+      evento.value.temario = temario;
+      evento.value.fecha = fecha;
+
       isModalOpen.value = true;
     };
 
@@ -269,19 +276,20 @@ export default {
     const deleteEvento = async () => {
       if (eventoToDelete.value) {
         await eventoStore.deleteEvento(eventoToDelete.value);
-        notificationMessage.value = 'Evento eliminado correctamente';
+        // notificationMessage.value = 'Evento eliminado correctamente';
+        notificationMessage.value = message;
         isConfirmVisible.value = false; // Cerrar el diálogo
         eventoToDelete.value = null; // Resetear el ID a eliminar
       }
     };
 
-    const handleEventoCreated = (message) => {
+    const handleEventoCreated = () => {
       isModalOpen.value = false;
       notificationMessage.value = message;
       eventoStore.fetchEventos(); // Actualiza la lista después de crear
     };
 
-    const handleEventoUpdated = (message) => {
+    const handleEventoUpdated = () => {
       isModalOpen.value = false;
       notificationMessage.value = message;
       eventoStore.fetchEventos(); // Actualiza la lista después de editar
@@ -312,6 +320,7 @@ export default {
       handleEventoUpdated,
       formatDate,
       notificationMessage,
+      message,
     };
   },
 };

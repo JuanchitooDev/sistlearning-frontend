@@ -36,13 +36,15 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
                 if (response.data.result) {
                     this.tipos = response.data.data
                 } else {
-                    if (response.data.message) {
-                        this.message = response.data.message
-                    } else {
-                        this.message = response.data.error
-                    }
+                    // if (response.data.message) {
+                    //     this.message = response.data.message
+                    // } else {
+                    //     this.message = response.data.error
+                    // }
+                    this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.message = "Error al obtener el tipo de evento"
                 console.error('Error al obtener el tipo evento: ', error)
             } finally {
                 this.loading = false
@@ -55,13 +57,15 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
                     this.tipos.push(response.data.data)
                     this.message = response.data.message
                 } else {
-                    if (response.data.message) {
-                        this.message = response.data.message
-                    } else {
-                        this.message = response.data.error
-                    }
+                    // if (response.data.message) {
+                    //     this.message = response.data.message
+                    // } else {
+                    //     this.message = response.data.error
+                    // }
+                    this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.message = "Error al crear un nuevo tipo de evento"
                 console.error('Error creating tipo evento: ', error)
             }
         },
@@ -75,13 +79,15 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
                         this.message = response.data.message
                     }
                 } else {
-                    if (response.data.message) {
-                        this.message = response.data.message
-                    } else {
-                        this.message = response.data.error
-                    }
+                    // if (response.data.message) {
+                    //     this.message = response.data.message
+                    // } else {
+                    //     this.message = response.data.error
+                    // }
+                    this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.message = "Error al actualizar el tipo de evento"
                 console.error('Error updating tipo evento: ', error)
             }
         },
@@ -92,13 +98,15 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
                     this.tipos = this.tipos.filter((tipo) => tipo.id !== idTipoEvento)
                     this.message = response.data.message
                 } else {
-                    if (response.data.message) {
-                        this.message = response.data.message
-                    } else {
-                        this.message = response.data.error
-                    }
+                    // if (response.data.message) {
+                    //     this.message = response.data.message
+                    // } else {
+                    //     this.message = response.data.error
+                    // }
+                    this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.message = 'Error al eliminar el tipo de evento'
                 console.error('Error deleting tipo evento: ', error)
             }
         },

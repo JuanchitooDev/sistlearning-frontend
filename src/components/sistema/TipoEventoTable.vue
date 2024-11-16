@@ -148,23 +148,33 @@ import { computed, ref, onMounted } from 'vue';
 import { useTipoEventoStore } from '../../stores/tipoEventoStore';
 import TipoEventoForm from './TipoEventoForm.vue';
 import ConfirmDialog from '../common/ConfirmDialog.vue';
-import Notification from '../common/Notification.vue'
+import Notification from '../common/Notification.vue';
 
 export default {
   components: {
     TipoEventoForm,
     ConfirmDialog,
-    Notification
+    Notification,
   },
   setup() {
     const isConfirmVisible = ref(false);
-    const notificationMessage = ref('')
+    const notificationMessage = ref('');
     const tipoEventoStore = useTipoEventoStore();
     const isModalOpen = ref(false);
     const tipoEvento = ref({ id: null, nombre: '', descripcion: '' });
     const tipoEventoToDelete = ref(null);
 
     const tipos = computed(() => tipoEventoStore.tipos);
+
+    // Computed para obtener el mensaje desde el store
+    const message = computed(() => tipoEventoStore.message);
+
+    // watch(
+    //   () => tipoEventoStore.message,
+    //   (newMessage) => {
+    //     notificationMessage.value = newMessage;
+    //   }
+    // );
 
     const openModal = () => {
       tipoEvento.value = { id: null, nombre: '', descripcion: '' }; // Resetea el formulario
@@ -188,21 +198,22 @@ export default {
     const deleteTipoEvento = async () => {
       if (tipoEventoToDelete.value) {
         await tipoEventoStore.deleteTipoEvento(tipoEventoToDelete.value);
-        notificationMessage.value = 'Tipo de evento eliminado correctamente'
+        // notificationMessage.value = 'Tipo de evento eliminado correctamente';
+        notificationMessage.value = message;
         isConfirmVisible.value = false; // Cerrar el diálogo
         tipoEventoToDelete.value = null; // Resetear el ID a eliminar
       }
     };
 
-    const handleTipoEventoCreated = (message) => {
+    const handleTipoEventoCreated = () => {
       isModalOpen.value = false;
-      notificationMessage.value = message
+      notificationMessage.value = message;
       tipoEventoStore.fetchTipoEventos(); // Actualiza la lista después de crear
     };
 
-    const handleTipoEventoUpdated = (message) => {
+    const handleTipoEventoUpdated = () => {
       isModalOpen.value = false;
-      notificationMessage.value = message
+      notificationMessage.value = message;
       tipoEventoStore.fetchTipoEventos(); // Actualiza la lista después de editar
     };
 
@@ -222,7 +233,7 @@ export default {
       deleteTipoEvento,
       handleTipoEventoCreated,
       handleTipoEventoUpdated,
-      notificationMessage
+      notificationMessage,
     };
   },
 };

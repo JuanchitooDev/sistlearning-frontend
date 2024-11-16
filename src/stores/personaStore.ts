@@ -18,7 +18,7 @@ export const usePersonaStore = defineStore('personaStore', {
 
                 // Actualiza la propiedad persona en el estado
                 this.persona = persona
-                
+
                 const index = this.personas.findIndex((p) => p.id === persona.id)
                 if (index !== -1) {
                     this.personas[index] = persona

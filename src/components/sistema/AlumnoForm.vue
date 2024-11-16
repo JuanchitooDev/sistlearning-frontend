@@ -174,21 +174,6 @@
             {{
               loading ? 'Cargando...' : alumno.id ? 'Actualizar' : 'Registrar'
             }}
-            <!-- <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            {{ alumno.id ? 'Actualizar' : 'Registrar' }} -->
           </button>
           <button
             type="button"
@@ -259,19 +244,29 @@ export default {
     const storePersona = usePersonaStore();
     const tipos = computed(() => storeTipoDocumento.tipos);
     const isDuplicated = ref(false);
-    const loading = ref(false);  // Estado de carga
+    const loading = ref(false); // Estado de carga
+
+    // Computed para obtener el mensaje desde el store
+    const message = computed(() => storeAlumno.message);
+
+    // watch(
+    //   () => props.alumno,
+    //   (newValue) => {
+    //     alumno.value = {
+    //       ...newValue,
+    //       fecha_nacimiento: newValue.fecha_nacimiento_str
+    //         ? newValue.fecha_nacimiento_str
+    //         : (newValue.fecha_nacimiento ? newValue.fecha_nacimiento.slice(0, 10) : null),
+    //     };
+    //   },
+    //   { immediate: true }
+    // );
 
     watch(
       () => props.alumno,
       (newValue) => {
-        alumno.value = {
-          ...newValue,
-          fecha_nacimiento: newValue.fecha_nacimiento_str
-            ? newValue.fecha_nacimiento_str
-            : (newValue.fecha_nacimiento ? newValue.fecha_nacimiento.slice(0, 10) : null),
-        };
-      },
-      { immediate: true }
+        alumno.value = newValue;
+      }
     );
 
     const validarRegistro = () => {
@@ -283,8 +278,8 @@ export default {
     };
 
     const submitForm = async () => {
-      loading.value = true;  // Activa el estado de carga
       try {
+        loading.value = true;
         if (isDuplicated.value) {
           console.error('El alumno ya existe');
           return;
@@ -292,24 +287,24 @@ export default {
 
         if (alumno.value.id) {
           await storeAlumno.updateAlumno(alumno.value.id, alumno.value);
-          emit('alumnoUpdated');
+          emit('alumnoUpdated', storeAlumno.message);
         } else {
-          alumno.value.fecha_nacimiento_str = alumno.value.fecha_nacimiento
+          alumno.value.fecha_nacimiento_str = alumno.value.fecha_nacimiento;
           await storeAlumno.createAlumno(alumno.value);
-          emit('alumnoCreated');
+          emit('alumnoCreated', storeAlumno.message);
         }
         resetForm();
         props.onClose();
       } catch (error) {
         console.log('error creating alumno', error);
       } finally {
-        loading.value = false;  // Desactiva el estado de carga
+        loading.value = false; // Desactiva el estado de carga
       }
     };
 
     const fetchPersona = async () => {
       if (alumno.value.id_tipodocumento && alumno.value.numero_documento) {
-        loading.value = true;  // Activa el estado de carga
+        loading.value = true; // Activa el estado de carga
         try {
           await storePersona.getDocumentoInfo(
             alumno.value.id_tipodocumento,
@@ -318,21 +313,21 @@ export default {
           const persona = storePersona.persona;
           if (persona) {
             validarRegistro();
-            let fechaNacimiento = ''
+            let fechaNacimiento = '';
             if (persona.fecha_nacimiento) {
-              const partsFechaNacimiento = persona.fecha_nacimiento.split("/")
-              fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`
+              const partsFechaNacimiento = persona.fecha_nacimiento.split('/');
+              fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`;
             }
             alumno.value.nombres = persona.nombres || '';
             alumno.value.apellido_paterno = persona.apellido_paterno || '';
             alumno.value.apellido_materno = persona.apellido_materno || '';
-            alumno.value.fecha_nacimiento = fechaNacimiento
+            alumno.value.fecha_nacimiento = fechaNacimiento;
             alumno.value.sexo = persona.sexo || '';
           }
         } catch (error) {
           console.error(error);
         } finally {
-          loading.value = false;  // Desactiva el estado de carga
+          loading.value = false; // Desactiva el estado de carga
         }
       }
     };
@@ -370,6 +365,7 @@ export default {
       isDuplicated,
       loading,
       validarRegistro,
+      message,
     };
   },
 };

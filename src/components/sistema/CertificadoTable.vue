@@ -23,9 +23,7 @@
     </div>
     <!-- Filtro por eventos -->
     <div class="mb-4 flex items-center space-x-4">
-      <label for="evento" class="font-semibold"
-        >Evento:</label
-      >
+      <label for="evento" class="font-semibold">Evento:</label>
       <select
         v-model="selectedEvento"
         id="evento"
@@ -36,6 +34,13 @@
           {{ evento.titulo }}
         </option>
       </select>
+      <!-- Campo de búsqueda de alumno -->
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="Buscar Alumno"
+        class="p-2 border border-gray-300 rounded"
+      />
     </div>
     <table class="min-w-full bg-white border border-gray-300">
       <thead>
@@ -51,7 +56,9 @@
       </thead>
       <tbody>
         <tr v-if="paginatedCertificados.length === 0">
-          <td colspan="7" class="text-center pt-2 pb-2">Certificados no registrados</td>
+          <td colspan="7" class="text-center pt-2 pb-2">
+            Certificados no registrados
+          </td>
         </tr>
         <tr v-for="certificado in paginatedCertificados" :key="certificado.id">
           <td class="border px-4 py-2">{{ certificado.id }}</td>
@@ -161,6 +168,25 @@
       </tbody>
     </table>
 
+    <!-- Paginación -->
+    <div class="mt-4 flex justify-between items-center">
+      <button
+        @click="prevPage"
+        :disabled="currentPage === 1"
+        class="px-4 py-2 bg-gray-300 rounded"
+      >
+        Anterior
+      </button>
+      <span>Página {{ currentPage }} de {{ totalPages }}</span>
+      <button
+        @click="nextPage"
+        :disabled="currentPage === totalPages"
+        class="px-4 py-2 bg-gray-300 rounded"
+      >
+        Siguiente
+      </button>
+    </div>
+
     <CertificadoForm
       :isVisible="isModalOpen"
       :onClose="closeModal"
@@ -191,56 +217,89 @@ import { computed, ref, onMounted } from 'vue';
 import { useCertificadoStore } from '../../stores/certificadoStore';
 import CertificadoForm from './CertificadoForm.vue';
 import ConfirmDialog from '../common/ConfirmDialog.vue';
-import Notification from '../common/Notification.vue'
+import Notification from '../common/Notification.vue';
 // import { formatDate } from '../../utils/date.utils'
-import { useEventoStore } from '@/stores/eventoStore'
+import { useEventoStore } from '@/stores/eventoStore';
 
 export default {
   components: {
     CertificadoForm,
     ConfirmDialog,
-    Notification
+    Notification,
   },
   setup() {
     const isConfirmVisible = ref(false);
-    const notificationMessage = ref('')
+    const notificationMessage = ref('');
     const certificadoStore = useCertificadoStore();
-    const eventoStore = useEventoStore()
+    const eventoStore = useEventoStore();
     const isModalOpen = ref(false);
     const certificado = ref({
       id: null,
       id_alumno: '',
       nombre_alumno_impresion: '',
       id_evento: '',
-      fecha_envio: null
+      fecha_envio: null,
     });
     const certificadoToDelete = ref(null);
 
     // Filtro por evento
-    const selectedEvento = ref('')
-    const eventos = computed(() => eventoStore.eventos)
+    const selectedEvento = ref('');
+    const eventos = computed(() => eventoStore.eventos);
 
-    // const certificados = computed(() => certificadoStore.certificados);
-    const certificados = computed(() => {
-      let filtered = certificadoStore.certificados
-      if (selectedEvento.value) {
-        filtered = filtered.filter(
-          (certificado) => certificado.id_evento === selectedEvento.value
-        )
-      }
-      return filtered
-    })
+    // Filtro de búsqueda
+    const searchQuery = ref('');
+
+    // Computed para obtener el mensaje desde el store
+    const message = computed(() => certificadoStore.message);
+
+    const certificados = computed(() => certificadoStore.certificados);
+    // const certificados = computed(() => {
+    //   let filtered = certificadoStore.certificados;
+    //   if (selectedEvento.value) {
+    //     filtered = filtered.filter(
+    //       (certificado) => certificado.id_evento === selectedEvento.value
+    //     );
+    //   }
+    //   return filtered;
+    // });
+
+    // Computar los certificados filtrados por búsqueda y evento
+    const filteredCertificados = computed(() => {
+      return certificados.value.filter((certificado) => {
+        const searchMatches =
+          certificado.Alumno &&
+          (certificado.Alumno.nombres
+            .toLowerCase()
+            .includes(searchQuery.value.toLowerCase()) ||
+            certificado.Alumno.apellido_paterno
+              .toLowerCase()
+              .includes(searchQuery.value.toLowerCase()) ||
+            certificado.Alumno.apellido_materno
+              .toLowerCase()
+              .includes(searchQuery.value.toLowerCase()));
+
+        const eventoMatches =
+          !selectedEvento.value ||
+          certificado.Evento?.id === selectedEvento.value;
+
+        return searchMatches && eventoMatches;
+      });
+    });
 
     // Paginación
     const currentPage = ref(1);
-    const perPage = 6;
+    const perPage = ref(6);
+
     const totalPages = computed(() =>
-      Math.ceil(alumnos.value.length / perPage)
+      // Math.ceil(alumnos.value.length / perPage)
+      Math.ceil(filteredCertificados.value.length / perPage.value)
     );
+
     const paginatedCertificados = computed(() => {
       const start = (currentPage.value - 1) * perPage;
-      const end = start + perPage;
-      return certificados.value.slice(start, end);
+      // const end = start + perPage;
+      // return certificados.value.slice(start, end);
+      return filteredCertificados.value.slice(start, start + perPage.value);
     });
 
     const prevPage = () => {
@@ -257,7 +316,7 @@ export default {
         id_alumno: '',
         nombre_alumno_impresion: '',
         id_evento: '',
-        fecha_envio: null
+        fecha_envio: null,
       }; // Resetea el formulario
       isModalOpen.value = true;
     };
@@ -267,18 +326,19 @@ export default {
     };
 
     const editCertificado = (certificadoEdit) => {
-      const alumno = certificadoEdit.Alumno
-      const nombreAlumno = `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`
+      const alumno = certificadoEdit.Alumno;
+      const nombreAlumno = `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`;
 
       certificado.value = { ...certificadoEdit };
 
-      certificado.value.nombre_alumno_impresion = certificado.value.nombre_alumno_impresion
+      certificado.value.nombre_alumno_impresion = certificado.value
+        .nombre_alumno_impresion
         ? certificado.value.nombre_alumno_impresion
-        : nombreAlumno
+        : nombreAlumno;
 
       certificado.value.fecha_envio = certificadoEdit.fecha_envio
         ? certificadoEdit.fecha_envio.slice(0, 10)
-        : null
+        : null;
 
       isModalOpen.value = true;
     };
@@ -290,32 +350,33 @@ export default {
 
     const deleteCertificado = async () => {
       if (certificadoToDelete.value) {
-        await certificadoStore.deleteCertificado(certificadoToDelete.value)
-        notificationMessage.value = 'Certificado eliminado correctamente'
+        await certificadoStore.deleteCertificado(certificadoToDelete.value);
+        // notificationMessage.value = 'Certificado eliminado correctamente'
+        notificationMessage.value = message;
         isConfirmVisible.value = false; // Cerrar el diálogo
         certificadoToDelete.value = null; // Resetear el ID a eliminar
       }
     };
 
     const downloadCertificado = (certificado) => {
-        certificadoStore.downloadCertificado(certificado.id)
-    }
+      certificadoStore.downloadCertificado(certificado.id);
+    };
 
-    const handleCertificadoCreated = (message) => {
+    const handleCertificadoCreated = () => {
       isModalOpen.value = false;
-      notificationMessage.value = message
+      notificationMessage.value = message;
       certificadoStore.fetchCertificados(); // Actualiza la lista después de crear
     };
 
-    const handleCertificadoUpdated = (message) => {
+    const handleCertificadoUpdated = () => {
       isModalOpen.value = false;
-      notificationMessage.value = message
+      notificationMessage.value = message;
       certificadoStore.fetchCertificados(); // Actualiza la lista después de editar
     };
 
     onMounted(() => {
       certificadoStore.fetchCertificados();
-      eventoStore.fetchEventos()
+      eventoStore.fetchEventos();
     });
 
     return {
@@ -339,7 +400,8 @@ export default {
       handleCertificadoCreated,
       handleCertificadoUpdated,
       // formatDate,
-      notificationMessage
+      notificationMessage,
+      searchQuery
     };
   },
 };

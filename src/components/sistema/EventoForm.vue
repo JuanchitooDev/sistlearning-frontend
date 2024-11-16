@@ -181,7 +181,6 @@ export default {
   },
   emits: ['eventoCreated', 'eventoUpdated'],
   setup(props, { emit }) {
-    // const evento = ref(props.evento);
     const evento = ref({
       id: props.evento.id || null,
       titulo: props.evento.titulo || '',
@@ -198,23 +197,30 @@ export default {
     const loading = ref(false);
 
     // Computed para obtener el mensaje desde el store
-    const message = computed(() => store.message)
+    const message = computed(() => store.message);
+
+    // watch(
+    //   () => props.evento,
+    //   (newValue) => {
+    //     evento.value = {
+    //       ...newValue,
+    //       temario: newValue.temario ? newValue.temario : '',
+    //       fecha: newValue.fecha ? newValue.fecha.slice(0, 10) : null,
+    //     };
+    //   },
+    //   { immediate: true }
+    // );
 
     watch(
       () => props.evento,
       (newValue) => {
-        evento.value = {
-          ...newValue,
-          temario: newValue.temario ? newValue.temario : '',
-          fecha: newValue.fecha ? newValue.fecha.slice(0, 10) : null,
-        };
-      },
-      { immediate: true }
+        evento.value = newValue;
+      }
     );
 
     const submitForm = async () => {
-      loading.value = true; // Activar el spinner
       try {
+        loading.value = true; // Activar el spinner
         if (evento.value.id) {
           await store.updateEvento(evento.value.id, evento.value);
           emit('eventoUpdated', store.message);
@@ -257,7 +263,7 @@ export default {
       submitForm,
       closeModal,
       loading,
-      message
+      message,
     };
   },
 };

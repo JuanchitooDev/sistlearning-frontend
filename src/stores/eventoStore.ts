@@ -16,10 +16,6 @@ export const useEventoStore = defineStore('eventoStore', {
             this.error = null
             try {
                 const response = await api.get('/evento')
-                // if (response.data.result) {
-                //     const eventos = response.data.data
-                //     this.eventos = eventos
-                // }
                 if (response.data.result) {
                     const eventos = response.data.data
                     this.eventos = eventos
@@ -36,13 +32,15 @@ export const useEventoStore = defineStore('eventoStore', {
                 if (response.data.result) {
                     this.eventos = response.data.data
                 } else {
-                    if (response.data.message) {
-                        this.message = response.data.message
-                    } else {
-                        this.message = response.data.error
-                    }
+                    // if (response.data.message) {
+                    //     this.message = response.data.message
+                    // } else {
+                    //     this.message = response.data.error
+                    // }
+                    this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.message = "Error al obtener el evento"
                 console.error('Error al obtener el evento: ', error)
             } finally {
                 this.loading = false
@@ -55,13 +53,15 @@ export const useEventoStore = defineStore('eventoStore', {
                     this.eventos.push(response.data.data)
                     this.message = response.data.message
                 } else {
-                    if (response.data.message) {
-                        this.message = response.data.message
-                    } else {
-                        this.message = response.data.error
-                    }
+                    // if (response.data.message) {
+                    //     this.message = response.data.message
+                    // } else {
+                    //     this.message = response.data.error
+                    // }
+                    this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.message = "Error al crear un nuevo evento"
                 console.error('Error creating evento: ', error)
             }
         },
@@ -75,13 +75,15 @@ export const useEventoStore = defineStore('eventoStore', {
                         this.message = response.data.message
                     }
                 } else {
-                    if (response.data.message) {
-                        this.message = response.data.message
-                    } else {
-                        this.message = response.data.error
-                    }
+                    // if (response.data.message) {
+                    //     this.message = response.data.message
+                    // } else {
+                    //     this.message = response.data.error
+                    // }
+                    this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.message = "Error al actualizar el evento"
                 console.error('Error updating evento: ', error)
             }
         },
@@ -92,13 +94,15 @@ export const useEventoStore = defineStore('eventoStore', {
                     this.eventos = this.eventos.filter((ev) => ev.id !== idEvento)
                     this.message = response.data.message
                 } else {
-                    if (response.data.message) {
-                        this.message = response.data.message
-                    } else {
-                        this.message = response.data.error
-                    }
+                    // if (response.data.message) {
+                    //     this.message = response.data.message
+                    // } else {
+                    //     this.message = response.data.error
+                    // }
+                    this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.message = 'Error al eliminar el evento'
                 console.error('Error deleting evento: ', error)
             }
         },

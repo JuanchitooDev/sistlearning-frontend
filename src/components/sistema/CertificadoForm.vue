@@ -212,13 +212,13 @@ export default {
     const isNombreAlumnoDisabled = ref(true);
 
     // Computed para obtener el mensaje desde el store
-    const message = computed(() => store.message)
+    const message = computed(() => store.message);
 
     watch(
       () => props.certificado,
       (newValue) => {
         certificado.value = newValue;
-        isNombreAlumnoDisabled.value = false
+        isNombreAlumnoDisabled.value = false;
       },
       { immediate: true }
     );
@@ -238,8 +238,8 @@ export default {
     };
 
     const submitForm = async () => {
-      loading.value = true; // Activar el spinner
       try {
+        loading.value = true; // Activar el spinner
         if (certificado.value.id) {
           await store.updateCertificado(
             certificado.value.id,
@@ -298,7 +298,7 @@ export default {
       isNombreAlumnoDisabled,
       loading,
       handleAlumnoSelect,
-      message
+      message,
     };
   },
 };
