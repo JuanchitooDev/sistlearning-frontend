@@ -36,11 +36,6 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
                 if (response.data.result) {
                     this.tipos = response.data.data
                 } else {
-                    // if (response.data.message) {
-                    //     this.message = response.data.message
-                    // } else {
-                    //     this.message = response.data.error
-                    // }
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
@@ -57,11 +52,6 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
                     this.tipos.push(response.data.data)
                     this.message = response.data.message
                 } else {
-                    // if (response.data.message) {
-                    //     this.message = response.data.message
-                    // } else {
-                    //     this.message = response.data.error
-                    // }
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
@@ -79,11 +69,6 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
                         this.message = response.data.message
                     }
                 } else {
-                    // if (response.data.message) {
-                    //     this.message = response.data.message
-                    // } else {
-                    //     this.message = response.data.error
-                    // }
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
@@ -98,11 +83,6 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
                     this.tipos = this.tipos.filter((tipo) => tipo.id !== idTipoEvento)
                     this.message = response.data.message
                 } else {
-                    // if (response.data.message) {
-                    //     this.message = response.data.message
-                    // } else {
-                    //     this.message = response.data.error
-                    // }
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
