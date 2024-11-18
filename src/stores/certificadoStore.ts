@@ -35,8 +35,10 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     responseType: 'blob'
                 })
 
-                if (response.status === 200) {
+                console.log('response createCertificado', response)
 
+                if (response.status === 200) {
+                    console.log('certificado', certificado)
                     this.certificados.push(certificado)
                     this.message = "Certificado registrado correctamente"
 
@@ -44,7 +46,7 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     const nombreCompleto = alumno.nombre_capitalized as string
                     const sanitizedAlumno = sanitizeFileName(nombreCompleto)
                     const fileName = `certificado_${sanitizedAlumno}.pdf`
-                    const url = window.URL.createObjectURL(new Blob([response.data.data]))
+                    const url = window.URL.createObjectURL(new Blob([response.data]))
                     const link = document.createElement('a')
 
                     link.href = url
@@ -114,6 +116,8 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     responseType: 'blob'
                 })
 
+                console.log('response downloadCertificado', response)
+
                 if (response.status === 200) {
                     this.message = "Certificado descargado correctamente"
                     const responseCertificado = await this.getCertificadoById(idCertificado)
@@ -122,7 +126,7 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     const sanitizedAlumno = sanitizeFileName(nombreCompleto)
                     const fileName = `certificado_${sanitizedAlumno}.pdf`
 
-                    const url = window.URL.createObjectURL(new Blob([response.data.data]));
+                    const url = window.URL.createObjectURL(new Blob([response.data]));
                     const link = document.createElement('a');
                     link.href = url;
                     link.setAttribute('download', `${fileName}`);
