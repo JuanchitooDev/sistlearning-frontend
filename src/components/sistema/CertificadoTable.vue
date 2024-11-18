@@ -317,7 +317,7 @@ export default {
 
     // Paginación
     const currentPage = ref(1);
-    const perPage = ref(6);
+    const perPage = ref(10);
 
     const totalPages = computed(() =>
       // Math.ceil(alumnos.value.length / perPage)
