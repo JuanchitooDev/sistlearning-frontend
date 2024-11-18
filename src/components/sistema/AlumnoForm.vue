@@ -286,9 +286,14 @@ export default {
         }
 
         if (alumno.value.id) {
+          console.log('in updated')
+          console.log('alumno.value.fecha_nacimiento', alumno.value.fecha_nacimiento)
+          alumno.value.fecha_nacimiento_str = alumno.value.fecha_nacimiento;
           await storeAlumno.updateAlumno(alumno.value.id, alumno.value);
           emit('alumnoUpdated', storeAlumno.message);
         } else {
+          console.log('in created')
+          console.log('alumno.value.fecha_nacimiento', alumno.value.fecha_nacimiento)
           alumno.value.fecha_nacimiento_str = alumno.value.fecha_nacimiento;
           await storeAlumno.createAlumno(alumno.value);
           emit('alumnoCreated', storeAlumno.message);
