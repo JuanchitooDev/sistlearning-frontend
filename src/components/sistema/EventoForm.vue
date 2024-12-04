@@ -70,12 +70,37 @@
         </div>
         <div class="mb-4">
           <label for="fecha" class="block text-sm font-medium text-gray-700"
-            >Fecha:</label
+            >Fecha Inicio:</label
           >
           <input
             v-model="evento.fecha"
             type="date"
             id="fecha"
+            autocomplete="off"
+            required
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+          />
+        </div>
+        <div class="mb-4">
+          <label for="fecha_fin" class="block text-sm font-medium text-gray-700"
+            >Fecha Final:</label
+          >
+          <input
+            v-model="evento.fecha_fin"
+            type="date"
+            id="fecha_fin"
+            autocomplete="off"
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+          />
+        </div>
+        <div class="mb-4">
+          <label for="duracion" class="block text-sm font-medium text-gray-700"
+            >Duración:</label
+          >
+          <input
+            v-model="evento.duracion"
+            type="text"
+            id="duracion"
             autocomplete="off"
             required
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
@@ -93,6 +118,7 @@
           >
             <option value="PRESENCIAL">Presencial</option>
             <option value="VIRTUAL">Virtual</option>
+            <option value="MIXTO">Mixto</option>
           </select>
         </div>
         <div class="flex justify-between">
@@ -175,6 +201,8 @@ export default {
         id_tipoevento: '',
         temario: '',
         fecha: null,
+        fecha_fin: null,
+        duracion: '',
         modalidad: 'VIRTUAL',
       }),
     },
@@ -187,6 +215,8 @@ export default {
       id_tipoevento: props.evento.id_tipoevento || '',
       temario: props.evento.temario || '',
       fecha: props.evento.fecha || null,
+      fecha_fin: props.evento.fecha_fin || null,
+      duracion: props.evento.duracion || '',
       modalidad: props.evento.modalidad || 'VIRTUAL',
     });
     const store = useEventoStore();
@@ -198,18 +228,6 @@ export default {
 
     // Computed para obtener el mensaje desde el store
     const message = computed(() => store.message);
-
-    // watch(
-    //   () => props.evento,
-    //   (newValue) => {
-    //     evento.value = {
-    //       ...newValue,
-    //       temario: newValue.temario ? newValue.temario : '',
-    //       fecha: newValue.fecha ? newValue.fecha.slice(0, 10) : null,
-    //     };
-    //   },
-    //   { immediate: true }
-    // );
 
     watch(
       () => props.evento,
@@ -244,6 +262,8 @@ export default {
         titulo: '',
         temario: '',
         fecha: null,
+        fecha_fin: null,
+        duracion: '',
         modalidad: 'VIRTUAL',
       };
     };
