@@ -70,7 +70,7 @@
           <td class="border px-4 py-2">
             {{ certificado.Evento ? certificado.Evento.titulo : 'Sin Tipo' }}
           </td>
-          <td class="border px-4 py-2">{{ certificado.fecha_envio }}</td>
+          <td class="border px-4 py-2">{{ formatDate(certificado.fecha_envio) }}</td>
           <td class="border px-4 py-2">
             <svg
               v-if="certificado.estado"
@@ -218,8 +218,9 @@ import { useCertificadoStore } from '../../stores/certificadoStore';
 import CertificadoForm from './CertificadoForm.vue';
 import ConfirmDialog from '../common/ConfirmDialog.vue';
 import Notification from '../common/Notification.vue';
-// import { formatDate } from '../../utils/date.utils'
+import { formatDate } from '../../utils/date.utils'
 import { useEventoStore } from '@/stores/eventoStore';
+// import { IAlumno } from '@/interfaces/alumnoInterface';
 
 export default {
   components: {
@@ -252,7 +253,35 @@ export default {
     // Computed para obtener el mensaje desde el store
     const message = computed(() => certificadoStore.message);
 
-    const certificados = computed(() => certificadoStore.certificados);
+    const filteredCertificados = computed(() => {
+      let filtered = certificadoStore.certificados;
+
+      if (selectedEvento.value) {
+        filtered = filtered.filter(
+          (certificado) => certificado.id_evento === selectedEvento.value
+        );
+      }
+
+      // Filtro por b+usqueda
+      if (searchQuery.value) {
+        const query = searchQuery.value.toLowerCase();
+        filtered = filtered.filter((certificado) => {
+          const alumno = certificado.alumno;
+          if (alumno) {
+            return (
+              alumno.nombres.toLowerCase().includes(query) ||
+              alumno.apellido_paterno.toLowerCase().includes(query) ||
+              alumno.apellido_materno.toLowerCase().includes(query)
+            );
+          }
+          return false
+        });
+      }
+
+      return filtered;
+    });
+
+    // const certificados = computed(() => certificadoStore.certificados);
     // const certificados = computed(() => {
     //   let filtered = certificadoStore.certificados;
     //   if (selectedEvento.value) {
@@ -264,31 +293,31 @@ export default {
     // });
 
     // Computar los certificados filtrados por búsqueda y evento
-    const filteredCertificados = computed(() => {
-      return certificados.value.filter((certificado) => {
-        const searchMatches =
-          certificado.Alumno &&
-          (certificado.Alumno.nombres
-            .toLowerCase()
-            .includes(searchQuery.value.toLowerCase()) ||
-            certificado.Alumno.apellido_paterno
-              .toLowerCase()
-              .includes(searchQuery.value.toLowerCase()) ||
-            certificado.Alumno.apellido_materno
-              .toLowerCase()
-              .includes(searchQuery.value.toLowerCase()));
+    // const filteredCertificados = computed(() => {
+    //   return certificados.value.filter((certificado) => {
+    //     const searchMatches =
+    //       certificado.Alumno &&
+    //       (certificado.Alumno.nombres
+    //         .toLowerCase()
+    //         .includes(searchQuery.value.toLowerCase()) ||
+    //         certificado.Alumno.apellido_paterno
+    //           .toLowerCase()
+    //           .includes(searchQuery.value.toLowerCase()) ||
+    //         certificado.Alumno.apellido_materno
+    //           .toLowerCase()
+    //           .includes(searchQuery.value.toLowerCase()));
 
-        const eventoMatches =
-          !selectedEvento.value ||
-          certificado.Evento?.id === selectedEvento.value;
+    //     const eventoMatches =
+    //       !selectedEvento.value ||
+    //       certificado.Evento?.id === selectedEvento.value;
 
-        return searchMatches && eventoMatches;
-      });
-    });
+    //     return searchMatches && eventoMatches;
+    //   });
+    // });
 
     // Paginación
     const currentPage = ref(1);
-    const perPage = ref(6);
+    const perPage = ref(10);
 
     const totalPages = computed(() =>
       // Math.ceil(alumnos.value.length / perPage)
@@ -296,7 +325,7 @@ export default {
     );
 
     const paginatedCertificados = computed(() => {
-      const start = (currentPage.value - 1) * perPage;
+      const start = (currentPage.value - 1) * perPage.value;
       // const end = start + perPage;
       // return certificados.value.slice(start, end);
       return filteredCertificados.value.slice(start, start + perPage.value);
@@ -380,7 +409,6 @@ export default {
     });
 
     return {
-      certificados,
       selectedEvento,
       eventos,
       currentPage,
@@ -399,9 +427,10 @@ export default {
       downloadCertificado,
       handleCertificadoCreated,
       handleCertificadoUpdated,
-      // formatDate,
+      formatDate,
       notificationMessage,
-      searchQuery
+      searchQuery,
+      filteredCertificados,
     };
   },
 };

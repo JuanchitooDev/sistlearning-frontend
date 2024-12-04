@@ -16,7 +16,6 @@ export const useAlumnoStore = defineStore('alumnoStore', {
             this.error = null
             try {
                 const response = await api.get('/alumno')
-                // this.alumnos = response.data.data
                 if (response.data.result) {
                     const alumnos = response.data.data
                     this.alumnos = alumnos
@@ -31,7 +30,6 @@ export const useAlumnoStore = defineStore('alumnoStore', {
             try {
                 const response = await api.get(`/alumno/${id}`)
                 if (response.data.result) {
-                    // this.alumnos = response.data.data
                     const alumno = response.data.data
                     const index = this.alumnos.findIndex((a) => a.id === alumno.id)
                     if (index !== -1) {
@@ -41,24 +39,10 @@ export const useAlumnoStore = defineStore('alumnoStore', {
                     }
                     return alumno
                 } else {
-                    // if (response.data.message) {
-                    //     this.message = response.data.message
-                    // } else {
-                    //     this.message = response.data.error
-                    // }
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                     return null
                 }
-                // const alumno = response.data.data
-                // const index = this.alumnos.findIndex((a) => a.id === alumno.id)
-                // if (index !== -1) {
-                //     this.alumnos[index] = alumno
-                // } else {
-                //     this.alumnos.push(alumno)
-                // }
-                // return alumno
             } catch (error) {
-                console.error(`Error al obtener el alumno: ${error}`)
                 this.message = "Error al obtener el alumno"
                 this.error = error instanceof Error ? error.message : 'Error desconocido'
             }
@@ -66,21 +50,14 @@ export const useAlumnoStore = defineStore('alumnoStore', {
         async createAlumno(alumno: IAlumno) {
             try {
                 const response = await api.post('/alumno', alumno)
-                // this.alumnos.push(response.data)
                 if (response.data.result) {
                     this.alumnos.push(response.data.data)
                     this.message = response.data.message
                 } else {
-                    // if (response.data.message) {
-                    //     this.message = response.data.message
-                    // } else {
-                    //     this.message = response.data.error
-                    // }
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
             } catch (error) {
                 this.message = "Error al crear un nuevo alumno"
-                console.error('Error creating alumno: ', error)
             }
         },
         async updateAlumno(idAlumno: number, alumno: IAlumno) {
@@ -93,17 +70,8 @@ export const useAlumnoStore = defineStore('alumnoStore', {
                         this.message = response.data.message
                     }
                 } else {
-                    // if (response.data.message) {
-                    //     this.message = response.data.message
-                    // } else {
-                    //     this.message = response.data.error
-                    // }
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
-                // const index = this.alumnos.findIndex((a) => a.id === alumno.id)
-                // if (index !== -1) {
-                //     this.alumnos[index] = alumno
-                // }
             } catch (error) {
                 this.message = "Error al actualizar el alumno"
                 console.error('Error updating alumno: ', error)
@@ -116,14 +84,8 @@ export const useAlumnoStore = defineStore('alumnoStore', {
                     this.alumnos = this.alumnos.filter((a) => a.id !== idAlumno)
                     this.message = response.data.message
                 } else {
-                    // if (response.data.message) {
-                    //     this.message = response.data.message
-                    // } else {
-                    //     this.message = response.data.error
-                    // }
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
-                // this.alumnos = this.alumnos.filter((a) => a.id !== idAlumno)
             } catch (error) {
                 this.message = 'Error al eliminar el alumno'
                 console.error('Error deleting alumno: ', error)
