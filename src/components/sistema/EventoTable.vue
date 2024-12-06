@@ -40,14 +40,15 @@
           <th class="border px-4 py-2">Título</th>
           <th class="border px-4 py-2">Tipo de evento</th>
           <th class="border px-4 py-2">Modalidad</th>
-          <th class="border px-4 py-2">Fecha</th>
+          <th class="border px-4 py-2">Fecha Inicio</th>
+          <th class="border px-4 py-2">Fecha Final</th>
           <th class="border px-4 py-2">Estado</th>
           <th class="border px-4 py-2">Acciones</th>
         </tr>
       </thead>
       <tbody>
         <tr v-if="paginatedEventos.length === 0">
-          <td colspan="7" class="text-center pt-2 pb-2">
+          <td colspan="8" class="text-center pt-2 pb-2">
             Eventos no registrados
           </td>
         </tr>
@@ -59,6 +60,8 @@
           </td>
           <td class="border px-4 py-2">{{ evento.modalidad }}</td>
           <td class="border px-4 py-2">{{ formatDate(evento.fecha) }}</td>
+          <td class="border px-4 py-2" v-if="evento.fecha_fin">{{ formatDate(evento.fecha_fin) }}</td>
+          <td class="border px-4 py-2" v-else>--</td>
           <td class="border px-4 py-2">
             <svg
               v-if="evento.estado"
@@ -257,11 +260,12 @@ export default {
       isModalOpen.value = false;
     };
 
-    const editEvento = (tipoEvento) => {
-      const temario = tipoEvento.temario ? tipoEvento.temario : '';
-      const fecha = tipoEvento.fecha ? tipoEvento.fecha.slice(0, 10) : null;
-
-      evento.value = { ...tipoEvento }; // Cargar los datos del tipo a editar
+    const editEvento = (ev) => {
+      console.log('evento in editEvento', ev)
+      const temario = ev.temario ? ev.temario : '';
+      const fecha = ev.fecha ? ev.fecha.slice(0, 10) : null;
+      
+      evento.value = { ...ev }; // Cargar los datos del tipo a editar
       evento.value.temario = temario;
       evento.value.fecha = fecha;
 

@@ -74,6 +74,7 @@
               id="apellido_paterno"
               autocomplete="off"
               required
+              maxlength="20"
               placeholder="Ejm: Pérez"
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
             />
@@ -90,6 +91,7 @@
               id="apellido_materno"
               autocomplete="off"
               required
+              maxlength="20"
               placeholder="Ejm: Pérez"
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
             />
@@ -104,6 +106,7 @@
               id="nombres"
               autocomplete="off"
               required
+              maxlength="30"
               placeholder="Ejm: José Carlos"
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
             />
@@ -149,6 +152,7 @@
               id="telefono"
               autocomplete="off"
               required
+              maxlength="15"
               placeholder="Ejm: 995511224"
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
             />

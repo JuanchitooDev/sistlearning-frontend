@@ -26,74 +26,111 @@
         </button>
       </div>
       <form @submit.prevent="submitForm">
-        <div class="mb-4">
-          <label
-            for="id_tipoevento"
-            class="block text-sm font-medium text-gray-700"
-            >Tipo de evento:</label
-          >
-          <select
-            name="id_tipoevento"
-            id="id_tipoevento"
-            v-model="evento.id_tipoevento"
-            class="mt-1 p-2 border border-gray-300 rounded w-full"
-          >
-            <option v-for="tipo in tipos" :value="tipo.id" :key="tipo.id">
-              {{ tipo.nombre }}
-            </option>
-          </select>
-        </div>
-        <div class="mb-4">
-          <label for="titulo" class="block text-sm font-medium text-gray-700"
-            >Nombre:</label
-          >
-          <input
-            v-model="evento.titulo"
-            type="text"
-            id="titulo"
-            autocomplete="off"
-            required
-            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
-          />
-        </div>
-        <div class="mb-4">
-          <label for="temario" class="block text-sm font-medium text-gray-700"
-            >Temario:</label
-          >
-          <textarea
-            v-model="evento.temario"
-            id="temario"
-            autocomplete="off"
-            required
-            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 h-32"
-          ></textarea>
-        </div>
-        <div class="mb-4">
-          <label for="fecha" class="block text-sm font-medium text-gray-700"
-            >Fecha:</label
-          >
-          <input
-            v-model="evento.fecha"
-            type="date"
-            id="fecha"
-            autocomplete="off"
-            required
-            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
-          />
-        </div>
-        <div class="mb-4">
-          <label for="modalidad" class="block text-sm font-medium text-gray-700"
-            >Modalidad:</label
-          >
-          <select
-            name="modalidad"
-            id="modalidad"
-            v-model="evento.modalidad"
-            class="mt-1 p-2 border border-gray-300 rounded w-full"
-          >
-            <option value="PRESENCIAL">Presencial</option>
-            <option value="VIRTUAL">Virtual</option>
-          </select>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="mb-4">
+            <label
+              for="id_tipoevento"
+              class="block text-sm font-medium text-gray-700"
+              >Tipo de evento:</label
+            >
+            <select
+              name="id_tipoevento"
+              id="id_tipoevento"
+              v-model="evento.id_tipoevento"
+              class="mt-1 p-2 border border-gray-300 rounded w-full"
+            >
+              <option v-for="tipo in tipos" :value="tipo.id" :key="tipo.id">
+                {{ tipo.nombre }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label for="titulo" class="block text-sm font-medium text-gray-700"
+              >Nombre:</label
+            >
+            <input
+              v-model="evento.titulo"
+              type="text"
+              id="titulo"
+              autocomplete="off"
+              required
+              maxlength="70"
+              placeholder="Ejm: Crianza de ganado con una dieta saludable"
+              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+            />
+          </div>
+          <div class="mb-4">
+            <label for="fecha" class="block text-sm font-medium text-gray-700"
+              >Fecha Inicio:</label
+            >
+            <input
+              v-model="evento.fecha"
+              type="date"
+              id="fecha"
+              autocomplete="off"
+              required
+              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              for="fecha_final"
+              class="block text-sm font-medium text-gray-700"
+              >Fecha Final:</label
+            >
+            <input
+              v-model="evento.fecha_final"
+              type="date"
+              id="fecha_final"
+              autocomplete="off"
+              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              for="duracion"
+              class="block text-sm font-medium text-gray-700"
+              >Duración:</label
+            >
+            <input
+              v-model="evento.duracion"
+              type="text"
+              id="duracion"
+              autocomplete="off"
+              required
+              placeholder="80 horas"
+              maxlength="10"
+              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              for="modalidad"
+              class="block text-sm font-medium text-gray-700"
+              >Modalidad:</label
+            >
+            <select
+              name="modalidad"
+              id="modalidad"
+              v-model="evento.modalidad"
+              class="mt-1 p-2 border border-gray-300 rounded w-full"
+            >
+              <option value="PRESENCIAL">Presencial</option>
+              <option value="VIRTUAL">Virtual</option>
+            </select>
+          </div>
+          <div class="mb-4 col-span-2">
+            <label for="temario" class="block text-sm font-medium text-gray-700"
+              >Temario:</label
+            >
+            <textarea
+              v-model="evento.temario"
+              id="temario"
+              autocomplete="off"
+              required
+              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 h-32"
+            ></textarea>
+          </div>
         </div>
         <div class="flex justify-between">
           <button
@@ -175,6 +212,8 @@ export default {
         id_tipoevento: '',
         temario: '',
         fecha: null,
+        fecha_final: '',
+        duracion: '',
         modalidad: 'VIRTUAL',
       }),
     },
@@ -187,6 +226,8 @@ export default {
       id_tipoevento: props.evento.id_tipoevento || '',
       temario: props.evento.temario || '',
       fecha: props.evento.fecha || null,
+      fecha_final: props.evento.fecha_final || '',
+      duracion: props.evento.duracion || '',
       modalidad: props.evento.modalidad || 'VIRTUAL',
     });
     const store = useEventoStore();
@@ -198,18 +239,6 @@ export default {
 
     // Computed para obtener el mensaje desde el store
     const message = computed(() => store.message);
-
-    // watch(
-    //   () => props.evento,
-    //   (newValue) => {
-    //     evento.value = {
-    //       ...newValue,
-    //       temario: newValue.temario ? newValue.temario : '',
-    //       fecha: newValue.fecha ? newValue.fecha.slice(0, 10) : null,
-    //     };
-    //   },
-    //   { immediate: true }
-    // );
 
     watch(
       () => props.evento,
@@ -244,6 +273,8 @@ export default {
         titulo: '',
         temario: '',
         fecha: null,
+        fecha_final: '',
+        duracion: '',
         modalidad: 'VIRTUAL',
       };
     };
