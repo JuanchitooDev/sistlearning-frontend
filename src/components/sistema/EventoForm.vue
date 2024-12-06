@@ -107,6 +107,28 @@
             <label
               for="modalidad"
               class="block text-sm font-medium text-gray-700"
+          <input
+            v-model="evento.fecha_fin"
+            type="date"
+            id="fecha_fin"
+            autocomplete="off"
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+          />
+        </div>
+        <div class="mb-4">
+          <label for="duracion" class="block text-sm font-medium text-gray-700"
+            >Duración:</label
+          >
+          <input
+            v-model="evento.duracion"
+            type="text"
+            id="duracion"
+            autocomplete="off"
+            required
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+          />
+        </div>
+        <div class="mb-4">
               >Modalidad:</label
             >
             <select
@@ -117,6 +139,7 @@
             >
               <option value="PRESENCIAL">Presencial</option>
               <option value="VIRTUAL">Virtual</option>
+            <option value="MIXTO">Mixto</option>
             </select>
           </div>
           <div class="mb-4 col-span-2">
