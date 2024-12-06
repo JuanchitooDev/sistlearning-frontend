@@ -8,7 +8,11 @@
         <h2 class="text-2xl font-semibold">
           {{ alumno.id ? 'Editar alumno' : 'Nuevo alumno' }}
         </h2>
-        <button @click="closeModal" class="text-gray-600 hover:text-gray-800">
+        <button
+          @click="closeModal"
+          :disabled="loading"
+          class="text-gray-600 hover:text-gray-800"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6"
@@ -152,7 +156,7 @@
               id="telefono"
               autocomplete="off"
               required
-              maxlength="15"
+              maxlength="12"
               placeholder="Ejm: 995511224"
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
             />
@@ -182,7 +186,8 @@
           <button
             type="button"
             @click="closeModal"
-            class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4"
+            class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4 disabled:bg-blue-300 disabled:cursor-not-allowed"
+            :disabled="loading"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -290,14 +295,20 @@ export default {
         }
 
         if (alumno.value.id) {
-          console.log('in updated')
-          console.log('alumno.value.fecha_nacimiento', alumno.value.fecha_nacimiento)
+          console.log('in updated');
+          console.log(
+            'alumno.value.fecha_nacimiento',
+            alumno.value.fecha_nacimiento
+          );
           alumno.value.fecha_nacimiento_str = alumno.value.fecha_nacimiento;
           await storeAlumno.updateAlumno(alumno.value.id, alumno.value);
           emit('alumnoUpdated', storeAlumno.message);
         } else {
-          console.log('in created')
-          console.log('alumno.value.fecha_nacimiento', alumno.value.fecha_nacimiento)
+          console.log('in created');
+          console.log(
+            'alumno.value.fecha_nacimiento',
+            alumno.value.fecha_nacimiento
+          );
           alumno.value.fecha_nacimiento_str = alumno.value.fecha_nacimiento;
           await storeAlumno.createAlumno(alumno.value);
           emit('alumnoCreated', storeAlumno.message);

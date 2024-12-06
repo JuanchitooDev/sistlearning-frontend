@@ -8,7 +8,11 @@
         <h2 class="text-2xl font-semibold">
           {{ certificado.id ? 'Editar certificado' : 'Nuevo certificado' }}
         </h2>
-        <button @click="closeModal" class="text-gray-600 hover:text-gray-800">
+        <button
+          @click="closeModal"
+          :disabled="loading"
+          class="text-gray-600 hover:text-gray-800"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6"
@@ -26,77 +30,123 @@
         </button>
       </div>
       <form @submit.prevent="submitForm">
-        <div class="mb-4">
-          <label for="id_alumno" class="block text-sm font-medium text-gray-700"
-            >Alumno:</label
-          >
-          <select
-            name="id_alumno"
-            id="id_alumno"
-            v-model="certificado.id_alumno"
-            class="mt-1 p-2 border border-gray-300 rounded w-full"
-            @change="handleAlumnoSelect"
-          >
-            <option
-              v-for="alumno in alumnos"
-              :value="alumno.id"
-              :key="alumno.id"
-            >
-              {{ alumno.nombres }} {{ alumno.apellido_paterno }}
-              {{ alumno.apellido_materno }}
-            </option>
-          </select>
-        </div>
-        <div class="mb-4">
-          <label
-            for="nombre_alumno_impresion"
-            class="block text-sm font-medium text-gray-700"
-            >Nombre alumno impresión:</label
-          >
-          <input
-            v-model="certificado.nombre_alumno_impresion"
-            type="text"
-            id="nombre_alumno_impresion"
-            autocomplete="off"
-            required
-            placeholder="Ejm: José Carlos Pérez Pérez"
-            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 rounded-md p-2 focus:ring focus:ring-blue-300"
-            :disabled="isNombreAlumnoDisabled"
-          />
-        </div>
-        <div class="mb-4">
-          <label for="id_evento" class="block text-sm font-medium text-gray-700"
-            >Evento:</label
-          >
-          <select
-            name="id_evento"
-            id="id_evento"
-            v-model="certificado.id_evento"
-            class="mt-1 p-2 border border-gray-300 rounded w-full"
-          >
-            <option
-              v-for="evento in eventos"
-              :value="evento.id"
-              :key="evento.id"
-            >
-              {{ evento.titulo }}
-            </option>
-          </select>
-        </div>
-        <div class="mb-4">
-          <label
-            for="fecha_envio"
-            class="block text-sm font-medium text-gray-700"
-            >Fecha emisión:</label
-          >
-          <input
-            v-model="certificado.fecha_envio"
-            type="date"
-            id="fecha_envio"
-            autocomplete="off"
-            required
-            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
-          />
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <div class="mb-4">
+              <label
+                for="id_alumno"
+                class="block text-sm font-medium text-gray-700"
+                >Alumno:</label
+              >
+              <input
+                type="text"
+                v-model="searchQuery"
+                @input="filterAlumnos"
+                placeholder="Buscar alumno..."
+                class="mt-1 p-2 border border-gray-300 rounded w-full"
+              />
+            </div>
+            <div class="mb-4">
+              <div
+                v-if="filteredAlumnos.length > 0"
+                class="mt-2 bg-white border border-gray-300 rounded max-h-60 overflow-y-auto"
+                style="max-height: 200px"
+              >
+                <ul>
+                  <li
+                    v-for="alumno in filteredAlumnos"
+                    :key="alumno.id"
+                    @click="selectAlumno(alumno)"
+                    class="p-2 hover:bg-gray-200 cursor-pointer"
+                  >
+                    {{ alumno.nombres }} {{ alumno.apellido_paterno }}
+                    {{ alumno.apellido_materno }}
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="mb-4">
+              <label
+                for="nombre_alumno_impresion"
+                class="block text-sm font-medium text-gray-700"
+                >Nombre alumno impresión:</label
+              >
+              <input
+                v-model="certificado.nombre_alumno_impresion"
+                type="text"
+                id="nombre_alumno_impresion"
+                autocomplete="off"
+                required
+                placeholder="Ejm: José Carlos Pérez Pérez"
+                class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+                :disabled="isNombreAlumnoDisabled"
+              />
+            </div>
+          </div>
+          <div>
+            <div class="mb-4">
+              <label
+                for="id_evento"
+                class="block text-sm font-medium text-gray-700"
+                >Evento:</label
+              >
+              <select
+                name="id_evento"
+                id="id_evento"
+                v-model="certificado.id_evento"
+                class="mt-1 p-2 border border-gray-300 rounded w-full"
+              >
+                <option
+                  v-for="evento in eventos"
+                  :value="evento.id"
+                  :key="evento.id"
+                >
+                  {{ evento.titulo }}
+                </option>
+              </select>
+            </div>
+            <div class="mb-4">
+              <label
+                for="fecha_envio"
+                class="block text-sm font-medium text-gray-700"
+                >Fecha emisión:</label
+              >
+              <input
+                v-model="certificado.fecha_envio"
+                type="date"
+                id="fecha_envio"
+                autocomplete="off"
+                required
+                class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+              />
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700"
+                >Seleccionar plantilla:</label
+              >
+              <div class="flex gap-4">
+                <div
+                  v-for="(template, index) in templates"
+                  :key="index"
+                  class="flex items-center"
+                >
+                  <input
+                    type="radio"
+                    :id="template.id"
+                    v-model="certificado.templateName"
+                    :value="template.id"
+                    class="mr-2"
+                    required
+                  />
+                  <label :for="template.id">{{ template.name }}</label>
+                  <!-- <img :src="require(`@/assets/${template.thumbnail}`)" :alt="template.name" class="w-20 h-20 object-cover rounded" /> -->
+                </div>
+              </div>
+              <div v-if="templateError" class="text-red-500 text-sm mt-2">
+                La selección de la plantilla es obligatoria.
+              </div>
+            </div>
+          </div>
         </div>
         <div class="flex justify-between">
           <button
@@ -125,26 +175,12 @@
               certificado.id ? 'Actualizar' : 'Registrar'
             }}</span>
             <span v-else>Guardando...</span>
-            <!-- <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            {{ certificado.id ? 'Actualizar' : 'Registrar' }} -->
           </button>
           <button
             type="button"
             @click="closeModal"
-            class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4"
+            class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4 disabled:bg-blue-300 disabled:cursor-not-allowed"
+            :disabled="loading"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -193,6 +229,7 @@ export default {
         nombre_alumno_impresion: '',
         id_evento: '',
         fecha_envio: currentDate,
+        templateName: 'template_uno',
       }),
     },
   },
@@ -206,13 +243,53 @@ export default {
     const alumnos = computed(() => storeAlumno.alumnos);
     const eventos = computed(() => storeEvento.eventos);
 
+    const searchQuery = ref('');
+    // const filteredAlumnos = ref([]);
+
+    const filteredAlumnos = computed(() => {
+      return alumnos.value.filter((alumno) => {
+        return `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`
+          .toLowerCase()
+          .includes(searchQuery.value.toLowerCase());
+        // return (
+        //   alumno.nombres
+        //     .toLowerCase()
+        //     .includes(searchQuery.value.toLowerCase()) ||
+        //   alumno.apellido_paterno
+        //     .toLowerCase()
+        //     .includes(searchQuery.value.toLowerCase()) ||
+        //   alumno.apellido_materno
+        //     .toLowerCase()
+        //     .includes(searchQuery.value.toLowerCase()) ||
+        //   alumno.numero_documento.includes(searchQuery.value)
+        // );
+      });
+    });
+
     const loading = ref(false); // Estado de carga
 
     // Nueva propiedad reactiva para habilitar/deshabilitar el campo
     const isNombreAlumnoDisabled = ref(true);
 
+    const templates = [
+      {
+        id: 'template_uno',
+        name: 'Template Uno',
+      },
+      {
+        id: 'template_dos',
+        name: 'Template Dos',
+      },
+      {
+        id: 'template_tres',
+        name: 'Template Tres',
+      },
+    ];
+
     // Computed para obtener el mensaje desde el store
     const message = computed(() => store.message);
+
+    const templateError = ref(false);
 
     watch(
       () => props.certificado,
@@ -223,23 +300,41 @@ export default {
       { immediate: true }
     );
 
-    // Función para manejar el evento de selección del alumno
-    const handleAlumnoSelect = async () => {
-      const alumno = alumnos.value.find(
-        (a) => a.id === certificado.value.id_alumno
-      );
-      if (alumno) {
-        isNombreAlumnoDisabled.value = false;
-        certificado.value.nombre_alumno_impresion = `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`;
+    // Mostrar todos los alumnos al cargar el modal
+    const loadAlumnos = () => {
+      console.log('alumnos.value', alumnos.value);
+      filteredAlumnos.value = alumnos.value;
+    };
+
+    const filterAlumnos = () => {
+      console.log('searchquery', searchQuery.value);
+      if (searchQuery.value.trim() === '') {
+        filteredAlumnos.value = alumnos.value;
       } else {
-        isNombreAlumnoDisabled.value = true;
-        certificado.value.nombre_alumno_impresion = ''; // Limpiar el campo si no hay alumno seleccionado
+        filteredAlumnos.value = alumnos.value.filter((alumno) => {
+          `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`
+            .toLowerCase()
+            .includes(searchQuery.value.toLowerCase());
+        });
       }
+    };
+
+    const selectAlumno = (alumno) => {
+      certificado.value.id_alumno = alumno.id;
+      certificado.value.nombre_alumno_impresion = `${alumno.nombres} ${alumno.apellido_paterno} ${alumno.apellido_materno}`;
+      searchQuery.value = ''; // Limpiar la búsqueda
     };
 
     const submitForm = async () => {
       try {
+        templateError.value = false;
         loading.value = true; // Activar el spinner
+
+        if (!certificado.value.templateName) {
+          templateError.value = true;
+          return;
+        }
+
         if (certificado.value.id) {
           await store.updateCertificado(
             certificado.value.id,
@@ -273,8 +368,10 @@ export default {
         id_alumno: '',
         nombre_alumno_impresion: '',
         id_evento: '',
-        fecha_envio: null,
+        fecha_envio: currentDate,
+        template: 'template_uno',
       };
+
       // Volver a deshabilitar el campo al resetear
       isNombreAlumnoDisabled.value = true;
     };
@@ -287,6 +384,7 @@ export default {
     onMounted(() => {
       storeAlumno.fetchAlumnos();
       storeEvento.fetchEventos();
+      loadAlumnos();
     });
 
     return {
@@ -297,8 +395,13 @@ export default {
       closeModal,
       isNombreAlumnoDisabled,
       loading,
-      handleAlumnoSelect,
+      searchQuery,
+      filteredAlumnos,
+      filterAlumnos,
+      selectAlumno,
       message,
+      templates,
+      templateError,
     };
   },
 };
@@ -321,6 +424,5 @@ export default {
   background: white;
   padding: 20px;
   border-radius: 5px;
-  width: 500px;
 }
 </style>

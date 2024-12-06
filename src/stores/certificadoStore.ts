@@ -37,8 +37,7 @@ export const useCertificadoStore = defineStore('certificadoStore', {
 
                 console.log('response createCertificado', response)
 
-                if (response.status === 200) {
-                    console.log('certificado', certificado)
+                if (response.status === 201) {
                     this.certificados.push(certificado)
                     this.message = "Certificado registrado correctamente"
 

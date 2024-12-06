@@ -8,7 +8,10 @@
         <h2 class="text-2xl font-semibold">
           {{ tipoEvento.id ? 'Editar tipo de evento' : 'Nuevo tipo de evento' }}
         </h2>
-        <button @click="closeModal" class="text-gray-600 hover:text-gray-800">
+        <button
+          @click="closeModal"
+          :disabled="loading"
+          class="text-gray-600 hover:text-gray-800">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6"
@@ -56,8 +59,8 @@
         <div class="flex justify-between">
           <button
             type="submit"
-            :disabled="loading"
             class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
+            :disabled="loading"
           >
             <!-- Spinner while loading -->
             <svg
@@ -88,8 +91,9 @@
           <button
             type="button"
             @click="closeModal"
-            class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4"
-          >
+            class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4 disabled:bg-blue-300 disabled:cursor-not-allowed"
+            :disabled="loading"
+            >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="h-5 w-5 mr-1"

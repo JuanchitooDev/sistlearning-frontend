@@ -70,7 +70,8 @@
           <td class="border px-4 py-2">
             {{ certificado.Evento ? certificado.Evento.titulo : 'Sin Tipo' }}
           </td>
-          <td class="border px-4 py-2">{{ formatDate(certificado.fecha_envio) }}</td>
+          <td class="border px-4 py-2" v-if="certificado.fecha_envio">{{ formatDate(certificado.fecha_envio) }}</td>
+          <td class="border px-4 py-2" v-else>--</td>
           <td class="border px-4 py-2">
             <svg
               v-if="certificado.estado"

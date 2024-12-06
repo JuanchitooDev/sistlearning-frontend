@@ -8,7 +8,11 @@
         <h2 class="text-2xl font-semibold">
           {{ evento.id ? 'Editar evento' : 'Nuevo evento' }}
         </h2>
-        <button @click="closeModal" class="text-gray-600 hover:text-gray-800">
+        <button
+          @click="closeModal"
+          :disabled="loading"
+          class="text-gray-600 hover:text-gray-800"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-6 w-6"
@@ -103,6 +107,23 @@
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
             />
           </div>
+          <div class="mb-4">
+            <label
+              for="modalidad"
+              class="block text-sm font-medium text-gray-700"
+              >Modalidad:</label
+            >
+            <select
+              name="modalidad"
+              id="modalidad"
+              v-model="evento.modalidad"
+              class="mt-1 p-2 border border-gray-300 rounded w-full"
+            >
+              <option value="PRESENCIAL">Presencial</option>
+              <option value="VIRTUAL">Virtual</option>
+              <option value="MIXTO">Mixto</option>
+            </select>
+          </div>
           <div class="mb-4 col-span-2">
             <label for="temario" class="block text-sm font-medium text-gray-700"
               >Temario:</label
@@ -149,7 +170,8 @@
           <button
             type="button"
             @click="closeModal"
-            class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4"
+            class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4 disabled:bg-blue-300 disabled:cursor-not-allowed"
+            :disabled="loading"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -301,6 +323,5 @@ export default {
   background: white;
   padding: 20px;
   border-radius: 5px;
-  width: 500px;
 }
 </style>
