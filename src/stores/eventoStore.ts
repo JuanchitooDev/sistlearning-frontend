@@ -44,7 +44,6 @@ export const useEventoStore = defineStore('eventoStore', {
         async createEvento(evento: IEvento) {
             try {
                 const response = await api.post('/evento', evento)
-                console.log('response createEvento', response)
                 if (response.data.result) {
                     this.eventos.push(response.data.data)
                     this.message = response.data.message

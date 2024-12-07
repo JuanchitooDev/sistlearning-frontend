@@ -261,7 +261,6 @@ export default {
     };
 
     const editEvento = (ev) => {
-      console.log('evento in editEvento', ev)
       const temario = ev.temario ? ev.temario : '';
       const fecha = ev.fecha ? ev.fecha.slice(0, 10) : null;
       

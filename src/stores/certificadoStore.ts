@@ -31,15 +31,13 @@ export const useCertificadoStore = defineStore('certificadoStore', {
         },
         async createCertificado(certificado: ICertificado) {
             try {
-                const response = await api.post('/certificado', certificado, {
+                const response = await api.post(`/certificado`, certificado, {
                     responseType: 'blob'
                 })
 
-                console.log('response createCertificado', response)
-
-                if (response.status === 201) {
-                    this.certificados.push(certificado)
+                if (response.status === 200) {
                     this.message = "Certificado registrado correctamente"
+                    this.certificados.push(certificado)
 
                     const alumno = certificado.alumno as IAlumno
                     const nombreCompleto = alumno.nombre_capitalized as string
@@ -114,8 +112,6 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 const response = await api.get(urlApi, {
                     responseType: 'blob'
                 })
-
-                console.log('response downloadCertificado', response)
 
                 if (response.status === 200) {
                     this.message = "Certificado descargado correctamente"

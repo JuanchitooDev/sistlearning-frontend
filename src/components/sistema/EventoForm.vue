@@ -78,14 +78,14 @@
           </div>
           <div class="mb-4">
             <label
-              for="fecha_final"
+              for="fecha_fin"
               class="block text-sm font-medium text-gray-700"
               >Fecha Final:</label
             >
             <input
-              v-model="evento.fecha_final"
+              v-model="evento.fecha_fin"
               type="date"
-              id="fecha_final"
+              id="fecha_fin"
               autocomplete="off"
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
             />
@@ -119,9 +119,9 @@
               v-model="evento.modalidad"
               class="mt-1 p-2 border border-gray-300 rounded w-full"
             >
-              <option value="PRESENCIAL">Presencial</option>
-              <option value="VIRTUAL">Virtual</option>
-              <option value="MIXTO">Mixto</option>
+              <option value="Presencial">PRESENCIAL</option>
+              <option value="Virtual">VIRTUAL</option>
+              <option value="Mixto">MIXTO</option>
             </select>
           </div>
           <div class="mb-4 col-span-2">
@@ -218,9 +218,9 @@ export default {
         id_tipoevento: '',
         temario: '',
         fecha: null,
-        fecha_final: '',
+        fecha_fin: '',
         duracion: '',
-        modalidad: 'VIRTUAL',
+        modalidad: 'Virtual',
       }),
     },
   },
@@ -232,9 +232,9 @@ export default {
       id_tipoevento: props.evento.id_tipoevento || '',
       temario: props.evento.temario || '',
       fecha: props.evento.fecha || null,
-      fecha_final: props.evento.fecha_final || '',
+      fecha_fin: props.evento.fecha_fin || '',
       duracion: props.evento.duracion || '',
-      modalidad: props.evento.modalidad || 'VIRTUAL',
+      modalidad: props.evento.modalidad || 'Virtual',
     });
     const store = useEventoStore();
     const storeTipoEvento = useTipoEventoStore();
@@ -279,9 +279,9 @@ export default {
         titulo: '',
         temario: '',
         fecha: null,
-        fecha_final: '',
+        fecha_fin: '',
         duracion: '',
-        modalidad: 'VIRTUAL',
+        modalidad: 'Virtual',
       };
     };
 

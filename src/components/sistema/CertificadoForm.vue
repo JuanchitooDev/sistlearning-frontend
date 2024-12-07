@@ -302,12 +302,10 @@ export default {
 
     // Mostrar todos los alumnos al cargar el modal
     const loadAlumnos = () => {
-      console.log('alumnos.value', alumnos.value);
       filteredAlumnos.value = alumnos.value;
     };
 
     const filterAlumnos = () => {
-      console.log('searchquery', searchQuery.value);
       if (searchQuery.value.trim() === '') {
         filteredAlumnos.value = alumnos.value;
       } else {
