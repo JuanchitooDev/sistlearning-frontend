@@ -1,23 +1,32 @@
 <template>
-  <div id="app" class="font-montserrat text-sm">
-    <Toolbar />
     <div class="flex">
-      <Sidebar />
-      <main class="flex-1 p-6">
-        <router-view />
-      </main>
+        <Sidebar />
+        <div class="flex-1">
+            <Toolbar :toggleSidebar="toggleSidebar" />
+            <router-view />
+        </div>
     </div>
-  </div>
 </template>
-
+  
 <script>
 import Sidebar from './components/sistema/Sidebar.vue';
 import Toolbar from './components/sistema/Toolbar.vue';
-
+  
 export default {
-  components: {
-    Sidebar,
-    Toolbar,
-  },
+    name: 'App',
+    components: {
+      Sidebar,
+      Toolbar,
+    },
+    methods: {
+      toggleSidebar() {
+        this.$refs.sidebar.toggleSidebar();
+      }
+    },
 };
 </script>
+  
+<style>
+/* Estilos generales */
+</style>
+  
