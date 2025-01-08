@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
+import { useUsuarioStore } from '@/stores/usuarioStore'
 // import HomeView from '../views/HomeView.vue';
 import TipoEvento from '../views/TipoEvento.vue'
 import Evento from '../views/Evento.vue'
@@ -9,6 +10,7 @@ import Alumno from '../views/Alumno.vue'
 import Certificado from '../views/Certificado.vue'
 // import CreateTipoEvento from '../views/CreateTipoEvento.vue'
 // import EditTipoEvento from '../views/EditTipoEvento.vue'
+import Login from '../views/Login.vue'
 import CertificadoDetail from '../components/pagina/CertificadoDetail.vue'
 
 const routes: Array<RouteRecordRaw> = [
@@ -34,28 +36,37 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/tipo-evento',
     name: 'list-tipo-evento',
-    component: TipoEvento
+    component: TipoEvento,
+    meta: { requiresAuth: true }
   },
   {
     path: '/evento',
     name: 'list-evento',
-    component: Evento
+    component: Evento,
+    meta: { requiresAuth: true }
   },
   {
     path: '/alumno',
     name: 'list-alumno',
-    component: Alumno
+    component: Alumno,
+    meta: { requiresAuth: true }
   },
   {
     path: '/certificado',
     name: 'list-certificado',
-    component: Certificado
+    component: Certificado,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login
   },
   {
     path: '/certificado/:codigo',
     name: 'certificado-detail',
     component: CertificadoDetail,
-    meta: {layout: 'no-sidebar'}
+    meta: { layout: 'no-sidebar' }
   }
   // {
   //   path: '/trabajador',
@@ -78,5 +89,15 @@ const router = createRouter({
   history: createWebHashHistory('/sistema'),
   routes,
 });
+
+// Guard de navegación para manejar la autenticación
+router.beforeEach(async (to, from, next) => {
+  const usuarioStore = useUsuarioStore()
+  if (to.meta.requiresAuth && !(await usuarioStore.verifyToken())) {
+    next('/login')
+  } else {
+    next()
+  }
+})
 
 export default router;
