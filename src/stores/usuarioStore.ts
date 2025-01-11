@@ -1,92 +1,45 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
 import api from '../utils/axios'
 import { IUsuario } from '../interfaces/usuarioInterface'
 
-export const useUsuarioStore = defineStore('usuarioStore', () => {
-    const usuario = ref({})
-    const token = ref(localStorage.getItem("token") || null)
-    const isAuthenticated = ref(!!token.value)
-
-    // Crear un usuario
-    const createUsuario = async (username: string, password: string) => {
-        try {
-            const usuarioItem: IUsuario = {
-                username: username,
-                password: password
-            }
-            const response = await api.post('/usuario/create', usuarioItem)
-
-            console.log('response createUsuario', response)
-
-            if (response.data.result) {
-                return response.data
-            } else {
-                throw new Error(response.data.message)
-            }
-        } catch (error) {
-            // throw new Error(error.response?.data?.message || 'Error al crear el usuario')
-            console.error('Error fetching eventos: ', error)
-        }
-    }
-
-    const loginUsuario = async (username: string, password: string) => {
-        try {
-            const usuarioItem: IUsuario = {
-                username: username,
-                password: password
-            }
-            const response = await api.post('/usuario/login', usuarioItem)
-            if (response.data.token) {
-                token.value = response.data.token;
-                isAuthenticated.value = true;
-                usuario.value = { username, token: response.data.token };
-                localStorage.setItem('token', token.value as string);
-                return response.data;
-            } else {
-                throw new Error(response.data.message);
-            }
-        } catch (error) {
-            console.error('Error fetching eventos: ', error)
-        }
-    }
-
-    const verifyToken = async () => {
-        if (!token.value) return false;
-
-        try {
-            const response = await api.get('/usuario/verify', {
-                headers: {
-                    Authorization: `Bearer ${token.value}`
+export const useUsuarioStore = defineStore('usuarioStore', {
+    state: () => ({
+        usuarios: [] as IUsuario[],
+        usuario: null,
+        loading: false,
+        error: null as string | null,
+        message: ''
+    }),
+    actions: {
+        async fetchUsuarios() {
+            this.loading = true
+            this.error = null
+            try {
+                const response = await api.get('/usuario')
+                if (response.data.result) {
+                    const usuarios = response.data.data
+                    this.usuarios = usuarios
                 }
-            })
-
-            if (response.data.valid) {
-                return true
-            } else {
-                logout();
-                return false
+            } catch (error) {
+                console.error('Error fetching usuarios: ', error)
+            } finally {
+                this.loading = false
             }
-        } catch (error) {
-            logout()
-            return false
+        },
+        async getUsuarioById(id: number) {
+            try {
+                const response = await api.get(`/usuario/${id}`)
+                if (response.data.result) {
+                    this.usuarios = response.data.data
+                } else {
+                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                }
+            } catch (error) {
+                this.message = 'Error al obtener el usuario'
+                console.error('Error al obtener el usuario: ', error)
+            } finally {
+                this.loading = false
+            }
         }
-    }
-
-    const logout = () => {
-        usuario.value = {}
-        token.value = null
-        isAuthenticated.value = false
-        localStorage.removeItem('token')
-    }
-
-    return {
-        usuario,
-        token,
-        isAuthenticated,
-        createUsuario,
-        loginUsuario,
-        verifyToken,
-        logout
     }
 })
