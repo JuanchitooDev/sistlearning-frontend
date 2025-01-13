@@ -1,7 +1,7 @@
 <template>
   <nav class="bg-gray-800 p-4">
     <ul class="flex space-x-4">
-      <li>
+      <!-- <li>
         <router-link to="/" class="text-white hover:text-gray-400"
           >Inicio</router-link
         >
@@ -30,17 +30,17 @@
         <router-link to="/alumno" class="text-white hover:text-gray-400"
           >Alumno</router-link
         >
-      </li>
+      </li> -->
       <li>
         <router-link to="/usuario" class="text-white hover:text-gray-400"
           >Usuario</router-link
         >
       </li>
-      <li>
+      <!-- <li>
         <router-link to="/certificado" class="text-white hover:text-gray-400"
           >Certificado</router-link
         >
-      </li>
+      </li> -->
       <li>
         <button
           @click="authStore.logout()"
@@ -54,12 +54,16 @@
 </template>
 
 <script>
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/stores';
 
 export default {
   name: 'Navbar',
-  setup(props, { emit }) {
+  setup() {
     const authStore = useAuthStore();
+
+    return {
+      authStore
+    }
   },
 };
 </script>

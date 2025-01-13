@@ -1,31 +1,25 @@
 <template>
-  <div class="flex">
-    <Sidebar />
-    <div class="flex-1">
-      <Toolbar :toggleSidebar="toggleSidebar" />
+  <div class="app-container" :class="authStore.usuario && 'bg-light'">
+    <Navbar />
+    <div class="container pt-4 pb-4">
       <router-view />
     </div>
   </div>
 </template>
-  
+
 <script>
-import Sidebar from './components/sistema/Sidebar.vue';
-import Toolbar from './components/sistema/Toolbar.vue';
+import { Navbar } from '@/components';
+import { useAuthStore } from '@/stores';
 
 export default {
   name: 'App',
   components: {
-    Sidebar,
-    Toolbar,
+    Navbar,
   },
-  methods: {
-    toggleSidebar() {
-      this.$refs.sidebar.toggleSidebar();
-    },
+  setup() {
+    const authStore = useAuthStore();
   },
 };
 </script>
-  
-<style>
-</style>
-  
+
+<style></style>

@@ -1,7 +1,7 @@
-import { Layout, List } from '@/views/users'
+import { Layout, List } from '@/views/usuarios'
 
 export default {
-    path: '/users',
+    path: '/usuarios',
     component: Layout,
     children: [
         { path: '', component: List }

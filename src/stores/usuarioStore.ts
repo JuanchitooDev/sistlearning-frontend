@@ -2,43 +2,56 @@ import { defineStore } from 'pinia'
 import api from '../utils/axios'
 import { IUsuario } from '../interfaces/usuarioInterface'
 
-export const useUsuarioStore = defineStore('usuarioStore', {
+export const useUsuarioStore = defineStore({
+    id: 'users',
     state: () => ({
-        usuarios: [] as IUsuario[],
-        usuario: null,
-        loading: false,
-        error: null as string | null,
-        message: ''
+        usuarios: {},
+        usuario: {}
     }),
     actions: {
-        async fetchUsuarios() {
-            this.loading = true
-            this.error = null
+        async register(username: string, password: string) {
+            try {
+                const usuarioItem: IUsuario = {
+                    username,
+                    password
+                }
+                const response = await api.post('/auth/register', usuarioItem)
+                console.log('response create usuario', response)
+
+                if (response.data.result) {
+                    this.usuario = response.data.data
+                } else {
+                    throw new Error(response.data.error)
+                }
+            } catch (error) {
+                console.error('Error al crear al usuario', error)
+                throw error
+            }
+        },
+        async getAll() {
+            this.usuarios = { loading: false }
             try {
                 const response = await api.get('/usuario')
+                console.log('response getAll usuario', response)
                 if (response.data.result) {
                     const usuarios = response.data.data
                     this.usuarios = usuarios
                 }
             } catch (error) {
                 console.error('Error fetching usuarios: ', error)
-            } finally {
-                this.loading = false
+                this.usuarios = { error }
             }
         },
-        async getUsuarioById(id: number) {
+        async getById(id: number) {
+            this.usuario = { loading: true }
             try {
                 const response = await api.get(`/usuario/${id}`)
+                console.log('response getById', response)
                 if (response.data.result) {
-                    this.usuarios = response.data.data
-                } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.usuario = response.data.data
                 }
             } catch (error) {
-                this.message = 'Error al obtener el usuario'
-                console.error('Error al obtener el usuario: ', error)
-            } finally {
-                this.loading = false
+                this.usuario = { error }
             }
         }
     }

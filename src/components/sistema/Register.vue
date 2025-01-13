@@ -2,7 +2,7 @@
   <div class="card m-3">
     <h4 class="card-header">Register</h4>
     <div class="card-body">
-      <form @submit.prevent="submitForm">
+      <form @submit.prevent="register">
         <div class="grid grid-cols-2 gap-4">
           <div class="mb-4">
             <label
@@ -58,13 +58,29 @@
 </template>
 
 <script>
-import { useUsuarioStore } from '@/stores'
-import { router } from '@/router'
+import { useUsuarioStore } from '@/stores';
+import { router } from '@/router';
 
 export default {
-    setup(props, { emit }) {
-        const usuariosStore = useUsuarioStore();
-        
+  setup() {
+    const usuarioStore = useUsuarioStore();
+
+    const register = async () => {
+      try {
+        const response = await usuarioStore.register(
+          username.value,
+          password.value
+        );
+        console.log('response register usuario', response);
+        await router.push('/account/login');
+      } catch (error) {
+        console.log('error creating usuario', error);
+      }
+    };
+
+    return {
+      register
     }
-}
+  },
+};
 </script>

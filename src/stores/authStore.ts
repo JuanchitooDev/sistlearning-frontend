@@ -1,71 +1,44 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import api from '../utils/axios'
-import { IUsuario } from '../interfaces/usuarioInterface'
 import { router } from '@/router'
+import { IUsuario } from '../interfaces/usuarioInterface'
+import api from '../utils/axios'
 
-export const useAuthStore = defineStore('authStore', () => {
-    const user = ref(null)
-    const token = ref(null)
-    const isAuthenticated = ref(false)
-    const returnUrl = ref(null)
+export const useAuthStore = defineStore({
+    id: 'auth',
+    state: () => ({
+        usuario: null,
+        returnUrl: null as string | null
+    }),
+    actions: {
+        async login(username: string, password: string) {
+            try {
+                const usuarioItem: IUsuario = {
+                    username,
+                    password
+                }
 
-    const login = async (username: string, password: string) => {
-        try {
-            const usuarioItem: IUsuario = {
-                username,
-                password
+                const response = await api.post('/auth/login', usuarioItem)
+
+                console.log('response login usuario', response)
+
+                if (response.status == 200) {
+                    const usuario = response.data.data
+                    this.usuario = usuario
+
+                    localStorage.setItem('usuario', JSON.stringify(usuario))
+
+                    router.push(this.returnUrl || '/')
+                }
+
+            } catch (error) {
+                console.error('Error de autenticación: ', error)
+                throw error;
             }
-
-            const response = await api.post('/auth/login', usuarioItem)
-
-            console.log('response login usuario', response)
-
-            if (response.data.result) {
-                token.value = response.data.token
-                isAuthenticated.value = true
-                localStorage.setItem('token', String(token.value))
-                router.push(returnUrl.value || '/')
-            } else {
-                throw new Error(response.data.message)
-            }
-        } catch (error) {
-            console.error('Error de autenticación: ', error)
-            throw error;
+        },
+        logout() {
+            this.usuario = null
+            localStorage.removeItem('usuario')
+            router.push('/account/login')
         }
-    }
-
-    const register = async (username: string, password: string) => {
-        try {
-            const usuarioItem: IUsuario = {
-                username,
-                password
-            }
-            const response = await api.post('/auth/register', usuarioItem)
-            console.log('response create usuario', response)
-
-            if (response.data.result) {
-                user.value = response.data.data
-            } else {
-                throw new Error(response.data.error)
-            }
-        } catch (error) {
-            console.error('Error al crear al usuario', error)
-            throw error
-        }
-    }
-
-    const logout = () => {
-        user.value = null
-        token.value = null
-        isAuthenticated.value = false
-        localStorage.removeItem('token')
-        router.push('/account/login')
-    }
-
-    return {
-        login,
-        register,
-        logout
     }
 })

@@ -14,12 +14,12 @@ export const router = createRouter({
     ]
 })
 
-router.beforeEach(async(to) => {
+router.beforeEach(async (to) => {
     const publicPages = ['/account/login', '/account/register']
     const authRequired = !publicPages.includes(to.path)
     const authStore = useAuthStore()
 
-    if (authRequired && !authStore.user) {
+    if (authRequired && !authStore.usuario) {
         authStore.returnUrl = to.fullPath
         return '/account/login'
     }

@@ -9,11 +9,11 @@
 </template>
 
 <script>
-import { useAuthStore } from '@/stores'
-import { router } from '@/router'
+import { useAuthStore } from '@/stores';
+import { router } from '@/router';
 
-const authStore = useAuthStore()
-if (authStore.user) {
-    router.push('/')
+const authStore = useAuthStore();
+if (authStore.usuario) {
+  router.push('/');
 }
 </script>
