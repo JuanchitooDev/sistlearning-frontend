@@ -1,22 +1,3 @@
-// import { createApp } from 'vue';
-// import pinia from './stores';
-
-// import App from './App.vue';
-// import router from './router';
-// import './assets/tailwind.css';
-// import axios from 'axios';
-
-// const app = createApp(App);
-// app.use(pinia);
-// app.use(router);
-
-// const token = localStorage.getItem('token')
-// if (token) {
-//     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-// }
-
-// app.mount('#app');
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 

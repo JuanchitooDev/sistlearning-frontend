@@ -12,8 +12,13 @@
 import { useAuthStore } from '@/stores';
 import { router } from '@/router';
 
-const authStore = useAuthStore();
-if (authStore.usuario) {
-  router.push('/');
-}
+export default {
+  name: 'Layout',
+  setup() {
+    const authStore = useAuthStore();
+    if (authStore.usuario) {
+      router.push('/');
+    }
+  },
+};
 </script>

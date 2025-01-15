@@ -17,15 +17,22 @@ export const useAuthStore = defineStore({
                     password
                 }
 
+                console.log('usuarioItem', usuarioItem)
+
                 const response = await api.post('/auth/login', usuarioItem)
 
                 console.log('response login usuario', response)
 
                 if (response.status == 200) {
-                    const usuario = response.data.data
+                    const token = response.data.token
+                    const usuario = response.data.usuario
+                    const dataLogin = {
+                        token,
+                        usuario
+                    }
                     this.usuario = usuario
 
-                    localStorage.setItem('usuario', JSON.stringify(usuario))
+                    localStorage.setItem('auth', JSON.stringify(dataLogin))
 
                     router.push(this.returnUrl || '/')
                 }
@@ -37,7 +44,7 @@ export const useAuthStore = defineStore({
         },
         logout() {
             this.usuario = null
-            localStorage.removeItem('usuario')
+            localStorage.removeItem('auth')
             router.push('/account/login')
         }
     }
