@@ -11,8 +11,8 @@
 </template>
 
 <script>
-import Sidebar from './components/sistema/Sidebar.vue';
-import Toolbar from './components/sistema/Toolbar.vue';
+import Sidebar from './components/sistema/__Sidebar.vue';
+import Toolbar from './components/sistema/__Toolbar.vue';
 
 export default {
   components: {

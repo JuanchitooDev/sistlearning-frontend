@@ -34,7 +34,7 @@ export const useAuthStore = defineStore({
 
                     localStorage.setItem('auth', JSON.stringify(dataLogin))
 
-                    router.push(this.returnUrl || '/')
+                    // router.push(this.returnUrl || '/')
                 }
 
             } catch (error) {
@@ -45,7 +45,7 @@ export const useAuthStore = defineStore({
         logout() {
             this.usuario = null
             localStorage.removeItem('auth')
-            router.push('/account/login')
+            // router.push('/account/login')
         }
     }
 })

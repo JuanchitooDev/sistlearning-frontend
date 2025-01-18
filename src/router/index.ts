@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores'
 import { Home } from '@/views'
 import accountRoutes from './account.routes'
 import usersRoutes from './users.routes'
+import tipoEventoRoutes from './tipoevento.routes'
 
 export const router = createRouter({
     history: createWebHistory('/sistema'),
@@ -10,6 +11,7 @@ export const router = createRouter({
         { path: '/', component: Home },
         { ...accountRoutes },
         { ...usersRoutes },
+        { ...tipoEventoRoutes },
         { path: '/:pathMatch(.*)*', redirect: '/' }
     ]
 })

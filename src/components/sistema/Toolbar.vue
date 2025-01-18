@@ -1,38 +1,39 @@
 <template>
-  <div class="bg-gray-800 text-white flex justify-between items-center p-4">
-    <div class="flex items-center space-x-4">
-      <button @click="toggleSidebar" class="lg:hidden">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          class="h-6 w-6"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M4 6h16M4 12h16M4 18h16"
-          ></path>
-        </svg>
-      </button>
-      <span class="text-xl">Mi Aplicación</span>
-    </div>
-    <!-- Puedes agregar más acciones globales aquí -->
+  <div class="bg-gray-800 text-white p-4 flex justify-between items-center">
+    <span class="text-xl">{{ pageTitle }}</span>
+    <button
+      @click="logout"
+      class="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
+    >
+      Cerrar Sesión
+    </button>
   </div>
 </template>
-  
-  <script>
+
+<script>
+import { computed } from 'vue'
+import { useAuthStore } from '@/stores'
+import { useRouter } from 'vue-router'
 export default {
-  name: 'Toolbar',
-  props: {
-    toggleSidebar: Function,
-  },
-};
+    name: 'Toolbar',
+    setup() {
+        const authStore = useAuthStore()
+        const router = useRouter()
+
+        const pageTitle = computed(() => {
+            return router.currentRoute.value.meta.title || 'Página Principal'
+        })
+
+        const logout = () => {
+            authStore.logout()
+            router.push('/account/login')
+        }
+
+        return {
+            pageTitle,
+            logout
+        }
+
+    }
+}
 </script>
-  
-  <style scoped>
-/* Estilos adicionales si los necesitas */
-</style>
-  

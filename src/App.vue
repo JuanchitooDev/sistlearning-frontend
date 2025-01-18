@@ -1,6 +1,6 @@
 <template>
   <div class="app-container" :class="authStore.usuario && 'bg-light'">
-    <!-- <Navbar /> -->
+    <Navbar />
     <div class="container pt-4 pb-4">
       <router-view />
     </div>
