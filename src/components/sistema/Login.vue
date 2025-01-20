@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h2 class="text-2xl font-semibold text-center mb-4">Iniciar Sesión</h2>
     <form @submit.prevent="login">
       <div class="mb-4">
         <label for="username" class="block text-gray-700">Username</label>

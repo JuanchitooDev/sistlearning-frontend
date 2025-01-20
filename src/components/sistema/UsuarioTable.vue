@@ -3,13 +3,6 @@
     <div class="flex items-center justify-between mb-4">
       <h1 class="text-2xl">Usuario</h1>
     </div>
-    <!-- <div class="mb-4">
-      <input
-        type="text"
-        placeholder="Criterio de búsqueda"
-        class="p-2 border border-gray-300 rounded"
-      />
-    </div> -->
     <table class="min-w-full bg-white border border-gray-300">
       <thead>
         <tr class="bg-gray-200">
@@ -99,97 +92,23 @@
         </tr>
       </tbody>
     </table>
-
-    <!-- Paginación -->
-    <!-- <div class="mt-4 flex justify-between items-center">
-      <button
-        @click="prevPage"
-        :disabled="currentPage === 1"
-        class="px-4 py-2 bg-gray-300 rounded"
-      >
-        Anterior
-      </button>
-      <span>Página {{ currentPage }} de {{ totalPages }}</span>
-      <button
-        @click="nextPage"
-        :disabled="currentPage === totalPages"
-        class="px-4 py-2 bg-gray-300 rounded"
-      >
-        Siguiente
-      </button>
-    </div> -->
   </div>
 </template>
 
 <script>
-// import { computed, ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useUsuarioStore } from '@/stores';
 
 export default {
   setup() {
     const usuarioStore = useUsuarioStore();
-    // const usuario = ref({
-    //   id: null,
-    //   username: '',
-    //   password: '',
-    // });
-    // const usuarioToDelete = ref(null);
 
     const { usuarios } = storeToRefs(usuarioStore);
 
-    usuarioStore.getAll()
-
-    // const usuarios = computed(() => usuarioStore.usuarios);
-
-    // const message = computed(() => usuarioStore.message);
-
-    // const searchQuery = ref('');
-
-    // const currentPage = ref(1);
-
-    // const perPage = 10;
-
-    // const filteredUsuarios = computed(() => {
-    //   const query = searchQuery.value.toLowerCase();
-    //   currentPage.value = 1;
-    //   return usuarios.value.filter((usuario) => {
-    //     return usuario.username.toLowerCase().includes(query);
-    //   });
-    // });
-
-    // const totalPages = computed(() => {
-    //   return Math.ceil(filteredUsuarios.value.length / perPage);
-    // });
-
-    // const paginatedUsuarios = computed(() => {
-    //   const start = (currentPage.value - 1) * perPage;
-    //   const end = start + perPage;
-    //   return filteredUsuarios.value.slice(start, end);
-    // });
-
-    // const prevPage = () => {
-    //   if (currentPage.value > 1) currentPage.value--;
-    // };
-
-    // const nextPage = () => {
-    //   if (currentPage.value < totalPages.value) currentPage.value++;
-    // };
-
-    // onMounted(() => {
-    //   eventoStore.fetchEventos();
-    // });
+    usuarioStore.getAll();
 
     return {
       usuarios,
-      // searchQuery,
-      // filteredUsuarios,
-      // currentPage,
-      // totalPages,
-      // paginatedUsuarios,
-      // prevPage,
-      // nextPage,
-      // usuario
     };
   },
 };

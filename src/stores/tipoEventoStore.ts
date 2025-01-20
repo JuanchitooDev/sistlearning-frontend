@@ -16,6 +16,7 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
             this.error = null
             try {
                 const response = await api.get('/tipo-evento')
+                console.log('fetchTipoEventos', response)
                 if (response.data.result) {
                     const tipos = response.data.data
                     if (estado) {
