@@ -1,18 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/stores'
-// import { Home } from '@/views'
-import { Dashboard } from '@/views'
+import { Home } from '@/views'
 import accountRoutes from './account.routes'
 import usersRoutes from './users.routes'
-import tipoEventoRoutes from './tipoevento.routes'
 
 export const router = createRouter({
     history: createWebHistory('/sistema'),
     routes: [
-        { path: '/dashboard', name: 'Dashboard', component: Dashboard, meta: { requiresAuth: true } },
+        { path: '/', component: Home },
         { ...accountRoutes },
         { ...usersRoutes },
-        { ...tipoEventoRoutes },
         { path: '/:pathMatch(.*)*', redirect: '/' }
     ]
 })

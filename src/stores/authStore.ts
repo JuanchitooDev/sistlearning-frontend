@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { router } from '@/router'
-// import { useRouter } from 'vue-router'
 import { IUsuario } from '../interfaces/usuarioInterface'
 import api from '../utils/axios'
 
@@ -35,15 +34,7 @@ export const useAuthStore = defineStore({
 
                     localStorage.setItem('auth', JSON.stringify(dataLogin))
 
-                    router.push(this.returnUrl || '/dashboard')
-
-                    // const router = useRouter()
-                    // if (!this.usuario) {
-                    //     router.push('/account/login')  // Si el usuario no está autenticado, redirige al login
-                    // } else {
-                    //     // Redirige a la ruta de destino o al Dashboard
-                    //     router.push(this.returnUrl || '/dashboard')
-                    // }
+                    router.push(this.returnUrl || '/')
                 }
 
             } catch (error) {
@@ -55,8 +46,6 @@ export const useAuthStore = defineStore({
             this.usuario = null
             localStorage.removeItem('auth')
             router.push('/account/login')
-            // const router = useRouter()
-            // router.push('/account/login')
         }
     }
 })
