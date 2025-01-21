@@ -3,8 +3,8 @@
     <TipoEventoTable />
   </div>
 </template>
-    
-  <script>
+
+<script>
 import TipoEventoTable from '@/components/sistema/TipoEventoTable.vue';
 
 export default {
