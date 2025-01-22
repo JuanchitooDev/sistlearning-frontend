@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import TipoEventoTable from '@/components/sistema/TipoEventoTable.vue';
+import TipoEventoTable from '@/components/sistema/tipo-evento/TipoEventoTable.vue';
 
 export default {
   components: {

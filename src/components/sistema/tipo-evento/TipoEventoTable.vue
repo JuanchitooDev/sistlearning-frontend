@@ -145,10 +145,10 @@
 
 <script>
 import { computed, ref, onMounted } from 'vue';
-import { useTipoEventoStore } from '../../stores/tipoEventoStore';
+import { useTipoEventoStore } from '@/stores/tipoEventoStore';
 import TipoEventoForm from './TipoEventoForm.vue';
-import ConfirmDialog from '../common/ConfirmDialog.vue';
-import Notification from '../common/Notification.vue';
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
+import Notification from '@/components/common/Notification.vue';
 
 export default {
   components: {
