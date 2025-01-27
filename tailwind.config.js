@@ -10,7 +10,8 @@ module.exports = {
   darkMode: 'class',
   theme: {
     fontFamily: {
-      montserrat: ['Montserrat', 'sans-serif']
+      montserrat: ['Montserrat', 'sans-serif'],
+      satoshi: ['Satoshi', 'sans-serif']
     },
     screens: {
       '2xsm': '375px',

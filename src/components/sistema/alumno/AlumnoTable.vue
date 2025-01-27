@@ -1,209 +1,117 @@
 <template>
-  <div class="p-4">
+  <div
+    class="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
     <div class="flex items-center justify-between mb-4">
-      <h1 class="text-2xl">Alumno</h1>
-      <button
-        @click="openModal"
-        class="bg-blue-500 text-white p-2 rounded flex items-center"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="w-4 h-4 mr-1"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fill-rule="evenodd"
+      <h4 class="mb-6 text-sm font-semibold text-black dark:text-white">Listado</h4>
+      <button @click="openModal" class="bg-blue-500 text-white p-2 rounded flex items-center text-xs">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
             d="M10 2a1 1 0 011 1v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H3a1 1 0 110-2h6V3a1 1 0 011-1z"
-            clip-rule="evenodd"
-          />
+            clip-rule="evenodd" />
         </svg>
         Agregar
       </button>
     </div>
-    <!-- Filtro por Tipo de Documento -->
-    <div class="mb-4 flex items-center space-x-4">
-      <label for="tipoDocumento" class="font-semibold"
-        >Tipo de Documento:</label
-      >
-      <select
-        v-model="selectedTipoDocumento"
-        id="tipoDocumento"
-        class="p-2 border border-gray-300 rounded"
-      >
-        <option value="">Todos</option>
-        <option v-for="tipo in tiposDocumentos" :key="tipo.id" :value="tipo.id">
-          {{ tipo.nombre }}
-        </option>
-      </select>
-      <input
-        type="text"
-        v-model="searchQuery"
-        placeholder="Criterio de búsqueda"
-        class="p-2 border border-gray-300 rounded"
-      />
-    </div>
-    <table class="min-w-full bg-white border border-gray-300">
-      <thead>
-        <tr class="bg-gray-200">
-          <th class="border px-4 py-2">ID</th>
-          <th class="border px-4 py-2">Tipo de documento</th>
-          <th class="border px-4 py-2">Número de documento</th>
-          <th class="border px-4 py-2">Apellidos</th>
-          <th class="border px-4 py-2">Nombres</th>
-          <th class="border px-4 py-2">Estado</th>
-          <th class="border px-4 py-2">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-if="paginatedAlumnos.length === 0">
-          <td colspan="7" class="text-center pt-2 pb-2">
-            Alumnos no registrados
-          </td>
-        </tr>
-        <tr v-for="alumno in paginatedAlumnos" :key="alumno.id">
-          <td class="border px-4 py-2">{{ alumno.id }}</td>
-          <td class="border px-4 py-2">
+    <div class="flex flex-col">
+      <div class="grid grid-cols-7 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-7">
+        <div class="p-2.5 text-center xl:p-5">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">ID</h5>
+        </div>
+        <div class="p-2.5 text-center xl:p-5">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">Tipo de documento</h5>
+        </div>
+        <div class="p-2.5 text-center xl:p-5">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">Número de documento</h5>
+        </div>
+        <div class="p-2.5 text-center sm:block xl:p-5">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">Apellidos</h5>
+        </div>
+        <div class="p-2.5 text-center sm:block xl:p-5">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">Nombres</h5>
+        </div>
+        <div class="p-2.5 text-center sm:block xl:p-5">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">Estado</h5>
+        </div>
+        <div class="p-2.5 text-center sm:block xl:p-5">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">Acciones</h5>
+        </div>
+      </div>
+
+      <div v-if="alumnos.length == 0">
+        <div class="flex items-center justify-center p-2.5 xl:p-5">
+          <p class="text-black dark:text-white">Alumnos no registrados</p>
+        </div>
+      </div>
+      <div v-for="(alumno, index) in alumnos" :key="alumno.id" :class="`grid grid-cols-7 sm:grid-cols-7 ${index === alumnos.length - 1 ? '' : 'border-b border-stroke dark:border-strokedark'
+        }`">
+        <div class="flex items-center justify-center p-2.5 xl:p-5">
+          <p class="text-black dark:text-white text-xs xsm:text-sm">{{ alumno.id }}</p>
+        </div>
+        <div class="flex items-center justify-center p-2.5 xl:p-5">
+          <p class="text-black dark:text-white text-xs xsm:text-sm">
             {{
               alumno.TipoDocumento
                 ? alumno.TipoDocumento.abreviatura
                 : 'Sin Tipo Documento'
             }}
-          </td>
-          <td class="border px-4 py-2">
-            {{ alumno.numero_documento }}
-          </td>
-          <td class="border px-4 py-2">
-            {{ alumno.apellido_paterno }} {{ alumno.apellido_materno }}
-          </td>
-          <td class="border px-4 py-2">{{ alumno.nombres }}</td>
-          <td class="border px-4 py-2">
-            <svg
-              v-if="alumno.estado"
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-green-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            <svg
-              v-else
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-red-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-          </td>
-          <td class="border px-4 py-2 flex space-x-2">
-            <button
-              @click="editAlumno(alumno)"
-              class="text-blue-500 hover:text-blue-700"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M16 4l4 4-8 8H8v-4l8-8z"
-                />
-              </svg>
-            </button>
-            <button
-              @click="requestDeleteAlumno(alumno.id)"
-              class="text-red-500 hover:text-red-700"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
 
-    <!-- Paginación -->
-    <div class="mt-4 flex justify-between items-center">
-      <button
-        @click="prevPage"
-        :disabled="currentPage === 1"
-        class="px-4 py-2 bg-gray-300 rounded"
-      >
-        Anterior
-      </button>
-      <span>Página {{ currentPage }} de {{ totalPages }}</span>
-      <button
-        @click="nextPage"
-        :disabled="currentPage === totalPages"
-        class="px-4 py-2 bg-gray-300 rounded"
-      >
-        Siguiente
-      </button>
+          </p>
+        </div>
+        <div class="flex items-center justify-center p-2.5 xl:p-5">
+          <p class="text-black dark:text-white text-xs xsm:text-sm">{{ alumno.numero_documento }}</p>
+        </div>
+        <div class="flex items-center justify-center p-2.5 xl:p-5">
+          <p class="text-black dark:text-white text-xs xsm:text-sm">{{ alumno.apellido_paterno }} {{ alumno.apellido_materno }}</p>
+        </div>
+        <div class="flex items-center justify-center p-2.5 xl:p-5">
+          <p class="text-black dark:text-white text-xs xsm:text-sm">{{ alumno.nombres }}</p>
+        </div>
+        <div class="items-center justify-center p-2.5 sm:flex xl:p-5">
+          <svg v-if="alumno.estado" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+        </div>
+        <div class="items-center justify-center p-2.5 sm:flex xl:p-5">
+          <button @click="editAlumno(alumno)" class="text-blue-500 hover:text-blue-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4l4 4-8 8H8v-4l8-8z" />
+            </svg>
+          </button>
+          <button @click="requestDeleteAlumno(alumno.id)" class="text-red-500 hover:text-red-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <AlumnoForm
-      :isVisible="isModalOpen"
-      :onClose="closeModal"
-      :alumno="alumno"
-      @alumnoCreated="handleAlumnoCreated"
-      @alumnoUpdated="handleAlumnoUpdated"
-    />
+    <AlumnoForm :isVisible="isModalOpen" :onClose="closeModal" :alumno="alumno" @alumnoCreated="handleAlumnoCreated"
+      @alumnoUpdated="handleAlumnoUpdated" />
 
-    <ConfirmDialog
-      :isVisible="isConfirmVisible"
-      title="Confirmar Eliminación"
-      message="¿Estás seguro de que deseas eliminar este alumno?"
-      @confirmed="deleteAlumno"
-      @canceled="isConfirmVisible = false"
-    />
+    <ConfirmDialog :isVisible="isConfirmVisible" title="Confirmar Eliminación"
+      message="¿Estás seguro de que deseas eliminar este alumno?" @confirmed="deleteAlumno"
+      @canceled="isConfirmVisible = false" />
 
-    <Notification
-      v-if="notificationMessage"
-      :message="notificationMessage"
-      :duration="4000"
-      @hide="notificationMessage = ''"
-    ></Notification>
+    <Notification v-if="notificationMessage" :message="notificationMessage" :duration="4000"
+      @hide="notificationMessage = ''"></Notification>
   </div>
 </template>
 
 <script>
 import { computed, ref, onMounted } from 'vue';
-import { useAlumnoStore } from '../../stores/alumnoStore';
+import { useAlumnoStore } from '@/stores';
+import { useTipoDocumentoStore } from '@/stores';
 import AlumnoForm from './AlumnoForm.vue';
-import ConfirmDialog from '../common/ConfirmDialog.vue';
-import Notification from '../common/Notification.vue';
-import { useTipoDocumentoStore } from '@/stores/tipoDocumentoStore';
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
+import Notification from '@/components/common/Notification.vue';
 
 export default {
   components: {
@@ -264,7 +172,7 @@ export default {
       return filtered;
     });
 
-    // const alumnos = computed(() => alumnoStore.alumnos);
+    const alumnos = computed(() => alumnoStore.alumnos);
     // const alumnos = computed(() => {
     //   let filtered = alumnoStore.alumnos;
     //   if (selectedTipoDocumento.value) {
@@ -320,8 +228,8 @@ export default {
       const fechaNacimiento = alumnoEdit.fecha_nacimiento_str
         ? alumnoEdit.fecha_nacimiento_str
         : alumnoEdit.fecha_nacimiento
-        ? alumnoEdit.fecha_nacimiento.slice(0, 10)
-        : null;
+          ? alumnoEdit.fecha_nacimiento.slice(0, 10)
+          : null;
 
       alumno.value = { ...alumnoEdit };
       alumno.value.fecha_nacimiento = fechaNacimiento;
@@ -361,6 +269,7 @@ export default {
     });
 
     return {
+      alumnos,
       filteredAlumnos,
       selectedTipoDocumento,
       tiposDocumentos,

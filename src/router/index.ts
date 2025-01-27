@@ -1,6 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import Dashboard from "@/views/Dashboard/Dashboard.vue"
+import TipoEventoView from "@/views/TipoEvento/ListView.vue"
+import EventoView from "@/views/Evento/ListView.vue"
+import AlumnoView from "@/views/Alumno/ListView.vue"
+import CertificadoView from "@/views/Certificado/ListView.vue"
+import ReporteView from "@/views/Reporte/CardsView.vue"
 
 const routes = [
     {
@@ -9,6 +14,46 @@ const routes = [
         component: Dashboard,
         meta: {
             title: 'Dashboard'
+        }
+    },
+    {
+        path: '/tipo-evento',
+        name: 'tipoEvento',
+        component: TipoEventoView,
+        meta: {
+            title: 'Tipo de evento'
+        }
+    },
+    {
+        path: '/evento',
+        name: 'evento',
+        component: EventoView,
+        meta: {
+            title: 'Evento'
+        }
+    },
+    {
+        path: '/alumno',
+        name: 'alumno',
+        component: AlumnoView,
+        meta: {
+            title: 'Alumno'
+        }
+    },
+    {
+        path: '/certificado',
+        name: 'certificado',
+        component: CertificadoView,
+        meta: {
+            title: 'Certificado'
+        }
+    },
+    {
+        path: '/reporte',
+        name: 'reporte',
+        component: ReporteView,
+        meta: {
+            title: 'Reporte'
         }
     }
 ]
@@ -28,7 +73,6 @@ export const router = createRouter({
 // // import accountRoutes from './account.routes'
 // import userRoutes from './user.routes'
 // import tipoEventoRoutes from './tipoevento.routes'
-
 // export const router = createRouter({
 //     history: createWebHistory('/sistema'),
 //     routes: [

@@ -3,8 +3,14 @@
 </template>
 
 <script>
-import { RouterView } from 'vue-router'
+import { RouterView } from 'vue-router';
 export default {
-  name: 'App'
-}
+  name: 'App',
+
+  setup() {
+    return {
+      RouterView,
+    };
+  },
+};
 </script>
