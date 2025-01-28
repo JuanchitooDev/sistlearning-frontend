@@ -3,14 +3,14 @@
     class="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
     <div class="flex items-center justify-between mb-4">
       <h4 class="mb-6 text-sm font-semibold text-black dark:text-white">Listado</h4>
-      <button @click="openModal" class="bg-blue-500 text-white p-2 rounded flex items-center text-xs">
+      <a href="/sistema/tipo-evento/nuevo" class="bg-blue-500 text-white p-2 rounded flex items-center text-xs">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd"
             d="M10 2a1 1 0 011 1v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H3a1 1 0 110-2h6V3a1 1 0 011-1z"
             clip-rule="evenodd" />
         </svg>
         Agregar
-      </button>
+      </a>
     </div>
     <div class="flex flex-col">
       <div class="grid grid-cols-3 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-5">
@@ -74,7 +74,7 @@
       </div>
     </div>
 
-    <TipoEventoForm :isVisible="isModalOpen" :onClose="closeModal" :tipoEvento="tipoEvento"
+    <!-- <TipoEventoForm :isVisible="isModalOpen" :onClose="closeModal" :tipoEvento="tipoEvento"
       @tipoEventoCreated="handleTipoEventoCreated" @tipoEventoUpdated="handleTipoEventoUpdated" />
 
     <ConfirmDialog :isVisible="isConfirmVisible" title="Confirmar Eliminación"
@@ -82,80 +82,81 @@
       @canceled="isConfirmVisible = false" />
 
     <Notification v-if="notificationMessage" :message="notificationMessage" :duration="4000"
-      @hide="notificationMessage = ''"></Notification>
+      @hide="notificationMessage = ''"></Notification> -->
   </div>
 </template>
 
 <script>
 import { computed, ref, onMounted } from 'vue';
 import { useTipoEventoStore } from '@/stores';
-import TipoEventoForm from './TipoEventoForm.vue';
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
-import Notification from '@/components/common/Notification.vue';
+// import TipoEventoForm from './TipoEventoForm.vue';
+// import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
+// import Notification from '@/components/common/Notification.vue';
 
 export default {
-  components: {
-    TipoEventoForm,
-    ConfirmDialog,
-    Notification,
-  },
+  // components: {
+  //   TipoEventoForm,
+  //   ConfirmDialog,
+  //   Notification,
+  // },
   setup() {
-    const isConfirmVisible = ref(false);
-    const notificationMessage = ref('');
+    // const isConfirmVisible = ref(false);
+    // const notificationMessage = ref('');
     const tipoEventoStore = useTipoEventoStore();
-    const isModalOpen = ref(false);
-    const tipoEvento = ref({
-      id: null,
-      nombre: '',
-      descripcion: ''
-    });
+    // const isModalOpen = ref(false);
+    // const tipoEvento = ref({
+    //   id: null,
+    //   nombre: '',
+    //   descripcion: ''
+    // });
     const tipoEventoToDelete = ref(null);
 
     const tipos = computed(() => tipoEventoStore.tipos);
 
     // Computed para obtener el mensaje desde el store
-    const message = computed(() => tipoEventoStore.message);
+    // const message = computed(() => tipoEventoStore.message);
 
-    const openModal = () => {
-      tipoEvento.value = { id: null, nombre: '', descripcion: '' }; // Resetea el formulario
-      isModalOpen.value = true;
-    };
+    // const openModal = () => {
+    //   tipoEvento.value = { id: null, nombre: '', descripcion: '' }; // Resetea el formulario
+    //   isModalOpen.value = true;
+    // };
 
-    const closeModal = () => {
-      isModalOpen.value = false;
-    };
+    // const closeModal = () => {
+    //   isModalOpen.value = false;
+    // };
 
     const editTipoEvento = (tipo) => {
-      tipoEvento.value = { ...tipo }; // Cargar los datos del tipo a editar
-      isModalOpen.value = true;
+      console.log('edit tipo', tipo)
+      // tipoEvento.value = { ...tipo }; // Cargar los datos del tipo a editar
+      // isModalOpen.value = true;
     };
 
     const requestDeleteTipoEvento = (id) => {
       tipoEventoToDelete.value = id;
-      isConfirmVisible.value = true;
+      // isConfirmVisible.value = true;
     };
 
     const deleteTipoEvento = async () => {
       if (tipoEventoToDelete.value) {
-        await tipoEventoStore.deleteTipoEvento(tipoEventoToDelete.value);
-        // notificationMessage.value = 'Tipo de evento eliminado correctamente';
-        notificationMessage.value = message;
-        isConfirmVisible.value = false; // Cerrar el diálogo
-        tipoEventoToDelete.value = null; // Resetear el ID a eliminar
+        // await tipoEventoStore.deleteTipoEvento(tipoEventoToDelete.value);
+        // // notificationMessage.value = 'Tipo de evento eliminado correctamente';
+        // notificationMessage.value = message;
+        // isConfirmVisible.value = false; // Cerrar el diálogo
+        // tipoEventoToDelete.value = null; // Resetear el ID a eliminar
       }
     };
 
-    const handleTipoEventoCreated = () => {
-      isModalOpen.value = false;
-      notificationMessage.value = message;
-      tipoEventoStore.fetchTipoEventos(); // Actualiza la lista después de crear
-    };
+    // const handleTipoEventoCreated = () => {
+    //   isModalOpen.value = false;
+    //   notificationMessage.value = message;
+    //   tipoEventoStore.fetchTipoEventos(); // Actualiza la lista después de crear
+    // };
 
-    const handleTipoEventoUpdated = () => {
-      isModalOpen.value = false;
-      notificationMessage.value = message;
-      tipoEventoStore.fetchTipoEventos(); // Actualiza la lista después de editar
-    };
+    // const handleTipoEventoUpdated = () => {
+    //   isModalOpen.value = false;
+    //   notificationMessage.value = message;
+    //   tipoEventoStore.fetchTipoEventos(); // Actualiza la lista después de editar
+    // };
 
     onMounted(() => {
       tipoEventoStore.fetchTipoEventos();
@@ -163,17 +164,17 @@ export default {
 
     return {
       tipos,
-      openModal,
-      closeModal,
+      // openModal,
+      // closeModal,
       editTipoEvento,
-      isModalOpen,
-      tipoEvento,
+      // isModalOpen,
+      // tipoEvento,
       requestDeleteTipoEvento,
-      isConfirmVisible,
+      // isConfirmVisible,
       deleteTipoEvento,
-      handleTipoEventoCreated,
-      handleTipoEventoUpdated,
-      notificationMessage,
+      // handleTipoEventoCreated,
+      // handleTipoEventoUpdated,
+      // notificationMessage,
     };
   }
 }

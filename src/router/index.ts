@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import Dashboard from "@/views/Dashboard/Dashboard.vue"
 import TipoEventoView from "@/views/TipoEvento/ListView.vue"
+import FormTipoEventoView from "@/views/TipoEvento/FormView.vue"
 import EventoView from "@/views/Evento/ListView.vue"
 import AlumnoView from "@/views/Alumno/ListView.vue"
 import CertificadoView from "@/views/Certificado/ListView.vue"
@@ -22,6 +23,14 @@ const routes = [
         component: TipoEventoView,
         meta: {
             title: 'Tipo de evento'
+        }
+    },
+    {
+        path: '/tipo-evento/nuevo',
+        name: 'nuevoTipoEvento',
+        component: FormTipoEventoView,
+        meta: {
+            title: 'Nuevo tipo de evento'
         }
     },
     {
