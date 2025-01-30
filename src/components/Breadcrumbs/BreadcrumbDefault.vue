@@ -3,7 +3,6 @@
         <h2 class="text-title-md2 font-semibold text-black dark:text-white">
             {{ props.pageTitle }}
         </h2>
-
         <nav>
             <ol class="flex items-center gap-2">
                 <li>

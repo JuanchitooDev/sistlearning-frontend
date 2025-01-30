@@ -1,10 +1,7 @@
 <template>
-  <div
-    v-if="isVisible"
+  <div v-if="isVisible"
     class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-300"
-    :class="{ 'opacity-100': isVisible, 'opacity-0': !isVisible }"
-    @click="hideNotification"
-  >
+    :class="{ 'opacity-100': isVisible, 'opacity-0': !isVisible }" @click="hideNotification">
     {{ message }}
   </div>
 </template>

@@ -16,7 +16,6 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
             this.error = null
             try {
                 const response = await api.get('/tipo-evento')
-                console.log('fetchTipoEventos', response)
                 if (response.data.result) {
                     const tipos = response.data.data
                     if (estado) {
@@ -35,7 +34,7 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
             try {
                 const response = await api.get(`/tipo-evento/${id}`)
                 if (response.data.result) {
-                    this.tipos = response.data.data
+                    this.tipoEvento = response.data.data
                 } else {
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
@@ -64,11 +63,7 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
             try {
                 const response = await api.put(`/tipo-evento/${idTipoEvento}`, tipoEvento)
                 if (response.data.result) {
-                    const index = this.tipos.findIndex((tipo) => tipo.id === tipoEvento.id)
-                    if (index !== -1) {
-                        this.tipos[index] = tipoEvento
-                        this.message = response.data.message
-                    }
+                    this.message = response.data.message
                 } else {
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
@@ -90,12 +85,6 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
                 this.message = 'Error al eliminar el tipo de evento'
                 console.error('Error deleting tipo evento: ', error)
             }
-        },
-        setTipoEvento(tipoEvento: any) {
-            this.tipoEvento = tipoEvento
-        },
-        cancelEdit() {
-            this.tipoEvento = null
         }
     }
 })

@@ -27,10 +27,18 @@ const routes = [
     },
     {
         path: '/tipo-evento/nuevo',
-        name: 'nuevoTipoEvento',
+        name: 'newTipoEvento',
         component: FormTipoEventoView,
         meta: {
             title: 'Nuevo tipo de evento'
+        }
+    },
+    {
+        path: '/tipo-evento/editar/:id',
+        name: 'editTipoEvento',
+        component: FormTipoEventoView,
+        meta: {
+            title: 'Editar tipo de evento'
         }
     },
     {

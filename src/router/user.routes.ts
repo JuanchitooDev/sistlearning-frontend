@@ -1,4 +1,4 @@
-import { Layout, List } from '@/views/usuarios'
+import { Layout, List } from '@/views/Usuario'
 
 export default {
     path: '/usuarios',
