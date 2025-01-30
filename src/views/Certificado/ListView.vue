@@ -8,7 +8,7 @@
 <script>
 import { ref } from "vue"
 import DefaultLayout from "@/layouts/DefaultLayout.vue"
-import CertificadoTable from "@/components/sistema/certificado/CertificadoTable.vue"
+import CertificadoTable from "@/components/Sistema/Certificado/CertificadoTable.vue"
 import BreadcrumbDefault from "@/components/Breadcrumbs/BreadcrumbDefault.vue"
 
 export default {

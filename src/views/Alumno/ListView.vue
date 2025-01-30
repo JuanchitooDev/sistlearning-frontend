@@ -8,7 +8,7 @@
 <script>
 import { ref } from "vue"
 import DefaultLayout from "@/layouts/DefaultLayout.vue"
-import AlumnoTable from "@/components/sistema/alumno/AlumnoTable.vue"
+import AlumnoTable from "@/components/Sistema/Alumno/AlumnoTable.vue"
 import BreadcrumbDefault from "@/components/Breadcrumbs/BreadcrumbDefault.vue"
 
 export default {

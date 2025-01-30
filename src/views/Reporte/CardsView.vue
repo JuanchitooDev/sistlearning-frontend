@@ -11,7 +11,7 @@
 import { ref } from "vue"
 import BreadcrumbDefault from "@/components/Breadcrumbs/BreadcrumbDefault.vue"
 import DefaultLayout from "@/layouts/DefaultLayout.vue"
-import CumpleaniosAlumnos from "@/components/sistema/reporte/CumpleaniosAlumnos.vue"
+import CumpleaniosAlumnos from "@/components/Sistema/Reporte/CumpleaniosAlumnos.vue"
 
 export default {
     name: 'CardsView',

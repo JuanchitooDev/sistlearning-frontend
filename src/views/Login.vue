@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import Login from '@/components/sistema/Login.vue';
+import Login from '@/components/Sistema/Auth/Login.vue';
 
 export default {
   components: {

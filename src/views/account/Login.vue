@@ -12,7 +12,7 @@
 <script>
 import { ref } from 'vue';
 import { useAuthStore } from '@/stores';
-import FormLogin from '@/components/sistema/Login.vue';
+import FormLogin from '@/components/Sistema/Login.vue';
 
 export default {
   name: 'Login',

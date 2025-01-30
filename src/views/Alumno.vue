@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import AlumnoTable from '../components/sistema/AlumnoTable.vue';
+import AlumnoTable from '@/components/Sistema/Alumno/AlumnoTable.vue';
 
 export default {
   components: {

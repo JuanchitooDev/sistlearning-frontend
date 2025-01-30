@@ -4,7 +4,7 @@
         <div class="flex justify-center items-center">
             <div class="w-full max-w-3xl">
                 <DefaultCard :cardTitle="cardTitle">
-                    <TipoEventoForm />
+                    <EventoForm />
                 </DefaultCard>
             </div>
         </div>
@@ -16,7 +16,7 @@ import { ref } from "vue";
 import DefaultLayout from "@/layouts/DefaultLayout.vue"
 import DefaultCard from "@/components/Common/DefaultCard.vue"
 import BreadcrumbDefault from "@/components/Breadcrumbs/BreadcrumbDefault.vue"
-import TipoEventoForm from "@/components/Sistema/TipoEvento/TipoEventoForm.vue"
+import EventoForm from "@/components/Sistema/Evento/EventoForm.vue"
 
 export default {
     name: 'FormView',
@@ -24,11 +24,12 @@ export default {
         DefaultLayout,
         DefaultCard,
         BreadcrumbDefault,
-        TipoEventoForm
+        EventoForm
     },
     setup() {
-        const pageTitle = ref("Nuevo tipo de evento")
-        const cardTitle = ref("Nuevo tipo de evento")
+        const pageTitle = ref("Nuevo evento")
+
+        const cardTitle = ref("Nuevo evento")
 
         return {
             pageTitle,

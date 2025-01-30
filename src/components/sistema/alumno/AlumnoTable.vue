@@ -110,8 +110,8 @@ import { computed, ref, onMounted } from 'vue';
 import { useAlumnoStore } from '@/stores';
 import { useTipoDocumentoStore } from '@/stores';
 import AlumnoForm from './AlumnoForm.vue';
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
-import Notification from '@/components/common/Notification.vue';
+import ConfirmDialog from '@/components/Common/ConfirmDialog.vue';
+import Notification from '@/components/Common/Notification.vue';
 
 export default {
   components: {

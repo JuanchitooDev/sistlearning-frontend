@@ -117,8 +117,8 @@
 import { computed, ref, onMounted } from 'vue';
 import { useCertificadoStore } from '@/stores';
 import CertificadoForm from './CertificadoForm.vue';
-import ConfirmDialog from '@/components/common/ConfirmDialog.vue';
-import Notification from '@/components/common/Notification.vue';
+import ConfirmDialog from '@/components/Common/ConfirmDialog.vue';
+import Notification from '@/components/Common/Notification.vue';
 import { formatDate } from '@/utils/date.utils'
 import { useEventoStore } from '@/stores';
 // import { IAlumno } from '@/interfaces/alumnoInterface';

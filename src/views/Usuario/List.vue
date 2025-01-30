@@ -5,7 +5,7 @@
 </template>
   
 <script>
-import UsuarioTable from '@/components/sistema/usuario/UsuarioTable.vue';
+import UsuarioTable from '@/components/Sistema/Usuario/UsuarioTable.vue';
 
 export default {
   components: {

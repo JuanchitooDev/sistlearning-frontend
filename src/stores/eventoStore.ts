@@ -30,7 +30,7 @@ export const useEventoStore = defineStore('eventoStore', {
             try {
                 const response = await api.get(`/evento/${id}`)
                 if (response.data.result) {
-                    this.eventos = response.data.data
+                    this.evento = response.data.data
                 } else {
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
@@ -59,11 +59,7 @@ export const useEventoStore = defineStore('eventoStore', {
             try {
                 const response = await api.put(`/evento/${idEvento}`, evento)
                 if (response.data.result) {
-                    const index = this.eventos.findIndex((ev) => ev.id === evento.id)
-                    if (index !== -1) {
-                        this.eventos[index] = evento
-                        this.message = response.data.message
-                    }
+                    this.message = response.data.message
                 } else {
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
@@ -85,12 +81,6 @@ export const useEventoStore = defineStore('eventoStore', {
                 this.message = 'Error al eliminar el evento'
                 console.error('Error deleting evento: ', error)
             }
-        },
-        setEvento(evento: any) {
-            this.evento = evento
-        },
-        cancelEdit() {
-            this.evento = null
         }
     }
 })

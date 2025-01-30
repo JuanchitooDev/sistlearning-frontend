@@ -1,9 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import Dashboard from "@/views/Dashboard/Dashboard.vue"
+
 import TipoEventoView from "@/views/TipoEvento/ListView.vue"
 import FormTipoEventoView from "@/views/TipoEvento/FormView.vue"
+
 import EventoView from "@/views/Evento/ListView.vue"
+import FormEventoView from "@/views/Evento/FormView.vue"
+
 import AlumnoView from "@/views/Alumno/ListView.vue"
 import CertificadoView from "@/views/Certificado/ListView.vue"
 import ReporteView from "@/views/Reporte/CardsView.vue"
@@ -47,6 +51,22 @@ const routes = [
         component: EventoView,
         meta: {
             title: 'Evento'
+        }
+    },
+    {
+        path: '/evento/nuevo',
+        name: 'newEvento',
+        component: FormEventoView,
+        meta: {
+            title: 'Nuevo evento'
+        }
+    },
+    {
+        path: '/evento/editar/:id',
+        name: 'editEvento',
+        component: FormEventoView,
+        meta: {
+            title: 'Editar evento'
         }
     },
     {
