@@ -30,21 +30,27 @@ export const useAlumnoStore = defineStore('alumnoStore', {
             try {
                 const response = await api.get(`/alumno/${id}`)
                 if (response.data.result) {
-                    const alumno = response.data.data
-                    const index = this.alumnos.findIndex((a) => a.id === alumno.id)
-                    if (index !== -1) {
-                        this.alumnos[index] = alumno
-                    } else {
-                        this.alumnos.push(alumno)
-                    }
-                    return alumno
+                    this.alumno = response.data.data
                 } else {
                     this.message = response.data.message || response.data.error || 'Error desconocido'
-                    return null
                 }
+                // if (response.data.result) {
+                //     const alumno = response.data.data
+                //     const index = this.alumnos.findIndex((a) => a.id === alumno.id)
+                //     if (index !== -1) {
+                //         this.alumnos[index] = alumno
+                //     } else {
+                //         this.alumnos.push(alumno)
+                //     }
+                //     return alumno
+                // } else {
+                //     this.message = response.data.message || response.data.error || 'Error desconocido'
+                //     return null
+                // }
             } catch (error) {
                 this.message = "Error al obtener el alumno"
-                this.error = error instanceof Error ? error.message : 'Error desconocido'
+            } finally {
+                this.loading = false
             }
         },
         async createAlumno(alumno: IAlumno) {
@@ -58,20 +64,26 @@ export const useAlumnoStore = defineStore('alumnoStore', {
                 }
             } catch (error) {
                 this.message = "Error al crear un nuevo alumno"
+                console.error('Error creating evento: ', error)
             }
         },
         async updateAlumno(idAlumno: number, alumno: IAlumno) {
             try {
                 const response = await api.put(`/alumno/${idAlumno}`, alumno)
                 if (response.data.result) {
-                    const index = this.alumnos.findIndex((a) => a.id === alumno.id)
-                    if (index !== -1) {
-                        this.alumnos[index] = alumno
-                        this.message = response.data.message
-                    }
+                    this.message = response.data.message
                 } else {
                     this.message = response.data.message || response.data.error || 'Error desconocido'
                 }
+                // if (response.data.result) {
+                //     const index = this.alumnos.findIndex((a) => a.id === alumno.id)
+                //     if (index !== -1) {
+                //         this.alumnos[index] = alumno
+                //         this.message = response.data.message
+                //     }
+                // } else {
+                //     this.message = response.data.message || response.data.error || 'Error desconocido'
+                // }
             } catch (error) {
                 this.message = "Error al actualizar el alumno"
                 console.error('Error updating alumno: ', error)

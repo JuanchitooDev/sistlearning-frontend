@@ -1,7 +1,9 @@
 <template>
     <DefaultLayout>
-        <BreadcrumbDefault :pageTitle="pageTitle"/>
-        <CertificadoTable />
+        <BreadcrumbDefault :pageTitle="pageTitle" />
+        <div class="flex flex-col gap-10">
+            <CertificadoTable />
+        </div>
     </DefaultLayout>
 </template>
 

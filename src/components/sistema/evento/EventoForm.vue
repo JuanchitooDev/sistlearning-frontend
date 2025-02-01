@@ -90,8 +90,8 @@
 <script>
 import { onMounted, ref, computed } from 'vue';
 import { useRoute } from "vue-router"
-import { useEventoStore } from '@/stores/eventoStore';
-import { useTipoEventoStore } from '@/stores/tipoEventoStore';
+import { useEventoStore } from '@/stores';
+import { useTipoEventoStore } from '@/stores';
 
 export default {
   setup() {

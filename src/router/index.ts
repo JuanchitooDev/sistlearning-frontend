@@ -9,7 +9,11 @@ import EventoView from "@/views/Evento/ListView.vue"
 import FormEventoView from "@/views/Evento/FormView.vue"
 
 import AlumnoView from "@/views/Alumno/ListView.vue"
+import FormAlumnoView from "@/views/Alumno/FormView.vue"
+
 import CertificadoView from "@/views/Certificado/ListView.vue"
+import FormCertificadoView from "@/views/Certificado/FormView.vue"
+
 import ReporteView from "@/views/Reporte/CardsView.vue"
 
 const routes = [
@@ -78,11 +82,43 @@ const routes = [
         }
     },
     {
+        path: '/alumno/nuevo',
+        name: 'newAlumno',
+        component: FormAlumnoView,
+        meta: {
+            title: 'Nuevo alumno'
+        }
+    },
+    {
+        path: '/alumno/editar/:id',
+        name: 'editAlumno',
+        component: FormAlumnoView,
+        meta: {
+            title: 'Editar alumno'
+        }
+    },
+    {
         path: '/certificado',
         name: 'certificado',
         component: CertificadoView,
         meta: {
             title: 'Certificado'
+        }
+    },
+    {
+        path: '/certificado/nuevo',
+        name: 'newCertificado',
+        component: FormCertificadoView,
+        meta: {
+            title: 'Nuevo certificado'
+        }
+    },
+    {
+        path: '/certificado/editar/:id',
+        name: 'editCertificado',
+        component: FormCertificadoView,
+        meta: {
+            title: 'Editar certificado'
         }
     },
     {

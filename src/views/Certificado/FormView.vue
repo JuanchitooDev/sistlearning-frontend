@@ -1,0 +1,40 @@
+<template>
+    <DefaultLayout>
+        <BreadcrumbDefault :pageTitle="pageTitle" />
+        <div class="flex justify-center items-center">
+            <div class="w-full max-w-3xl">
+                <DefaultCard :cardTitle="cardTitle">
+                    <CertificadoForm />
+                </DefaultCard>
+            </div>
+        </div>
+    </DefaultLayout>
+</template>
+
+<script>
+import { ref } from "vue";
+import DefaultLayout from "@/layouts/DefaultLayout.vue"
+import DefaultCard from "@/components/Common/DefaultCard.vue"
+import BreadcrumbDefault from "@/components/Breadcrumbs/BreadcrumbDefault.vue"
+import CertificadoForm from "@/components/Sistema/Certificado/CertificadoForm.vue"
+
+export default {
+    name: 'FormView',
+    components: {
+        DefaultLayout,
+        DefaultCard,
+        BreadcrumbDefault,
+        CertificadoForm
+    },
+    setup() {
+        const pageTitle = ref("Nuevo certificado")
+
+        const cardTitle = ref("Nuevo certificado")
+
+        return {
+            pageTitle,
+            cardTitle
+        }
+    }
+}
+</script>
