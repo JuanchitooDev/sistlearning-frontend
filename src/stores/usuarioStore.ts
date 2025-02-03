@@ -16,7 +16,6 @@ export const useUsuarioStore = defineStore({
                     password
                 }
                 const response = await api.post('/auth/register', usuarioItem)
-                console.log('response create usuario', response)
 
                 if (response.data.result) {
                     this.usuario = response.data.data
@@ -32,7 +31,6 @@ export const useUsuarioStore = defineStore({
             this.usuarios = { loading: false }
             try {
                 const response = await api.get('/usuario')
-                console.log('response getAll usuario', response)
                 if (response.data.result) {
                     const usuarios = response.data.data
                     this.usuarios = usuarios
@@ -46,7 +44,6 @@ export const useUsuarioStore = defineStore({
             this.usuario = { loading: true }
             try {
                 const response = await api.get(`/usuario/${id}`)
-                console.log('response getById', response)
                 if (response.data.result) {
                     this.usuario = response.data.data
                 }

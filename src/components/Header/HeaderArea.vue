@@ -6,7 +6,7 @@
           class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
           @click="() => {
             console.log('Toggling Sidebar')
-            toggleSidebar()
+            sidebarStore.toggleSidebar()
           }
             ">
           <span class="relative block h-5.5 w-5.5 cursor-pointer">
@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { useSidebarStore } from "@/stores/sidebar"
+import { useSidebarStore } from "@/stores"
 import DropdownUser from './DropdownUser.vue';
 
 export default {

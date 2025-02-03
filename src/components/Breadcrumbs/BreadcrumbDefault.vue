@@ -5,8 +5,8 @@
         </h2>
         <nav>
             <ol class="flex items-center gap-2">
-                <li>
-                    <router-link class="font-medium" to="/"> Dashboard / </router-link>
+                <li v-for="option in props.options">
+                    <router-link class="font-medium" to="`{{ option.url }}`">{{ option.title }}</router-link><span class="ml-2 d-block">/</span>
                 </li>
                 <li class="font-medium text-primary">{{ props.pageTitle }}</li>
             </ol>
@@ -20,6 +20,10 @@ export default {
     props: {
         pageTitle: {
             type: String,
+            required: true
+        },
+        options: {
+            type: Object,
             required: true
         }
     },

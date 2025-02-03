@@ -1,6 +1,6 @@
 <template>
     <DefaultLayout>
-        <BreadcrumbDefault :pageTitle="pageTitle" />
+        <BreadcrumbDefault :pageTitle="pageTitle" :options="options"/>
         <div class="flex justify-center items-center">
             <div class="w-full max-w-3xl">
                 <DefaultCard :cardTitle="cardTitle">
@@ -12,7 +12,8 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router"
 import DefaultLayout from "@/layouts/DefaultLayout.vue"
 import DefaultCard from "@/components/Common/DefaultCard.vue"
 import BreadcrumbDefault from "@/components/Breadcrumbs/BreadcrumbDefault.vue"
@@ -28,12 +29,34 @@ export default {
     },
     setup() {
         const pageTitle = ref("Nuevo evento")
+        const cardTitle = ref("Formulario de registro")
+        const route = useRoute()
 
-        const cardTitle = ref("Nuevo evento")
+        const options = ref(
+            [
+                {
+                    'url': '/',
+                    'title': 'Dashboard'
+                },
+                {
+                    'url': '/tipo-evento',
+                    'title': 'Tipo de evento'
+                }
+            ]
+        )
+
+        onMounted(() => {
+            const eventoId = route.params.id
+            if (eventoId) {
+                pageTitle.value = "Editar evento",
+                cardTitle.value = "Formulario de actualización"
+            }
+        })
 
         return {
             pageTitle,
-            cardTitle
+            cardTitle,
+            options
         }
     }
 }

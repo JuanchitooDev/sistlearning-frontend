@@ -1,5 +1,5 @@
-export const formatDate = (dateString: string) => {
-    const date = dateString.split("T")
+export const formatDate = (dateParam: string) => {
+    const date = dateParam.split("T")
     const partsDate = date[0]
     const fielsDate = partsDate.split("-")
     const year = fielsDate[0]
@@ -9,6 +9,8 @@ export const formatDate = (dateString: string) => {
 }
 
 export const currentDate = () => {
+    console.log('date', new Date())
     const today = new Date().toISOString().split('T')[0];
-    return today
+    console.log('today', today)
+    return `${today}`
 }

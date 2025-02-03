@@ -15,6 +15,7 @@
           <label for="id_tipoevento" class="block text-sm font-medium text-gray-700">Tipo de evento:</label>
           <select name="id_tipoevento" id="id_tipoevento" v-model="evento.id_tipoevento"
             class="mt-1 p-2 border border-gray-300 rounded w-full">
+            <option value="">- SELECCIONE --</option>
             <option v-for="tipo in tipos" :value="tipo.id" :key="tipo.id">
               {{ tipo.nombre }}
             </option>
@@ -75,7 +76,7 @@
         </button>
         <button type="button"
           class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4 disabled:bg-blue-300 disabled:cursor-not-allowed"
-          :disabled="loading">
+          :disabled="loading" @click="cancelar">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -125,8 +126,8 @@ export default {
           const partFecha = evento.value.fecha.split("T")
           evento.value.fecha = partFecha[0]
         }
-        console.log('evento.value', evento.value)
       }
+      storeEvento.message = ""
     })
 
     const submitForm = async () => {
@@ -136,12 +137,26 @@ export default {
           await storeEvento.updateEvento(evento.value.id, evento.value);
         } else {
           await storeEvento.createEvento(evento.value);
-          resetForm()
+          if (storeEvento.result) {
+            resetForm()
+          }
         }
       } catch (error) {
         console.log('error creating evento', error);
       } finally {
         loading.value = false; // Desactivar el spinner
+      }
+    }
+
+    const cancelar = () => {
+      evento.value = {
+        id_tipoevento: '',
+        titulo: '',
+        temario: '',
+        fecha: null,
+        fecha_fin: '',
+        duracion: '',
+        modalidad: 'Virtual'
       }
     }
 
@@ -168,7 +183,8 @@ export default {
       loading,
       submitForm,
       message,
-      isError
+      isError,
+      cancelar
     }
   }
 }

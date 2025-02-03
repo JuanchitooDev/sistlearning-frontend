@@ -8,7 +8,8 @@ export const useEventoStore = defineStore('eventoStore', {
         evento: null,
         loading: false,
         error: null as string | null,
-        message: ''
+        message: '',
+        result: false
     }),
     actions: {
         async fetchEventos() {
@@ -44,7 +45,8 @@ export const useEventoStore = defineStore('eventoStore', {
         async createEvento(evento: IEvento) {
             try {
                 const response = await api.post('/evento', evento)
-                if (response.data.result) {
+                this.result = response.data.result 
+                if (this.result) {
                     this.eventos.push(response.data.data)
                     this.message = response.data.message
                 } else {
@@ -52,13 +54,15 @@ export const useEventoStore = defineStore('eventoStore', {
                 }
             } catch (error) {
                 this.message = "Error al crear un nuevo evento"
+                this.result = false
                 console.error('Error creating evento: ', error)
             }
         },
         async updateEvento(idEvento: number, evento: IEvento) {
             try {
                 const response = await api.put(`/evento/${idEvento}`, evento)
-                if (response.data.result) {
+                this.result = response.data.result 
+                if (this.result) {
                     this.message = response.data.message
                 } else {
                     this.message = response.data.message || response.data.error || 'Error desconocido'
@@ -71,7 +75,8 @@ export const useEventoStore = defineStore('eventoStore', {
         async deleteEvento(idEvento: number) {
             try {
                 const response = await api.delete(`/evento/${idEvento}`)
-                if (response.data.result) {
+                this.result = response.data.result 
+                if (this.result) {
                     this.eventos = this.eventos.filter((ev) => ev.id !== idEvento)
                     this.message = response.data.message
                 } else {

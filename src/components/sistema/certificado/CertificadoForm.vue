@@ -34,8 +34,7 @@
               impresión:</label>
             <input v-model="certificado.nombre_alumno_impresion" type="text" id="nombre_alumno_impresion"
               autocomplete="off" required placeholder="Ejm: José Carlos Pérez Pérez"
-              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 rounded-md p-2 focus:ring focus:ring-blue-300"
-              :disabled="isNombreAlumnoDisabled" />
+              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 rounded-md p-2 focus:ring focus:ring-blue-300"/>
           </div>
         </div>
         <div>
@@ -43,6 +42,7 @@
             <label for="id_evento" class="block text-sm font-medium text-gray-700">Evento:</label>
             <select name="id_evento" id="id_evento" v-model="certificado.id_evento"
               class="mt-1 p-2 border border-gray-300 rounded w-full">
+              <option value="">- SELECCIONE -</option>
               <option v-for="evento in eventos" :value="evento.id" :key="evento.id">
                 {{ evento.titulo }}
               </option>
@@ -84,7 +84,7 @@
         </button>
         <button type="button"
           class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4 disabled:bg-blue-300 disabled:cursor-not-allowed"
-          :disabled="loading">
+          :disabled="loading" @click="cancelar">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -102,6 +102,7 @@ import { useRoute } from "vue-router"
 import { useAlumnoStore } from "@/stores"
 import { useEventoStore } from '@/stores';
 import { useCertificadoStore } from '@/stores';
+import { currentDate } from "@/utils/date.utils";
 
 export default {
   setup() {
@@ -110,7 +111,7 @@ export default {
       id_alumno: '',
       nombre_alumno_impresion: '',
       id_evento: '',
-      fecha_envio: currentDate,
+      fecha_envio: currentDate(),
       templateName: 'template_uno',
 
     });
@@ -127,8 +128,8 @@ export default {
     const route = useRoute()
 
     // Computed para obtener el mensaje desde el store
-    const message = computed(() => storeEvento.message);
-    const isError = computed(() => storeEvento.message && storeEvento.message.includes('Error'));
+    const message = computed(() => storeCertificado.message);
+    const isError = computed(() => storeCertificado.message && storeCertificado.message.includes('Error'));
     const templateError = ref(false);
 
     const isNombreAlumnoDisabled = ref(true);
@@ -183,6 +184,11 @@ export default {
       if (certificadoId) {
         await storeCertificado.getCertificadoById(certificadoId)
         certificado.value = storeCertificado.certificado || {}
+        if (certificado.value) {
+          const partFecha = certificado.value.fecha_envio.split("T")
+          certificado.value.fecha_envio = partFecha[0]
+        }
+        storeCertificado.message = ""
         console.log('certificado.value', certificado.value)
       }
     })
@@ -197,23 +203,27 @@ export default {
           return;
         }
 
+        console.log('certificado.value', certificado.value)
+
         if (certificado.value.id) {
           await storeCertificado.updateCertificado(
             certificado.value.id,
             certificado.value
           );
         } else {
-          const alumno = await storeAlumno.getAlumnoById(
+          await storeAlumno.getAlumnoById(
             certificado.value.id_alumno
           );
-          if (alumno) {
-            certificado.value.alumno = alumno;
-            await storeCertificado.createCertificado(certificado.value);
+          if (storeAlumno.alumno) {
+            certificado.value.alumno = storeAlumno.alumno
+            await storeCertificado.createCertificado(certificado.value)
+            if (storeCertificado.result) {
+              resetForm();
+            }
           } else {
-            console.error('No se pudo obtener el alumno');
+            console.error(storeAlumno.message)
           }
         }
-        resetForm();
       } catch (error) {
         console.log('error creating certificado', error);
       } finally {
@@ -221,13 +231,26 @@ export default {
       }
     };
 
+    const cancelar = () => {
+      certificado.value = {
+        id_alumno: '',
+        nombre_alumno_impresion: '',
+        id_evento: '',
+        fecha_envio: currentDate(),
+        template: 'template_uno',
+      };
+
+      // Volver a deshabilitar el campo al resetear
+      isNombreAlumnoDisabled.value = true;
+    }
+
     const resetForm = () => {
       certificado.value = {
         id: null,
         id_alumno: '',
         nombre_alumno_impresion: '',
         id_evento: '',
-        fecha_envio: currentDate,
+        fecha_envio: currentDate(),
         template: 'template_uno',
       };
 
@@ -239,6 +262,7 @@ export default {
       storeAlumno.fetchAlumnos();
       storeEvento.fetchEventos();
       loadAlumnos();
+      storeCertificado.message = ""
     })
 
     return {
@@ -255,6 +279,8 @@ export default {
       message,
       templates,
       templateError,
+      isError,
+      cancelar
     }
   }
 }

@@ -109,7 +109,7 @@ import { computed, ref, onMounted } from 'vue';
 import { useAlumnoStore } from '@/stores';
 import ConfirmDialog from '@/components/Common/ConfirmDialog.vue';
 import Notification from '@/components/Common/Notification.vue';
-import { formatDate } from "@/utils/date.utils"
+// import { formatDate } from "@/utils/date.utils"
 
 export default {
   components: {
@@ -153,7 +153,7 @@ export default {
       isConfirmVisible,
       deleteAlumno,
       notificationMessage,
-      formatDate
+      // formatDate
     };
   }
 }

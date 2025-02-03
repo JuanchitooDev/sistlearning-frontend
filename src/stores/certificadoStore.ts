@@ -11,7 +11,8 @@ export const useCertificadoStore = defineStore('certificadoStore', {
         certificado: null,
         loading: false,
         error: null as string | null,
-        message: ''
+        message: '',
+        result: false
     }),
     actions: {
         async fetchCertificados() {
@@ -35,7 +36,10 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     responseType: 'blob'
                 })
 
+                console.log('response createCertificado', response)
+
                 if (response.status === 200) {
+                    this.result = true
                     this.message = "Certificado registrado correctamente"
                     this.certificados.push(certificado)
 
@@ -52,9 +56,11 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     link.click()
                     link.remove()
                 } else {
+                    this.result = false
                     this.message = 'Error al crear el certificado'
                 }
             } catch (error) {
+                this.result = false
                 this.message = "Error al crear el certificado"
                 console.error('Error creating certificado', error)
             }
@@ -114,6 +120,7 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 })
 
                 if (response.status === 200) {
+                    this.result = true
                     this.message = "Certificado descargado correctamente"
                     const responseCertificado = await this.getCertificadoById(idCertificado)
                     const alumno = responseCertificado.Alumno
@@ -129,24 +136,35 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     link.click();
                     link.remove();
                 } else {
+                    this.result = false
                     this.message = "Error al descargar el certificado"
                 }
             } catch (error) {
+                this.result = false
                 this.message = "Error para descargar el certificado"
                 console.error('Error downloading certificado', error)
             }
         },
         async updateCertificado(idCertificado: number, certificado: ICertificado) {
             try {
+                console.log('certificado', certificado)
                 const response = await api.put(`/certificado/${idCertificado}`, certificado, {
                     responseType: 'blob'
                 })
 
+                console.log('response updateCertificado', response)
+
                 if (response.status == 200) {
+                    this.result = true
                     this.message = "Certificado actualizado con éxito"
                     this.certificados.push(certificado)
-                    const alumno = await useAlumnoStore().getAlumnoById(certificado.id_alumno as number)
-                    const nombreCompleto = alumno.nombre_capitalized as string
+
+                    const storeAlumno = useAlumnoStore()
+
+                    await storeAlumno.getAlumnoById(certificado.id_alumno as number)
+                    const alumno = storeAlumno.alumno as IAlumno | null
+                    console.log('alumno', alumno)
+                    const nombreCompleto = alumno?.nombre_capitalized as string
                     const sanitizedAlumno = sanitizeFileName(nombreCompleto)
                     const fileName = `certificado_${sanitizedAlumno}.pdf`
                     const url = window.URL.createObjectURL(new Blob([response.data]))
@@ -158,9 +176,11 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     link.click()
                     link.remove()
                 } else {
+                    this.result = false
                     this.message = "Error al actualizar el certificado"
                 }
             } catch (error) {
+                this.result = false
                 this.message = "Error al actualizar el certificado"
                 console.error('Error updating certificado: ', error)
             }
@@ -168,7 +188,8 @@ export const useCertificadoStore = defineStore('certificadoStore', {
         async deleteCertificado(idCertificado: number) {
             try {
                 const response = await api.delete(`/certificado/${idCertificado}`)
-                if (response.data.result) {
+                this.result = response.data.result
+                if (this.result) {
                     this.certificados = this.certificados.filter((c) => c.id !== idCertificado)
                     this.message = response.data.message
                 } else {
@@ -179,6 +200,7 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     }
                 }
             } catch (error) {
+                this.result = false
                 this.message = 'Error al eliminar el certificado'
                 console.error('Error deleting certificado: ', error)
             }

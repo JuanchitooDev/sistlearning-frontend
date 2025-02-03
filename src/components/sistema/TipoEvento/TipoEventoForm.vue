@@ -39,7 +39,7 @@
         </button>
         <button type="button"
           class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4 disabled:bg-blue-300 disabled:cursor-not-allowed"
-          :disabled="loading">
+          :disabled="loading" @click="cancelar">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -63,29 +63,30 @@ export default {
       nombre: '',
       descripcion: ''
     })
-    const store = useTipoEventoStore();
+    const storeTipoEvento = useTipoEventoStore();
     const loading = ref(false);
     const route = useRoute()
 
     // Computed para obtener el mensaje desde el store
-    const message = computed(() => store.message);
-    const isError = computed(() => store.message && store.message.includes('Error'));
+    const message = computed(() => storeTipoEvento.message);
+    const isError = computed(() => storeTipoEvento.message && storeTipoEvento.message.includes('Error'));
 
     onMounted(async () => {
       const tipoEventoId = route.params.id
       if (tipoEventoId) {
-        await store.getTipoEventoById(tipoEventoId)
-        tipoEvento.value = store.tipoEvento || {}
+        await storeTipoEvento.getTipoEventoById(tipoEventoId)
+        tipoEvento.value = storeTipoEvento.tipoEvento || {}
       }
+      storeTipoEvento.message = ""
     })
 
     const submitForm = async () => {
       try {
         loading.value = true;
         if (tipoEvento.value.id) {
-          await store.updateTipoEvento(tipoEvento.value.id, tipoEvento.value);
+          await storeTipoEvento.updateTipoEvento(tipoEvento.value.id, tipoEvento.value);
         } else {
-          await store.createTipoEvento(tipoEvento.value);
+          await storeTipoEvento.createTipoEvento(tipoEvento.value);
           resetForm();
         }
       } catch (error) {
@@ -94,6 +95,13 @@ export default {
         loading.value = false;
       }
     };
+
+    const cancelar = () => {
+      tipoEvento.value = {
+        nombre: '',
+        descripcion: ''
+      }
+    }
 
     const resetForm = () => {
       tipoEvento.value = {
@@ -105,11 +113,11 @@ export default {
 
     return {
       tipoEvento,
-      store,
       loading,
       submitForm,
       message,
-      isError
+      isError,
+      cancelar
     }
   }
 }

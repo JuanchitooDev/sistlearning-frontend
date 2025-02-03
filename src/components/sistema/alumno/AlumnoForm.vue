@@ -15,6 +15,7 @@
           <label for="id_tipodocumento" class="block text-sm font-medium text-gray-700">Tipo de documento:</label>
           <select name="id_tipodocumento" id="id_tipodocumento" v-model="alumno.id_tipodocumento"
             class="mt-1 p-2 border border-gray-300 rounded w-full">
+            <option value="">- SELECCIONE -</option>
             <option v-for="tipo in tipos" :value="tipo.id" :key="tipo.id">
               {{ tipo.abreviatura }}
             </option>
@@ -52,6 +53,7 @@
         <div class="mb-4">
           <label for="sexo" class="block text-sm font-medium text-gray-700">Sexo:</label>
           <select name="sexo" id="sexo" v-model="alumno.sexo" class="mt-1 p-2 border border-gray-300 rounded w-full">
+            <option value="">- SELECCIONE -</option>
             <option value="M">Masculino</option>
             <option value="F">Femenino</option>
           </select>
@@ -67,20 +69,21 @@
         <button type="submit" :disabled="isDuplicated || loading"
           class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
           :class="{ 'opacity-50 cursor-not-allowed': isDuplicated }">
-          <!-- Spinner para el estado de carga -->
-          <span v-if="loading" class="mr-2">
-            <svg class="animate-spin h-5 w-5 border-t-2 border-white rounded-full" xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" stroke-width="4" />
-            </svg>
-          </span>
+          <svg v-if="loading" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 animate-spin" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" />
+          </svg>
           {{
-            loading ? 'Cargando...' : alumno.id ? 'Actualizar' : 'Registrar'
+            loading
+              ? 'Cargando...'
+              : alumno.id
+                ? 'Actualizar'
+                : 'Registrar'
           }}
         </button>
-        <button type="button" @click="closeModal"
+        <button type="button"
           class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4 disabled:bg-blue-300 disabled:cursor-not-allowed"
-          :disabled="loading">
+          :disabled="loading" @click="cancelar">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -124,6 +127,7 @@ export default {
 
     const loading = ref(false);
     const route = useRoute()
+    const isDuplicated = ref(false);
 
     // Computed para obtener el mensaje desde el store
     const message = computed(() => storeAlumno.message);
@@ -133,9 +137,13 @@ export default {
       const alumnoId = route.params.id
       if (alumnoId) {
         await storeAlumno.getAlumnoById(alumnoId)
-        alumno.value = storeAlumno.evento || {}
-        console.log('evento.value', evento.value)
+        alumno.value = storeAlumno.alumno || {}
+        if (alumno.value) {
+          const partFecha = alumno.value.fecha_nacimiento.split("T")
+          alumno.value.fecha_nacimiento = partFecha[0]
+        }
       }
+      storeAlumno.message = ""
     })
 
     const validarRegistro = () => {
@@ -159,7 +167,9 @@ export default {
           await storeAlumno.updateAlumno(alumno.value.id, alumno.value);
         } else {
           await storeAlumno.createAlumno(alumno.value);
-          resetForm()
+          if (storeAlumno.result) {
+            resetForm()
+          }
         }
       } catch (error) {
         console.log('error creating alumno', error);
@@ -196,7 +206,21 @@ export default {
           loading.value = false; // Desactiva el estado de carga
         }
       }
-    };
+    }
+
+    const cancelar = () => {
+      alumno.value = {
+        id_tipodocumento: '',
+        numero_documento: '',
+        apellido_paterno: '',
+        apellido_materno: '',
+        nombres: '',
+        telefono: '',
+        fecha_nacimiento: null,
+        sexo: '',
+      }
+      isDuplicated.value = false
+    }
 
     const resetForm = () => {
       alumno.value = {
@@ -221,12 +245,13 @@ export default {
       tipos,
       alumno,
       submitForm,
-      closeModal,
       fetchPersona,
       isDuplicated,
       loading,
       validarRegistro,
-      message
+      message,
+      isError,
+      cancelar
     }
   }
 }
