@@ -53,20 +53,19 @@
             <input v-model="certificado.fecha_envio" type="date" id="fecha_envio" autocomplete="off" required
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           </div>
-          <div class="mb-4">
+          <!-- <div class="mb-4">
             <label class="block text-sm font-medium text-gray-700">Seleccionar plantilla:</label>
             <div class="flex gap-4">
               <div v-for="(template, index) in templates" :key="index" class="flex items-center">
                 <input type="radio" :id="template.id" v-model="certificado.templateName" :value="template.id"
                   class="mr-2" required />
                 <label :for="template.id">{{ template.name }}</label>
-                <!-- <img :src="require(`@/assets/${template.thumbnail}`)" :alt="template.name" class="w-20 h-20 object-cover rounded" /> -->
               </div>
             </div>
             <div v-if="templateError" class="text-red-500 text-sm mt-2">
               La selección de la plantilla es obligatoria.
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
       <div class="flex justify-between">
@@ -111,8 +110,7 @@ export default {
       id_alumno: '',
       nombre_alumno_impresion: '',
       id_evento: '',
-      fecha_envio: currentDate(),
-      templateName: 'template_uno',
+      fecha_envio: currentDate()
 
     });
     const storeCertificado = useCertificadoStore();
@@ -198,10 +196,10 @@ export default {
         templateError.value = false;
         loading.value = true; // Activar el spinner
 
-        if (!certificado.value.templateName) {
-          templateError.value = true;
-          return;
-        }
+        // if (!certificado.value.templateName) {
+        //   templateError.value = true;
+        //   return;
+        // }
 
         console.log('certificado.value', certificado.value)
 

@@ -4,6 +4,8 @@ import { ICertificado } from '../interfaces/certificadoInterface'
 import { sanitizeFileName } from '@/utils/string.utils'
 import { IAlumno } from '@/interfaces/alumnoInterface'
 import { useAlumnoStore } from './alumnoStore'
+import { useEventoStore } from './eventoStore'
+import { IEvento } from '@/interfaces/eventoInterface'
 
 export const useCertificadoStore = defineStore('certificadoStore', {
     state: () => ({
@@ -32,6 +34,18 @@ export const useCertificadoStore = defineStore('certificadoStore', {
         },
         async createCertificado(certificado: ICertificado) {
             try {
+                const eventoStore = useEventoStore()
+                await eventoStore.getEventoById(certificado.id_evento as number)
+                const evento = eventoStore.evento as IEvento | null
+
+                if (!evento) {
+                    this.result = false
+                    this.message = 'Error al obtener el evento'
+                    return
+                }
+
+                certificado.templateName = evento.plantilla_certificado
+
                 const response = await api.post(`/certificado`, certificado, {
                     responseType: 'blob'
                 })
@@ -147,6 +161,18 @@ export const useCertificadoStore = defineStore('certificadoStore', {
         },
         async updateCertificado(idCertificado: number, certificado: ICertificado) {
             try {
+                const eventoStore = useEventoStore()
+                await eventoStore.getEventoById(certificado.id_evento as number)
+                const evento = eventoStore.evento as IEvento | null
+
+                if (!evento) {
+                    this.result = false
+                    this.message = 'Error al obtener el evento'
+                    return
+                }
+
+                certificado.templateName = evento.plantilla_certificado
+                
                 console.log('certificado', certificado)
                 const response = await api.put(`/certificado/${idCertificado}`, certificado, {
                     responseType: 'blob'
