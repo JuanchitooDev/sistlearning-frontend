@@ -40,6 +40,11 @@ module.exports = {
         primary: '#3C50E0',
         secondary: '#80CAEE',
         stroke: '#E2E8F0',
+        greenwhite: {
+          300: '#93d96c',
+          600: '#82c75c',
+          700: '#59b91e'
+        },
         gray: {
           ...colors.gray,
           DEFAULT: '#EFF4FB',

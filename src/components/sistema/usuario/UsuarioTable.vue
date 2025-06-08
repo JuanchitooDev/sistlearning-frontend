@@ -1,196 +1,272 @@
 <template>
-  <div class="p-4">
-    <div class="flex items-center justify-between mb-4">
-      <h1 class="text-2xl">Usuario</h1>
+  <div
+    class="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-6">
+    <!-- Encabezado con búsqueda y botón -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
+      <input v-model="searchInput" @keyup.enter="applySearch" type="text" placeholder="Buscar por nombre..."
+        class="w-full sm:w-1/3 px-4 py-2 text-sm border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
+      <router-link to="/usuario/nuevo"
+        class="inline-flex items-center gap-2 self-end md:self-auto rounded bg-greenwhite-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-greenwhite-700">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd"
+            d="M10 2a1 1 0 011 1v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H3a1 1 0 110-2h6V3a1 1 0 011-1z"
+            clip-rule="evenodd" />
+        </svg>
+        Nuevo
+      </router-link>
     </div>
-    <!-- <div class="mb-4">
-      <input
-        type="text"
-        placeholder="Criterio de búsqueda"
-        class="p-2 border border-gray-300 rounded"
-      />
-    </div> -->
-    <table class="min-w-full bg-white border border-gray-300">
-      <thead>
-        <tr class="bg-gray-200">
-          <th class="border px-4 py-2">ID</th>
-          <th class="border px-4 py-2">Username</th>
-          <th class="border px-4 py-2">Trabajador</th>
-          <th class="border px-4 py-2">Estado</th>
-          <th class="border px-4 py-2">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-if="usuarios.length === 0">
-          <td colspan="5" class="text-center pt-2 pb-2">
-            Usuarios no registrados
-          </td>
-        </tr>
-        <tr v-for="usuario in usuarios" :key="usuario.id">
-          <td class="border px-4 py-2">{{ usuario.id }}</td>
-          <td class="border px-4 py-2">{{ usuario.username }}</td>
-          <td class="border px-4 py-2">{{ usuario.trabajador }}</td>
-          <td class="border px-4 py-2">
-            <svg
-              v-if="usuario.estado"
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-green-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            <svg
-              v-else
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 text-red-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-          </td>
-          <td class="border px-4 py-2 flex space-x-2">
-            <button class="text-blue-500 hover:text-blue-700">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M16 4l4 4-8 8H8v-4l8-8z"
-                />
-              </svg>
-            </button>
-            <button class="text-red-500 hover:text-red-700">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Tabla -->
+    <div class="flex flex-col">
+      <!-- Cabecera -->
+      <div class="grid grid-cols-6 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-6 text-center">
+        <div class="p-2.5 xl:p-5 text-left sm:text-center">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">ID</h5>
+        </div>
+        <div class="p-2.5 xl:p-5">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">Usuario</h5>
+        </div>
+        <div class="p-2.5 xl:p-5">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">Nombre de Usuario</h5>
+        </div>
+        <div class="p-2.5 xl:p-5">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">Perfil</h5>
+        </div>
+        <div class="p-2.5 xl:p-5">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">Estado</h5>
+        </div>
+        <div class="p-2.5 xl:p-5">
+          <h5 class="text-xs font-medium uppercase xsm:text-sm">Acciones</h5>
+        </div>
+      </div>
 
+      <!-- Filas -->
+      <div v-if="filteredUsuarios.length === 0"
+        class="flex justify-center py-6 text-sm text-gray-500 dark:text-gray-300">
+        No se encontraron usuarios.
+      </div>
+
+      <div v-for="(usuario, index) in paginatedUsuarios" :key="usuario.id"
+        :class="`grid grid-cols-6 sm:grid-cols-6 items-center ${index < paginatedUsuarios.length - 1 ? 'border-b border-stroke dark:border-strokedark' : ''}`">
+        <div class="p-2.5 xl:p-5 text-left sm:text-center text-xs xsm:text-sm text-black dark:text-white">
+          {{ usuario.id }}
+        </div>
+        <div class="p-2.5 xl:p-5 flex items-center justify-start">
+          <p v-if="usuario?.perfil?.nombre === 'Estudiante'">{{ usuario.alumno.apellido_paterno }} {{
+            usuario.alumno.apellido_materno }} {{ usuario.alumno.nombres }}</p>
+          <p v-else-if="usuario?.perfil?.nombre === 'Instructor'">{{ usuario.instructor.apellido_paterno }} {{
+            usuario.instructor.apellido_materno }} {{ usuario.instructor.nombres }}</p>
+          <p v-else>{{ usuario?.trabajador?.apellido_paterno }} {{ usuario?.trabajador?.apellido_materno }} {{
+            usuario?.trabajador?.nombres }}</p>
+        </div>
+        <div class="p-2.5 xl:p-5 flex items-center justify-start">
+          <p class="text-xs xsm:text-sm text-black dark:text-white">{{ usuario.username }}</p>
+        </div>
+        <div class="p-2.5 xl:p-5 flex items-center justify-start">
+          <p class="text-xs xsm:text-sm text-black dark:text-white">{{ usuario?.Perfil?.nombre }}</p>
+        </div>
+        <div class="items-center justify-center p-2.5 sm:flex xl:p-5">
+          <button @click="requestToggleEstado(usuario.id)"
+            class="focus:outline-none hover:scale-105 transition-transform">
+            <svg v-if="usuario.estado" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none"
+              viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="p-2.5 xl:p-5 flex justify-center relative">
+          <div class="relative">
+            <button @click="toggleDropdown(usuario.id)"
+              class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
+              <svg class="w-5 h-5 text-gray-600 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 6v.01M12 12v.01M12 18v.01" />
+              </svg>
+            </button>
+
+            <!-- Dropdown -->
+            <div v-if="dropdownVisibleId === usuario.id"
+              class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600">
+              <router-link :to="{ name: 'editUsuario', params: { id: usuario.id } }"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
+                Editar
+              </router-link>
+              <button @click="() => { requestDeleteUsuario(usuario.id); dropdownVisibleId = null }"
+                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Paginación -->
-    <!-- <div class="mt-4 flex justify-between items-center">
-      <button
-        @click="prevPage"
-        :disabled="currentPage === 1"
-        class="px-4 py-2 bg-gray-300 rounded"
-      >
+    <div v-if="totalPages > 1" class="mt-6 flex justify-center gap-2 flex-wrap">
+      <button :disabled="currentPage === 1" @click="changePage(currentPage - 1)"
+        class="px-3 py-1 text-sm border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
         Anterior
       </button>
-      <span>Página {{ currentPage }} de {{ totalPages }}</span>
-      <button
-        @click="nextPage"
-        :disabled="currentPage === totalPages"
-        class="px-4 py-2 bg-gray-300 rounded"
-      >
+      <button v-for="page in totalPages" :key="page" @click="changePage(page)" :class="[
+        'px-3 py-1 text-sm border rounded transition-colors duration-200',
+        currentPage === page ? 'bg-blue-600 text-white border-blue-600 active' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+      ]">
+        {{ page }}
+      </button>
+      <button :disabled="currentPage === totalPages" @click="changePage(currentPage + 1)"
+        class="px-3 py-1 text-sm border rounded hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-50">
         Siguiente
       </button>
-    </div> -->
+    </div>
+    <ConfirmDialog :isVisible="isConfirmVisible" title="Confirmar Eliminación"
+      message="¿Estás seguro de que deseas eliminar este usuario?" @confirmed="deleteUsuario"
+      @canceled="isConfirmVisible = false" />
+    <ConfirmDialog :isVisible="isEstadoConfirmVisible" title="Confirmar cambio de estado"
+      message="¿Estás seguro que deseas cambiar el estado de este usuario?" @confirmed="toggleEstado"
+      @canceled="isEstadoConfirmVisible = false" />
+    <Notification v-if="notificationMessage" :message="notificationMessage" :duration="4000"
+      @hide="notificationMessage = ''"></Notification>
   </div>
 </template>
 
 <script>
-// import { computed, ref, onMounted } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useUsuarioStore } from '@/stores';
+import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
+import { useUsuarioStore } from '@/stores'
+import ConfirmDialog from "@/components/Common/ConfirmDialog.vue"
+import Notification from "@/components/Common/Notification.vue"
 
 export default {
+  components: {
+    ConfirmDialog,
+    Notification
+  },
   setup() {
-    const usuarioStore = useUsuarioStore();
-    // const usuario = ref({
-    //   id: null,
-    //   username: '',
-    //   password: '',
-    // });
-    // const usuarioToDelete = ref(null);
+    const usuarioStore = useUsuarioStore()
+    const usuarios = computed(() => usuarioStore.usuarios)
+    const message = computed(() => usuarioStore.message)
 
-    const { usuarios } = storeToRefs(usuarioStore);
+    const searchInput = ref('')
+    const searchQuery = ref('')
+    const currentPage = ref(1)
+    const dropdownVisibleId = ref(null)
+    const itemsPerPage = 5
 
-    usuarioStore.getAll()
+    const isConfirmVisible = ref(false)
+    const notificationMessage = ref('')
+    const usuarioToDelete = ref(null)
 
-    // const usuarios = computed(() => usuarioStore.usuarios);
+    const isEstadoConfirmVisible = ref(false)
+    const usuarioToToggleEstado = ref(null)
 
-    // const message = computed(() => usuarioStore.message);
+    const filteredUsuarios = computed(() =>
+      usuarios.value.filter(usuario =>
+        usuario.username.toLowerCase().includes(searchQuery.value.toLowerCase())
+      )
+    )
 
-    // const searchQuery = ref('');
+    const totalPages = computed(() => Math.ceil(filteredUsuarios.value.length / itemsPerPage))
 
-    // const currentPage = ref(1);
+    const paginatedUsuarios = computed(() =>
+      filteredUsuarios.value.slice(
+        (currentPage.value - 1) * itemsPerPage,
+        currentPage.value * itemsPerPage
+      )
+    )
 
-    // const perPage = 10;
+    const toggleDropdown = (id) => {
+      dropdownVisibleId.value = dropdownVisibleId.value === id ? null : id
+    }
 
-    // const filteredUsuarios = computed(() => {
-    //   const query = searchQuery.value.toLowerCase();
-    //   currentPage.value = 1;
-    //   return usuarios.value.filter((usuario) => {
-    //     return usuario.username.toLowerCase().includes(query);
-    //   });
-    // });
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.relative')) {
+        dropdownVisibleId.value = null
+      }
+    }
 
-    // const totalPages = computed(() => {
-    //   return Math.ceil(filteredUsuarios.value.length / perPage);
-    // });
+    const requestToggleEstado = (id) => {
+      usuarioToToggleEstado.value = id
+      isEstadoConfirmVisible.value = true
+      console.log('usuarioToToggleEstado.value', usuarioToToggleEstado.value)
+      console.log('isEstadoConfirmVisible.value', isEstadoConfirmVisible.value)
+    }
 
-    // const paginatedUsuarios = computed(() => {
-    //   const start = (currentPage.value - 1) * perPage;
-    //   const end = start + perPage;
-    //   return filteredUsuarios.value.slice(start, end);
-    // });
+    const toggleEstado = async () => {
+      const usuario = usuarios.value.find(us => us.id === usuarioToToggleEstado.value)
+      const nuevoEstado = !usuario.estado
+      await usuarioStore.updateEstado(usuarioToToggleEstado.value, nuevoEstado)
+      notificationMessage.value = message
+      isEstadoConfirmVisible.value = false
+      usuarioToToggleEstado.value = null
+      usuarioStore.fetchUsuarios()
+    }
 
-    // const prevPage = () => {
-    //   if (currentPage.value > 1) currentPage.value--;
-    // };
+    const requestDeleteUsuario = (id) => {
+      usuarioToDelete.value = id;
+      isConfirmVisible.value = true;
+    };
 
-    // const nextPage = () => {
-    //   if (currentPage.value < totalPages.value) currentPage.value++;
-    // };
+    const deleteUsuario = async () => {
+      if (usuarioToDelete.value) {
+        await usuarioStore.deleteUsuario(usuarioToDelete.value);
+        notificationMessage.value = message;
+        isConfirmVisible.value = false; // Cerrar el diálogo
+        usuarioToDelete.value = null; // Resetear el ID a eliminar
+        usuarioStore.fetchUsuarios()
+      }
+    };
 
-    // onMounted(() => {
-    //   eventoStore.fetchEventos();
-    // });
+    const changePage = (page) => {
+      if (page >= 1 && page <= totalPages.value) {
+        currentPage.value = page
+      }
+    }
+
+    const applySearch = () => {
+      searchQuery.value = searchInput.value
+      currentPage.value = 1
+    }
+
+    onMounted(() => {
+      usuarioStore.fetchUsuarios()
+      window.addEventListener('click', handleClickOutside)
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('click', handleClickOutside)
+    })
+
+    watch(filteredUsuarios, () => {
+      currentPage.value = 1
+    })
 
     return {
       usuarios,
-      // searchQuery,
-      // filteredUsuarios,
-      // currentPage,
-      // totalPages,
-      // paginatedUsuarios,
-      // prevPage,
-      // nextPage,
-      // usuario
-    };
-  },
-};
+      requestDeleteUsuario,
+      isConfirmVisible,
+      deleteUsuario,
+      notificationMessage,
+      totalPages,
+      paginatedUsuarios,
+      filteredUsuarios,
+      changePage,
+      searchQuery,
+      searchInput,
+      applySearch,
+      requestToggleEstado,
+      toggleEstado,
+      isEstadoConfirmVisible,
+      usuarioToToggleEstado,
+      dropdownVisibleId,
+      toggleDropdown
+    }
+  }
+}
+
 </script>
+
+<style scoped>
+/* Agrega tus estilos aquí si es necesario */
+</style>

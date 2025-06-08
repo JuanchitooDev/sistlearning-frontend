@@ -7,16 +7,31 @@ export const useTrabajadorStore = defineStore('trabajadorStore', {
         trabajadores: [] as ITrabajador[],
         trabajador: null,
         loading: false,
-        error: null as string | null
+        error: null as string | null,
+        message: '',
+        result: false
     }),
     actions: {
-        async fetchTrabajadores() {
+        async fetchTrabajadores(estado: boolean | null = null) {
             this.loading = true
             this.error = null
             try {
                 const response = await api.get('/trabajador')
-                this.trabajadores = response.data.data
+                console.log('response trabajadores', response)
+                const { data } = response
+                const { result } = data
+
+                if (result) {
+                    this.result = result
+                    const trabajadores = data.data
+                    if (estado) {
+                        this.trabajadores = trabajadores.filter((trabajador: ITrabajador) => trabajador.estado === estado)
+                    } else {
+                        this.trabajadores = trabajadores
+                    }
+                }
             } catch (error) {
+                this.result = false
                 console.error('Error fetching trabajadores: ', error)
             } finally {
                 this.loading = false
@@ -25,9 +40,47 @@ export const useTrabajadorStore = defineStore('trabajadorStore', {
         async getTrabajadorById(id: number) {
             try {
                 const response = await api.get(`/trabajador/${id}`)
-                this.trabajadores = response.data.data
+                const { data } = response
+                const { result, message } = data
+                
+                if (result) {
+                    this.result = result
+                    this.trabajador = data.data
+                } else {
+                    this.message = message || data.error || 'Error desconocido'
+                }
             } catch (error) {
+                this.result = false
+                this.message = "Error al obtener el cargo"
                 console.error('Error al obtener el trabajador: ', error)
+            } finally {
+                this.loading = false
+            }
+        },
+        async getTrabajadorByTipoDocNumDoc(idTipoDoc: number, numDoc: string) {
+            try {
+                this.trabajador = null
+                this.message = ""
+
+                const url = `/trabajador/tipo-documento/${idTipoDoc}/numero-documento/${numDoc}`
+                const response = await api.get(`${url}`)
+
+                const { data } = response
+                const { result, message } = data
+
+                if (result) {
+                    this.result = result
+                    this.trabajador = data.data
+                    this.message = message
+                } else {
+                    this.trabajador = null
+                    this.message = message || data.error || 'Error desconocido'
+                }
+            } catch (error) {
+                this.result = false
+                this.message = "Error al obtener al trabajador"
+                this.trabajador = null
+                console.error('Error al obtener al trabajador: ', error)
             } finally {
                 this.loading = false
             }
@@ -35,35 +88,59 @@ export const useTrabajadorStore = defineStore('trabajadorStore', {
         async createTrabajador(trabajador: ITrabajador) {
             try {
                 const response = await api.post('/trabajador', trabajador)
-                this.trabajadores.push(response.data)
+                console.log('response createTrabajador', response)
+                
+                const { data } = response
+                const { result, message } = data
+                
+                if (result) {
+                    this.result = result
+                    this.trabajadores.push(data.data)
+                } else {
+                    this.message = message || data.error || 'Error desconocido'
+                }
             } catch (error) {
+                this.message = "Error al crear un nuevo trabajador"
+                this.result = false
                 console.error('Error creating trabajador: ', error)
             }
         },
         async updateTrabajador(idTrabajador: number, trabajador: ITrabajador) {
             try {
-                await api.put(`/trabajador/${idTrabajador}`, trabajador)
-                const index = this.trabajadores.findIndex((t) => t.id === trabajador.id)
-                if (index !== -1) {
-                    this.trabajadores[index] = trabajador
+                const response = await api.put(`/trabajador/${idTrabajador}`, trabajador)
+                const { data } = response
+                const { result, message } = data
+                
+                if (result) {
+                    this.result = result
+                    this.message = message
+                } else {
+                    this.message = message || data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.message = "Error al actualizar al trabajador"
+                this.result = false
                 console.error('Error updating trabajador: ', error)
             }
         },
         async deleteTrabajador(idTrabajador: number) {
             try {
-                await api.delete(`/trabajador/${idTrabajador}`)
-                this.trabajadores = this.trabajadores.filter((t) => t.id !== idTrabajador)
+                const response = await api.delete(`/trabajador/${idTrabajador}`)
+                const { data } = response
+                const { result, message } = data
+                
+                if (result) {
+                    this.result = result
+                    this.trabajadores = this.trabajadores.filter((trabajador) => trabajador.id !== idTrabajador)
+                    this.message = message
+                } else {
+                    this.message = message || data.error || 'Error desconocido'
+                }
             } catch (error) {
+                this.message = 'Error al eliminar el trabajador'
+                this.result = false
                 console.error('Error deleting trabajador: ', error)
             }
-        },
-        setTrabajador(trabajador: any) {
-            this.trabajador = trabajador
-        },
-        cancelEdit() {
-            this.trabajador = null
         }
     }
 })

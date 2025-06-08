@@ -5,7 +5,7 @@
         <!-- ===== Content Area Start ===== -->
         <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
             <!-- ===== Header Start ===== -->
-            <HeaderArea />
+            <Header />
             <!-- ===== Header End ===== -->
 
             <!-- ===== Main Content Start ===== -->
@@ -20,13 +20,14 @@
 </template>
 
 <script>
-import HeaderArea from '@/components/Header/HeaderArea.vue';
+// import HeaderArea from '@/components/Header/HeaderArea.vue';
+import Header from "@/components/Header/Header.vue"
 import SidebarArea from '@/components/Sidebar/SidebarArea.vue';
 
 export default {
     name: 'DefaultLayout',
     components: {
-        HeaderArea,
+        Header,
         SidebarArea,
     },
 };

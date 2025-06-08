@@ -1,4 +1,5 @@
 import { ITipoDocumento } from "./tipoDocumentoInterface"
+import { IPais } from "./paisInterface"
 
 export interface IAlumno {
     id?: number
@@ -24,4 +25,5 @@ export interface IAlumno {
     sistema?: boolean
     estado?: boolean
     tipoDocumento?: ITipoDocumento
+    pais?: IPais
 }

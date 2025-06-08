@@ -1,5 +1,6 @@
 <template>
-  <div class="px-6 py-8">
+  <div class="px-6 py-4">
+    <!--
     <div v-if="message" :class="{ 'bg-green-100 text-green-800': !isError, 'bg-red-100 text-red-800': isError }"
       class="p-4 mb-6 rounded-md">
       <div class="flex items-center">
@@ -9,22 +10,24 @@
         <span>{{ message }}</span>
       </div>
     </div>
+  -->
     <form @submit.prevent="submitForm">
-      <div class="mb-4">
-        <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre:</label>
-        <input v-model="tipoEvento.nombre" type="text" id="nombre" autocomplete="off" required
-          placeholder="Ejm: Capacitación"
+      <div class="mb-1">
+        <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre: <span
+            class="text-red-500">*</span></label>
+        <input v-model="tipoEvento.nombre" type="text" id="nombre" autocomplete="off" placeholder="Ejm: Capacitación"
           class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
+        <div v-if="errors.nombre" class="text-red-600 text-sm mt-1">{{ errors.nombre }}</div>
       </div>
-      <div class="mb-4">
+      <div class="mb-1">
         <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción:</label>
         <textarea v-model="tipoEvento.descripcion" id="descripcion" placeholder="Ejm: Tipo de eventos de corta duración"
           class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"></textarea>
       </div>
-      <div class="flex justify-between">
+      <div class="flex justify-between mt-2">
         <button type="submit"
-          class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
-          :disabled="loading">
+          class="flex items-center px-4 py-2 bg-greenwhite-600 text-white rounded-md hover:bg-greenwhite-700 disabled:bg-greenwhite-300 disabled:cursor-not-allowed"
+          :class="{ 'opacity-50 cursor-not-allowed': isDuplicated }" :disabled="isDuplicated || loading">
           <svg v-if="loading" xmlns="http://www.w3.org/2000/svg" class="animate-spin h-5 w-5 mr-2" fill="none"
             viewBox="0 0 24 24" stroke="currentColor">
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" />
@@ -52,9 +55,9 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router"
-import { useTipoEventoStore } from '@/stores/tipoEventoStore';
+import { useTipoEventoStore, useToastStore } from '@/stores';
 
 export default {
   setup() {
@@ -63,34 +66,107 @@ export default {
       nombre: '',
       descripcion: ''
     })
+
     const storeTipoEvento = useTipoEventoStore();
+    const storeToast = useToastStore();
+
     const loading = ref(false);
+    const isDuplicated = ref(false)
+    const errors = ref({})
+
     const route = useRoute()
 
-    // Computed para obtener el mensaje desde el store
-    const message = computed(() => storeTipoEvento.message);
-    const isError = computed(() => storeTipoEvento.message && storeTipoEvento.message.includes('Error'));
+    // const message = ref("")
+    // const isError = ref(false)
+
+    const validateForm = () => {
+      errors.value = {}
+
+      if (!tipoEvento.value.nombre || tipoEvento.value.nombre.trim() === '') {
+        errors.value.nombre = 'El nombre es obligatorio'
+      }
+
+      return Object.keys(errors.value).length === 0
+    }
 
     onMounted(async () => {
       const tipoEventoId = route.params.id
+
       if (tipoEventoId) {
         await storeTipoEvento.getTipoEventoById(tipoEventoId)
         tipoEvento.value = storeTipoEvento.tipoEvento || {}
       }
+
       storeTipoEvento.message = ""
     })
 
     const submitForm = async () => {
+      if (!validateForm()) return
+
       try {
         loading.value = true;
+        // message.value = ""
+        // isError.value = false
+        isDuplicated.value = false
+
+        await storeTipoEvento.getTipoEventoByNombre(tipoEvento.value.nombre)
+
+        if (storeTipoEvento.tipoEvento) {
+          // message.value = 'Tipo de evento ya existe'
+          // isError.value = true
+          storeToast.addToast('Tipo de evento ya existe', 'warning')
+          isDuplicated.value = false
+          return
+        }
+
         if (tipoEvento.value.id) {
           await storeTipoEvento.updateTipoEvento(tipoEvento.value.id, tipoEvento.value);
+
+          const classToast = (storeTipoEvento.result) ? 'success' : 'error'
+          storeToast.addToast(storeTipoEvento.message, classToast)
+
+          // if (storeTipoEvento.result) {
+          //   storeToast.addToast(storeTipoEvento.message, 'success')
+          // } else {
+          //   storeToast.addToast(storeTipoEvento.message, 'error')
+          // }
+
+          // if (storeTipoEvento.result) {
+          //   isError.value = false
+          // } else {
+          //   isError.value = true
+          // }
+          // message.value = storeTipoEvento.message
+          isDuplicated.value = false
         } else {
           await storeTipoEvento.createTipoEvento(tipoEvento.value);
-          resetForm();
+
+          const classToast = (storeTipoEvento.result) ? 'success' : 'error'
+          storeToast.addToast(storeTipoEvento.message, classToast)
+          if (storeTipoEvento.result) resetForm()
+
+          // if (storeTipoEvento.result) {
+          //   storeToast.addToast(storeTipoEvento.message, 'success')
+          //   resetForm()
+          // } else {
+          //   storeToast.addToast(storeTipoEvento.message, 'error')
+          // }
+
+          // if (storeTipoEvento.result) {
+          //   isError.value = false
+          //   resetForm();
+          // } else {
+          //   isError.value = true
+          // }
+          // message.value = storeTipoEvento.message
+          isDuplicated.value = false
         }
       } catch (error) {
         console.log('error creating tipo evento', error);
+        // message.value = 'Falló al registrar tipo de evento'
+        // isError.value = true
+        storeToast.addToast('Falló al registrar el tipo de evento', 'error')
+        isDuplicated.value = false
       } finally {
         loading.value = false;
       }
@@ -101,6 +177,9 @@ export default {
         nombre: '',
         descripcion: ''
       }
+      isDuplicated.value = false
+      // isError.value = false
+      // message.value = ""
     }
 
     const resetForm = () => {
@@ -109,15 +188,20 @@ export default {
         nombre: '',
         descripcion: '',
       };
+      isDuplicated.value = false
+      // isError.value = false
+      // message.value = ""
     };
 
     return {
       tipoEvento,
       loading,
       submitForm,
-      message,
-      isError,
-      cancelar
+      // message,
+      // isError,
+      cancelar,
+      errors,
+      isDuplicated
     }
   }
 }

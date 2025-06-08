@@ -1,134 +1,44 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router'
 
-import Dashboard from "@/views/Dashboard/Dashboard.vue"
+import authRoutes from './modules/auth.routes'
+import adjuntoRoutes from './modules/adjunto.routes'
+import cargoRoutes from './modules/cargo.routes'
+import dashboardRoutes from './modules/dashboard.routes'
+import tipoEventoRoutes from './modules/tipoevento.routes'
+import eventoRoutes from './modules/evento.routes'
+import alumnoRoutes from './modules/alumno.routes'
+import certificadoRoutes from './modules/certificado.routes'
+import instructorRoutes from './modules/instructor.routes'
+import trabajadorRoutes from './modules/trabajador.routes'
+import usuarioRoutes from './modules/usuario.routes'
+import NotAuthorizedRoutes from './modules/401.routes'
+import NotFoundRoutes from './modules/404.routes'
+import { useAuthStore } from "@/stores/authStore"
 
-import TipoEventoView from "@/views/TipoEvento/ListView.vue"
-import FormTipoEventoView from "@/views/TipoEvento/FormView.vue"
-
-import EventoView from "@/views/Evento/ListView.vue"
-import FormEventoView from "@/views/Evento/FormView.vue"
-
-import AlumnoView from "@/views/Alumno/ListView.vue"
-import FormAlumnoView from "@/views/Alumno/FormView.vue"
-
-import CertificadoView from "@/views/Certificado/ListView.vue"
-import FormCertificadoView from "@/views/Certificado/FormView.vue"
-
-import ReporteView from "@/views/Reporte/CardsView.vue"
+// Ruta raíz dinámica
+const rootRoute = {
+    path: '/',
+    redirect: () => {
+        const auth = localStorage.getItem('auth')
+        return auth ? '/dashboard' : '/login'
+    }
+}
 
 const routes = [
-    {
-        path: '/',
-        name: 'Dashboard',
-        component: Dashboard,
-        meta: {
-            title: 'Dashboard'
-        }
-    },
-    {
-        path: '/tipo-evento',
-        name: 'tipoEvento',
-        component: TipoEventoView,
-        meta: {
-            title: 'Tipo de evento'
-        }
-    },
-    {
-        path: '/tipo-evento/nuevo',
-        name: 'newTipoEvento',
-        component: FormTipoEventoView,
-        meta: {
-            title: 'Nuevo tipo de evento'
-        }
-    },
-    {
-        path: '/tipo-evento/editar/:id',
-        name: 'editTipoEvento',
-        component: FormTipoEventoView,
-        meta: {
-            title: 'Editar tipo de evento'
-        }
-    },
-    {
-        path: '/evento',
-        name: 'evento',
-        component: EventoView,
-        meta: {
-            title: 'Evento'
-        }
-    },
-    {
-        path: '/evento/nuevo',
-        name: 'newEvento',
-        component: FormEventoView,
-        meta: {
-            title: 'Nuevo evento'
-        }
-    },
-    {
-        path: '/evento/editar/:id',
-        name: 'editEvento',
-        component: FormEventoView,
-        meta: {
-            title: 'Editar evento'
-        }
-    },
-    {
-        path: '/alumno',
-        name: 'alumno',
-        component: AlumnoView,
-        meta: {
-            title: 'Alumno'
-        }
-    },
-    {
-        path: '/alumno/nuevo',
-        name: 'newAlumno',
-        component: FormAlumnoView,
-        meta: {
-            title: 'Nuevo alumno'
-        }
-    },
-    {
-        path: '/alumno/editar/:id',
-        name: 'editAlumno',
-        component: FormAlumnoView,
-        meta: {
-            title: 'Editar alumno'
-        }
-    },
-    {
-        path: '/certificado',
-        name: 'certificado',
-        component: CertificadoView,
-        meta: {
-            title: 'Certificado'
-        }
-    },
-    {
-        path: '/certificado/nuevo',
-        name: 'newCertificado',
-        component: FormCertificadoView,
-        meta: {
-            title: 'Nuevo certificado'
-        }
-    },
-    {
-        path: '/certificado/editar/:id',
-        name: 'editCertificado',
-        component: FormCertificadoView,
-        meta: {
-            title: 'Editar certificado'
-        }
-    },
-    {
-        path: '/reporte',
-        name: 'reporte',
-        component: ReporteView,
-        meta: {
-            title: 'Reporte'
-        }
-    }
+    rootRoute,
+    ...authRoutes,
+    ...adjuntoRoutes,
+    ...cargoRoutes,
+    ...dashboardRoutes,
+    ...tipoEventoRoutes,
+    ...eventoRoutes,
+    ...alumnoRoutes,
+    ...certificadoRoutes,
+    ...instructorRoutes,
+    ...trabajadorRoutes,
+    ...usuarioRoutes,
+    ...NotAuthorizedRoutes,
+    ...NotFoundRoutes
 ]
 
 export const router = createRouter({
@@ -136,34 +46,27 @@ export const router = createRouter({
     routes
 })
 
-// router.beforeEach((to, from, next) => {
-//     document.title = `Vue.js ${to.meta.title} | TailAdmin - Vue.js Tailwind CSS Dashboard Template`
-//     next()
-// })
+// Guard global para proteger rutas
+router.beforeEach((to, from, next) => {
+    const publicPages = ['/login']
+    const authRequired = !publicPages.includes(to.path)
 
-// // import { useAuthStore } from '@/stores'
-// import { Home } from '@/views'
-// // import accountRoutes from './account.routes'
-// import userRoutes from './user.routes'
-// import tipoEventoRoutes from './tipoevento.routes'
-// export const router = createRouter({
-//     history: createWebHistory('/sistema'),
-//     routes: [
-//         { path: '/', component: Home },
-//         // { ...accountRoutes },
-//         { ...userRoutes },
-//         { ...tipoEventoRoutes },
-//         { path: '/:pathMatch(.*)*', redirect: '/' }
-//     ]
-// })
+    const authStore = useAuthStore()
 
-// // router.beforeEach(async (to) => {
-// //     const publicPages = ['/account/login', '/account/register']
-// //     const authRequired = !publicPages.includes(to.path)
-// //     const authStore = useAuthStore()
+    if (!authStore.usuario) {
+        const savedAuth = localStorage.getItem('auth')
+        if (savedAuth) {
+            const parsed = JSON.parse(savedAuth)
+            authStore.usuario = parsed.usuario
+        }
+    }
 
-// //     if (authRequired && !authStore.usuario) {
-// //         authStore.returnUrl = to.fullPath
-// //         return '/account/login'
-// //     }
-// // })
+    if (authRequired && !authStore.usuario) {
+        authStore.returnUrl = to.fullPath
+        return next('/login')
+    }
+
+    document.title = `${to.meta.title} | Sistema`
+
+    next()
+})

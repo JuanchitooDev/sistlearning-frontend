@@ -14,10 +14,11 @@ export interface IPersona {
     ubigeo_reniec?: string
     ubigeo_sunat?: string
     ubigeo?: string
-    fecha_nacimiento?: Date
+    fecha_nacimiento?: string
     estado_civil?: string
     foto?: string
     sexo?: string
     origen?: string
+    sistema?: boolean
     estado?: boolean
 }

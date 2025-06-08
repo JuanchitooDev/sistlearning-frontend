@@ -1,6 +1,6 @@
 <template>
     <DefaultLayout>
-        <BreadcrumbDefault :pageTitle="pageTitle" :options="options"/>
+        <BreadcrumbDefault :pageTitle="pageTitle" :urlCurrentName="urlCurrentName" :options="options"/>
         <div class="flex justify-center items-center">
             <div class="w-full max-w-3xl">
                 <DefaultCard :cardTitle="cardTitle">
@@ -28,7 +28,9 @@ export default {
         CertificadoForm
     },
     setup() {
-        const pageTitle = ref("Nuevo certificado")
+        const pageTitle = ref("")
+        const urlCurrentName = ref("Nuevo certificado")
+
         const cardTitle = ref("Formulario de registro")
         const route = useRoute()
 
@@ -55,6 +57,7 @@ export default {
 
         return {
             pageTitle,
+            urlCurrentName,
             cardTitle,
             options
         }

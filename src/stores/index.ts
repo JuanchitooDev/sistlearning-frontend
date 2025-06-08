@@ -1,10 +1,5 @@
-// import { createPinia } from 'pinia';
-// const pinia = createPinia();
-// export default pinia;
 
-// export * from './authStore'
-// export * from './usuarioStore'
-
+export * from './authStore'
 export * from './tipoEventoStore'
 export * from './eventoStore'
 export * from './alumnoStore'
@@ -13,3 +8,12 @@ export * from './certificadoStore'
 export * from './reporteStore'
 export * from './personaStore'
 export * from './sidebar'
+export * from './plantillaStore'
+export * from './instructorStore'
+export * from './paisStore'
+export * from './adjuntoStore'
+export * from './usuarioStore'
+export * from './perfilStore'
+export * from './toastStore'
+export * from './cargoStore'
+export * from './trabajadorStore'

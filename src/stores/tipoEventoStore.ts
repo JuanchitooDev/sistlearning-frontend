@@ -8,7 +8,8 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
         tipoEvento: null,
         loading: false,
         error: null as string | null,
-        message: ''
+        message: '',
+        result: false
     }),
     actions: {
         async fetchTipoEventos(estado: boolean | null = null) {
@@ -16,15 +17,21 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
             this.error = null
             try {
                 const response = await api.get('/tipo-evento')
-                if (response.data.result) {
-                    const tipos = response.data.data
+                const { data } = response
+                const { result } = data
+
+                if (result) {
+                    const tipos = data.data
+                
                     if (estado) {
+                        this.result = result
                         this.tipos = tipos.filter((tipo: ITipoEvento) => tipo.estado === estado)
                     } else {
                         this.tipos = tipos
                     }
                 }
             } catch (error) {
+                this.result = false
                 console.error('Error fetching tipo eventos: ', error)
             } finally {
                 this.loading = false
@@ -33,12 +40,39 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
         async getTipoEventoById(id: number) {
             try {
                 const response = await api.get(`/tipo-evento/${id}`)
-                if (response.data.result) {
-                    this.tipoEvento = response.data.data
+                const { data } = response
+                const { result, message } = data
+                
+                if (result) {
+                    this.result = result
+                    this.tipoEvento = data.data
                 } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.message = message || data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.result = false
+                this.message = "Error al obtener el tipo de evento"
+                console.error('Error al obtener el tipo evento: ', error)
+            } finally {
+                this.loading = false
+            }
+        },
+        async getTipoEventoByNombre(nombre: string) {
+            try {
+                const url = `/tipo-evento/nombre/${nombre}`
+                const response = await api.get(`${url}`)
+                const { data } = response
+                const { result, message } = data
+                
+                if (result) {
+                    this.result = result
+                    this.tipoEvento = data.data
+                } else {
+                    this.tipoEvento = null
+                    this.message = message || data.error || 'Error desconocido'
+                }
+            } catch (error) {
+                this.result = false
                 this.message = "Error al obtener el tipo de evento"
                 console.error('Error al obtener el tipo evento: ', error)
             } finally {
@@ -48,41 +82,76 @@ export const useTipoEventoStore = defineStore('tipoEventoStore', {
         async createTipoEvento(tipoEvento: ITipoEvento) {
             try {
                 const response = await api.post('/tipo-evento', tipoEvento)
-                if (response.data.result) {
-                    this.tipos.push(response.data.data)
-                    this.message = response.data.message
+                const { data } = response
+                const { result, message } = data                
+                
+                if (result) {
+                    this.result = result
+                    this.tipos.push(data.data)
+                    this.message = message
                 } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.message = message || data.error || 'Error desconocido'
                 }
             } catch (error) {
                 this.message = "Error al crear un nuevo tipo de evento"
+                this.result = false
                 console.error('Error creating tipo evento: ', error)
             }
         },
         async updateTipoEvento(idTipoEvento: number, tipoEvento: ITipoEvento) {
             try {
                 const response = await api.put(`/tipo-evento/${idTipoEvento}`, tipoEvento)
-                if (response.data.result) {
-                    this.message = response.data.message
+                const { data } = response
+                const { result, message } = data
+                
+                if (result) {
+                    this.result = result
+                    this.message = message
                 } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.message = message || data.error || 'Error desconocido'
                 }
             } catch (error) {
                 this.message = "Error al actualizar el tipo de evento"
+                this.result = false
+                console.error('Error updating tipo evento: ', error)
+            }
+        },
+        async updateEstado(idTipoEvento: number, newEstado: boolean) {
+            try {
+                const response = await api.put(`/tipo-evento/cambiar-estado/${idTipoEvento}`, {
+                    estado: newEstado
+                })
+                const { data } = response
+                const { result, message, error } = data
+
+                if (result) {
+                    this.result = result
+                    this.message = message
+                } else {
+                    this.message = message || error || 'Error desconocido'
+                }
+            } catch (error) {
+                this.result = false
+                this.message = "Error al actualizar el estado"
                 console.error('Error updating tipo evento: ', error)
             }
         },
         async deleteTipoEvento(idTipoEvento: number) {
             try {
                 const response = await api.delete(`/tipo-evento/${idTipoEvento}`)
-                if (response.data.result) {
+                const { data } = response
+                const { result, message, error } = data
+                
+                if (result) {
+                    this.result = result
                     this.tipos = this.tipos.filter((tipo) => tipo.id !== idTipoEvento)
-                    this.message = response.data.message
+                    this.message = message
                 } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.message = message || error || 'Error desconocido'
                 }
             } catch (error) {
                 this.message = 'Error al eliminar el tipo de evento'
+                this.result = false
                 console.error('Error deleting tipo evento: ', error)
             }
         }

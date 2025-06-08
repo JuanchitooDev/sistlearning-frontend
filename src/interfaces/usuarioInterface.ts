@@ -1,10 +1,14 @@
 import { IPerfil } from "./perfilInterface"
 import { ITrabajador } from "./trabajadorInterface"
+import { IInstructor } from './instructorInterface'
+import { IAlumno } from './alumnoInterface'
 
 export interface IUsuario {
     id?: number
     id_trabajador?: number
     id_perfil?: number
+    id_instructor?: number
+    id_alumno?: number
     username?: string
     password?: string
     token?: string
@@ -15,4 +19,6 @@ export interface IUsuario {
     estado?: boolean
     trabajador?: ITrabajador
     perfil?: IPerfil
+    instructor?: IInstructor
+    alumno?: IAlumno
 }

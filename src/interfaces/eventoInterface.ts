@@ -1,10 +1,11 @@
 import { ITipoEvento } from "./tipoEventoInterface"
+import { IInstructor } from './instructorInterface'
 
 export interface IEvento {
     id?: number
     id_parent?: number
     id_tipoevento?: number
-    id_trabajador?: number
+    id_instructor?: number
     titulo?: string
     titulo_url?: string
     descripcion?: string
@@ -13,11 +14,13 @@ export interface IEvento {
     fecha?: Date
     fecha_fin?: string
     modalidad?: string
-    duracion?: string
     precio?: number
+    duracion?: string
+    capacidad_maxima?: number
     user_crea?: string
     user_actualiza?: string
     user_elimina?: string
     estado?: boolean
     tipoEvento?: ITipoEvento
+    instructor?: IInstructor
 }

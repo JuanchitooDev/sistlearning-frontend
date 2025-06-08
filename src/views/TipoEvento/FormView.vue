@@ -1,6 +1,6 @@
 <template>
     <DefaultLayout>
-        <BreadcrumbDefault :pageTitle="pageTitle" :options="options"/>
+        <BreadcrumbDefault :pageTitle="pageTitle" :urlCurrentName="urlCurrentName" :options="options" />
         <div class="flex justify-center items-center">
             <div class="w-full max-w-3xl">
                 <DefaultCard :cardTitle="cardTitle">
@@ -28,14 +28,16 @@ export default {
         TipoEventoForm
     },
     setup() {
-        const pageTitle = ref("Nuevo tipo de evento")
+        const pageTitle = ref("")
+        const urlCurrentName = ref("Nuevo tipo de evento")
+
         const cardTitle = ref("Formulario de registro")
         const route = useRoute()
 
         const options = ref(
             [
                 {
-                    'url': '/',
+                    'url': '/dashboard',
                     'title': 'Dashboard'
                 },
                 {
@@ -49,12 +51,13 @@ export default {
             const tipoEventoId = route.params.id
             if (tipoEventoId) {
                 pageTitle.value = "Editar tipo de evento",
-                cardTitle.value = "Formulario de actualización"
+                    cardTitle.value = "Formulario de actualización"
             }
         })
 
         return {
             pageTitle,
+            urlCurrentName,
             cardTitle,
             options
         }

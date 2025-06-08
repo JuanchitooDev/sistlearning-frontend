@@ -1,6 +1,6 @@
 <template>
     <DefaultLayout>
-        <BreadcrumbDefault :pageTitle="pageTitle" />
+        <BreadcrumbDefault :pageTitle="pageTitle" :urlCurrentName="urlCurrentName"/>
         <div class="flex flex-col gap-10">
             <CertificadoTable />
         </div>
@@ -21,10 +21,12 @@ export default {
         BreadcrumbDefault
     },
     setup() {
-        const pageTitle = ref("Certificado")
+        const pageTitle = ref("Listado")
+        const urlCurrentName = ref("Certificado")
 
         return {
-            pageTitle
+            pageTitle,
+            urlCurrentName
         }
     }
 }

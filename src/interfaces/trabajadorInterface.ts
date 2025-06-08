@@ -1,6 +1,9 @@
+import { ITipoDocumento } from './tipoDocumentoInterface'
+import { ICargo } from './cargoInterface'
+
 export interface ITrabajador {
     id?: number
-    id_perfil?: number
+    id_cargo?: number
     id_tipodocumento?: number
     numero_documento?: string
     apellido_paterno?: string
@@ -20,4 +23,6 @@ export interface ITrabajador {
     user_elimina?: string
     sistema?: boolean
     estado?: boolean
+    tipoDocumento?: ITipoDocumento
+    cargo?: ICargo
 }

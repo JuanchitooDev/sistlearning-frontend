@@ -7,16 +7,26 @@ export const useTipoDocumentoStore = defineStore('tipoDocumentoStore', {
         tipos: [] as ITipoDocumento[],
         tipoDocumento: null,
         loading: false,
-        error: null as string | null
+        error: null as string | null,
+        message: '',
+        result: false
     }),
     actions: {
         async fetchTipos() {
             this.loading = true
             this.error = null
+
             try {
                 const response = await api.get('/tipo-documento')
-                this.tipos = response.data.data
+                const { data } = response
+                const { result } = data
+                
+                if (result) {
+                    this.result = result
+                    this.tipos = data.data
+                }
             } catch (error) {
+                this.result = false
                 console.error('Error fetching tipo documentos: ', error)
             } finally {
                 this.loading = false
@@ -25,13 +35,19 @@ export const useTipoDocumentoStore = defineStore('tipoDocumentoStore', {
         async fetchTiposPorCategoria(categoria: String) {
             this.loading = true
             this.error = null
+
             try {
                 const response = await api.get(`/tipo-documento/categoria/${categoria}`)
-                this.tipos = response.data.data
-                return this.tipos
+                const { data } = response
+                const { result } = data
+
+                if (result) {
+                    this.result = result
+                    this.tipos = data.data
+                }            
             } catch (error) {
+                this.result = false
                 console.error('Error fetching tipo documentos por categoria: ', error)
-                return [];
             } finally {
                 this.loading = false
             }
@@ -39,8 +55,15 @@ export const useTipoDocumentoStore = defineStore('tipoDocumentoStore', {
         async getTipoDocumentoById(id: number) {
             try {
                 const response = await api.get(`/tipo-documento/${id}`)
-                this.tipos = response.data.data
+                const { data } = response
+                const { result } = data
+
+                if (result) {
+                    this.result = result
+                    this.tipos = data.data
+                }
             } catch (error) {
+                this.result = false
                 console.error('Error al obtener el tipo documento: ', error)
             } finally {
                 this.loading = false
@@ -49,35 +72,59 @@ export const useTipoDocumentoStore = defineStore('tipoDocumentoStore', {
         async createTipoDocumento(tipoDocumento: ITipoDocumento) {
             try {
                 const response = await api.post('/tipo-documento', tipoDocumento)
-                this.tipos.push(response.data)
+                const { data } = response
+                const { result, message } = data
+
+                if (result) {
+                    this.result = result
+                    this.tipos.push(response.data)
+                    this.message = message
+                } else {
+                    this.message = message || data.error || 'Error desconocido'
+                }
             } catch (error) {
+                this.message = "Error al crear un tipo de documento"
+                this.result = false
                 console.error('Error creating tipo documento: ', error)
             }
         },
         async updateTipoDocumento(idTipoDocumento: number, tipoDocumento: ITipoDocumento) {
             try {
-                await api.put(`/tipo-documento/${idTipoDocumento}`, tipoDocumento)
-                const index = this.tipos.findIndex((tipo) => tipo.id === tipoDocumento.id)
-                if (index !== -1) {
-                    this.tipos[index] = tipoDocumento
+                const response = await api.put(`/tipo-documento/${idTipoDocumento}`, tipoDocumento)
+                const { data } = response
+                const { result, message } = data
+
+                if (result) {
+                    this.result = result
+                    this.message = message
+                } else {
+                    this.message = message || data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.message = 'Error al actualizar el tipo de documento'
+                this.result = false
                 console.error('Error updating tipo documento: ', error)
             }
         },
         async deleteTipoDocumento(idTipoDocumento: number) {
             try {
-                await api.delete(`/tipo-documento/${idTipoDocumento}`)
-                this.tipos = this.tipos.filter((tipo) => tipo.id !== idTipoDocumento)
+                const response = await api.delete(`/tipo-documento/${idTipoDocumento}`)
+                const { data } = response
+                const { result, message } = data
+
+                if (result) {
+                    this.result = result
+                    this.tipos = this.tipos.filter((tipo) => tipo.id !== idTipoDocumento)
+                    this.message = message
+                } else {
+                    this.message = message || data.error || 'Error desconocido'
+                }
+
             } catch (error) {
+                this.message = 'Error al eliminar el tipo de documento'
+                this.result = false
                 console.error('Error deleting tipo documento: ', error)
             }
-        },
-        setTipoDocumento(tipoDocumento: any) {
-            this.tipoDocumento = tipoDocumento
-        },
-        cancelEdit() {
-            this.tipoDocumento = null
         }
     }
 })

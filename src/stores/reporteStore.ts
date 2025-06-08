@@ -11,17 +11,21 @@ export const useReporteStore = defineStore('reporteStore', {
         async downloadCumpleanios() {
             this.loading = true
             this.error = null
+            
             try {
                 const urlApi = `/reporte/alumnos-cumpleanios`
                 const response = await api.get(urlApi, {
                     responseType: 'blob'
                 })
+                const { status, data } = response
 
-                if (response.status === 200) {
+                if (status === 200) {
                     this.message = "Reporte descargado correctamente"
+                    
                     const fileName = `listado_cumpleanios.xlsx`
-                    const url = window.URL.createObjectURL(new Blob([response.data]))
+                    const url = window.URL.createObjectURL(new Blob([data]))
                     const link = document.createElement('a')
+                    
                     link.href = url
                     link.setAttribute('download', `${fileName}`)
                     document.body.appendChild(link)

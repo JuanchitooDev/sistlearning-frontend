@@ -12,16 +12,25 @@ export const useAlumnoStore = defineStore('alumnoStore', {
         result: false
     }),
     actions: {
-        async fetchAlumnos() {
+        async fetchAlumnos(estado: boolean | null = null) {
             this.loading = true
             this.error = null
             try {
                 const response = await api.get('/alumno')
-                if (response.data.result) {
-                    const alumnos = response.data.data
-                    this.alumnos = alumnos
+                const { data } = response
+                const { result } = data
+                
+                if (result) {
+                    const alumnos = data.data
+                    if (estado) {
+                        this.alumnos = alumnos.filter((alumno: IAlumno) => alumno.estado === estado)
+                    } else {
+                        this.alumnos = alumnos
+                    }
+                    this.result = result
                 }
             } catch (error) {
+                this.result = false
                 console.error('Error fetching alumnos: ', error)
             } finally {
                 this.loading = false
@@ -30,14 +39,46 @@ export const useAlumnoStore = defineStore('alumnoStore', {
         async getAlumnoById(id: number) {
             try {
                 const response = await api.get(`/alumno/${id}`)
-                console.log('response getAlumnoById', response)
-                if (response.data.result) {
-                    this.alumno = response.data.data
+                const { data } = response
+                const { result, message } = data
+
+                if (result) {
+                    this.result = result
+                    this.alumno = data.data
                 } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.message = message || data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.result = false
                 this.message = "Error al obtener al alumno"
+                console.error('Error al obtener al alumno: ', error)
+            } finally {
+                this.loading = false
+            }
+        },
+        async getAlumnoByTipoDocNumDoc(idTipoDoc: number, numDoc: string) {
+            try {
+                this.alumno = null
+                this.message = ""
+
+                const url = `/alumno/tipo-documento/${idTipoDoc}/numero-documento/${numDoc}`
+                const response = await api.get(`${url}`)
+
+                const { data } = response
+                const { result, message } = data
+
+                if (result) {
+                    this.result = result
+                    this.alumno = data.data
+                    this.message = message
+                } else {
+                    this.alumno = null
+                    this.message = message || data.error || 'Error desconocido'
+                }
+            } catch (error) {
+                this.result = false
+                this.message = "Error al obtener al alumno"
+                this.alumno = null
                 console.error('Error al obtener al alumno: ', error)
             } finally {
                 this.loading = false
@@ -46,12 +87,15 @@ export const useAlumnoStore = defineStore('alumnoStore', {
         async createAlumno(alumno: IAlumno) {
             try {
                 const response = await api.post('/alumno', alumno)
-                this.result = response.data.result
-                if (this.result) {
+                const { data } = response
+                const { result, message, error } = data
+
+                if (result) {
+                    this.result = result
                     this.alumnos.push(response.data.data)
                     this.message = response.data.message
                 } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.message = message || error || 'Error desconocido'
                 }
             } catch (error) {
                 this.message = "Error al crear un nuevo alumno"
@@ -62,29 +106,57 @@ export const useAlumnoStore = defineStore('alumnoStore', {
         async updateAlumno(idAlumno: number, alumno: IAlumno) {
             try {
                 const response = await api.put(`/alumno/${idAlumno}`, alumno)
-                this.result = response.data.result
-                if (this.result) {
+                const { data } = response
+                const { result, message, error } = data
+                
+                if (result) {
+                    this.result = result
                     this.message = response.data.message
                 } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.message = message || error || 'Error desconocido'
                 }
             } catch (error) {
                 this.message = "Error al actualizar el alumno"
+                this.result = false
+                console.error('Error updating alumno: ', error)
+            }
+        },
+        async updateEstado(idAlumno: number, newEstado: boolean) {
+            try {
+                const response = await api.put(`/alumno/cambiar-estado/${idAlumno}`, {
+                    estado: newEstado
+                })
+                const { data } = response
+                const { result, message, error } = data
+                
+                if (result) {
+                    this.result = result
+                    this.message = data.message
+                } else {
+                    this.message = message || error || 'Error desconocido'
+                }
+            } catch (error) {
+                this.result = false
+                this.message = "Error al actualizar el estado"
                 console.error('Error updating alumno: ', error)
             }
         },
         async deleteAlumno(idAlumno: number) {
             try {
                 const response = await api.delete(`/alumno/${idAlumno}`)
-                this.result = response.data.result
-                if (this.result) {
+                const { data } = response
+                const { result, message, error } = data
+                
+                if (result) {
+                    this.result = result
                     this.alumnos = this.alumnos.filter((a) => a.id !== idAlumno)
-                    this.message = response.data.message
+                    this.message = message
                 } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.message = message || error || 'Error desconocido'
                 }
             } catch (error) {
                 this.message = 'Error al eliminar el alumno'
+                this.result = false
                 console.error('Error deleting alumno: ', error)
             }
         }

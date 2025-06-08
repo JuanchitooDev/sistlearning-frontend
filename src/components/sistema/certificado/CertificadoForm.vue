@@ -1,5 +1,6 @@
 <template>
   <div class="px-6 py-8">
+    <!--
     <div v-if="message" :class="{ 'bg-green-100 text-green-800': !isError, 'bg-red-100 text-red-800': isError }"
       class="p-4 mb-6 rounded-md">
       <div class="flex items-center">
@@ -9,80 +10,77 @@
         <span>{{ message }}</span>
       </div>
     </div>
+    -->
     <form @submit.prevent="submitForm">
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <div class="mb-4">
-            <label for="id_alumno" class="block text-sm font-medium text-gray-700">Alumno:</label>
-            <input type="text" v-model="searchQuery" @input="filterAlumnos" placeholder="Buscar alumno..."
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Columna izquierda: búsqueda -->
+        <div class="space-y-4">
+          <!-- Buscar alumno -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Buscar alumno: <span
+                class="text-red-500">*</span></label>
+            <input type="text" v-model="searchQuery" @input="filterAlumnos" placeholder="Ej. Juan Pérez"
               class="mt-1 p-2 border border-gray-300 rounded w-full" />
-          </div>
-          <div class="mb-4">
             <div v-if="filteredAlumnos.length > 0"
-              class="mt-2 bg-white border border-gray-300 rounded max-h-60 overflow-y-auto" style="max-height: 200px">
+              class="mt-2 bg-white border border-gray-300 rounded max-h-60 overflow-y-auto">
               <ul>
                 <li v-for="alumno in filteredAlumnos" :key="alumno.id" @click="selectAlumno(alumno)"
                   class="p-2 hover:bg-gray-200 cursor-pointer">
-                  {{ alumno.nombres }} {{ alumno.apellido_paterno }}
-                  {{ alumno.apellido_materno }}
+                  {{ alumno.nombres }} {{ alumno.apellido_paterno }} {{ alumno.apellido_materno }}
                 </li>
               </ul>
             </div>
+            <div v-if="errors.id_alumno" class="text-red-600 text-sm mt-1">{{ errors.id_alumno }}</div>
           </div>
-          <div class="mb-4">
-            <label for="nombre_alumno_impresion" class="block text-sm font-medium text-gray-700">Nombre alumno
-              impresión:</label>
-            <input v-model="certificado.nombre_alumno_impresion" type="text" id="nombre_alumno_impresion"
-              autocomplete="off" required placeholder="Ejm: José Carlos Pérez Pérez"
-              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 rounded-md p-2 focus:ring focus:ring-blue-300"/>
-          </div>
-        </div>
-        <div>
-          <div class="mb-4">
-            <label for="id_evento" class="block text-sm font-medium text-gray-700">Evento:</label>
-            <select name="id_evento" id="id_evento" v-model="certificado.id_evento"
-              class="mt-1 p-2 border border-gray-300 rounded w-full">
+
+          <!-- Buscar evento -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Seleccionar evento: <span
+                class="text-red-500">*</span></label>
+            <select v-model="certificado.id_evento" class="mt-1 p-2 border border-gray-300 rounded w-full">
               <option value="">- SELECCIONE -</option>
               <option v-for="evento in eventos" :value="evento.id" :key="evento.id">
                 {{ evento.titulo }}
               </option>
             </select>
+            <div v-if="errors.id_evento" class="text-red-600 text-sm mt-1">{{ errors.id_evento }}</div>
           </div>
-          <div class="mb-4">
-            <label for="fecha_envio" class="block text-sm font-medium text-gray-700">Fecha emisión:</label>
-            <input v-model="certificado.fecha_envio" type="date" id="fecha_envio" autocomplete="off" required
+        </div>
+
+        <!-- Columna derecha: información adicional -->
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Nombre alumno (para impresión): <span
+                class="text-red-500">*</span></label>
+            <input v-model="certificado.nombre_alumno_impresion" type="text" placeholder="Ej. Juan Pérez Rodríguez"
+              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
+            <div v-if="errors.nombre_alumno_impresion" class="text-red-600 text-sm mt-1">{{
+              errors.nombre_alumno_impresion }}</div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Fecha de emisión: <span
+                class="text-red-500">*</span></label>
+            <input v-model="certificado.fecha_envio" type="date"
               class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           </div>
-          <!-- <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700">Seleccionar plantilla:</label>
-            <div class="flex gap-4">
-              <div v-for="(template, index) in templates" :key="index" class="flex items-center">
-                <input type="radio" :id="template.id" v-model="certificado.templateName" :value="template.id"
-                  class="mr-2" required />
-                <label :for="template.id">{{ template.name }}</label>
-              </div>
-            </div>
-            <div v-if="templateError" class="text-red-500 text-sm mt-2">
-              La selección de la plantilla es obligatoria.
-            </div>
-          </div> -->
+          <div v-if="errors.fecha_envio" class="text-red-600 text-sm mt-1">{{ errors.fecha_envio }}</div>
         </div>
       </div>
-      <div class="flex justify-between">
+
+      <!-- Botones -->
+      <div class="flex justify-between mt-8">
         <button type="submit"
-          class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-blue-300 disabled:cursor-not-allowed"
+          class="flex items-center px-4 py-2 bg-greenwhite-600 text-white rounded-md hover:bg-greenwhite-700 disabled:bg-greenwhite-300 disabled:cursor-not-allowed"
           :disabled="loading">
           <svg v-if="loading" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1 animate-spin" fill="none"
             viewBox="0 0 24 24" stroke="currentColor">
             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle>
           </svg>
-          <span v-if="!loading">{{
-            certificado.id ? 'Actualizar' : 'Registrar'
-          }}</span>
-          <span v-else>Guardando...</span>
+          {{ loading ? 'Guardando...' : (certificado.id ? 'Actualizar' : 'Registrar') }}
         </button>
+
         <button type="button"
-          class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4 disabled:bg-blue-300 disabled:cursor-not-allowed"
+          class="flex items-center px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 ml-4"
           :disabled="loading" @click="cancelar">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
@@ -98,9 +96,7 @@
 <script>
 import { onMounted, ref, computed } from 'vue';
 import { useRoute } from "vue-router"
-import { useAlumnoStore } from "@/stores"
-import { useEventoStore } from '@/stores';
-import { useCertificadoStore } from '@/stores';
+import { useAlumnoStore, useEventoStore, useCertificadoStore, useToastStore } from "@/stores"
 import { currentDate } from "@/utils/date.utils";
 
 export default {
@@ -116,21 +112,23 @@ export default {
     const storeCertificado = useCertificadoStore();
     const storeAlumno = useAlumnoStore();
     const storeEvento = useEventoStore();
-
-    const alumnos = computed(() => storeAlumno.alumnos)
-    const eventos = computed(() => storeEvento.eventos)
-
-    const searchQuery = ref('');
-
-    const loading = ref(false);
+    const storeToast = useToastStore();
     const route = useRoute()
 
-    // Computed para obtener el mensaje desde el store
-    const message = computed(() => storeCertificado.message);
-    const isError = computed(() => storeCertificado.message && storeCertificado.message.includes('Error'));
-    const templateError = ref(false);
+    const alumnos = computed(() => storeAlumno.alumnos)
 
-    const isNombreAlumnoDisabled = ref(true);
+    const eventos = computed(() => {
+      return [...storeEvento.eventos].sort((a, b) => a.titulo.localeCompare(b.titulo))
+    })
+
+    const searchQuery = ref('')
+    const loading = ref(false)
+    const isNombreAlumnoDisabled = ref(true)
+    const errors = ref({})
+
+    // const message = computed(() => storeCertificado.message);
+    // const isError = computed(() => storeCertificado.message && storeCertificado.message.includes('Error'));
+    const templateError = ref(false);
 
     const filteredAlumnos = computed(() => {
       return alumnos.value.filter((alumno) => {
@@ -140,20 +138,27 @@ export default {
       });
     });
 
-    const templates = [
-      {
-        id: 'template_uno',
-        name: 'Template Uno',
-      },
-      {
-        id: 'template_dos',
-        name: 'Template Dos',
-      },
-      {
-        id: 'template_tres',
-        name: 'Template Tres',
-      },
-    ];
+    const validateForm = () => {
+      errors.value = {}
+
+      if (!certificado.value.id_alumno) {
+        errors.value.id_alumno = 'Seleccione un alumno'
+      }
+
+      if (!certificado.value.id_evento) {
+        errors.value.id_evento = 'Seleccione un evento'
+      }
+
+      if (!certificado.value.nombre_alumno_impresion || certificado.value.nombre_alumno_impresion.trim() === '') {
+        errors.value.nombre_alumno_impresion = 'El nombre del alumno es obligatorio'
+      }
+
+      if (!certificado.value.fecha_envio) {
+        errors.value.fecha_envio = 'Seleccione una fecha'
+      }
+
+      return Object.keys(errors.value).length === 0
+    }
 
     const loadAlumnos = () => {
       filteredAlumnos.value = alumnos.value;
@@ -178,10 +183,17 @@ export default {
     };
 
     onMounted(async () => {
+      storeAlumno.fetchAlumnos();
+      storeEvento.fetchEventos();
+      loadAlumnos();
+      storeCertificado.message = ""
+
       const certificadoId = route.params.id
+
       if (certificadoId) {
         await storeCertificado.getCertificadoById(certificadoId)
         certificado.value = storeCertificado.certificado || {}
+
         if (certificado.value) {
           const partFecha = certificado.value.fecha_envio.split("T")
           certificado.value.fecha_envio = partFecha[0]
@@ -192,38 +204,42 @@ export default {
     })
 
     const submitForm = async () => {
+      if (!validateForm()) return
+
       try {
         templateError.value = false;
         loading.value = true; // Activar el spinner
-
-        // if (!certificado.value.templateName) {
-        //   templateError.value = true;
-        //   return;
-        // }
-
-        console.log('certificado.value', certificado.value)
 
         if (certificado.value.id) {
           await storeCertificado.updateCertificado(
             certificado.value.id,
             certificado.value
           );
+
+          const classToast = (storeCertificado.result) ? 'success' : 'error'
+          storeToast.addToast(storeCertificado.message, classToast)
         } else {
           await storeAlumno.getAlumnoById(
             certificado.value.id_alumno
           );
+
           if (storeAlumno.alumno) {
             certificado.value.alumno = storeAlumno.alumno
             await storeCertificado.createCertificado(certificado.value)
-            if (storeCertificado.result) {
-              resetForm();
-            }
+            const classToast = (storeCertificado.result) ? 'success' : 'error'
+            storeToast.addToast(storeCertificado.message, classToast)
+            if (storeCertificado.result) resetForm()
+            // if (storeCertificado.result) {
+            //   resetForm();
+            // }
           } else {
-            console.error(storeAlumno.message)
+            storeToast.addToast(storeAlumno.message, 'error')
+            // console.error(storeAlumno.message)
           }
         }
       } catch (error) {
         console.log('error creating certificado', error);
+        storeToast.addToast(storeAlumno.message, 'error')
       } finally {
         loading.value = false; // Desactivar el spinner
       }
@@ -256,13 +272,6 @@ export default {
       isNombreAlumnoDisabled.value = true;
     };
 
-    onMounted(() => {
-      storeAlumno.fetchAlumnos();
-      storeEvento.fetchEventos();
-      loadAlumnos();
-      storeCertificado.message = ""
-    })
-
     return {
       alumnos,
       eventos,
@@ -274,11 +283,11 @@ export default {
       filteredAlumnos,
       filterAlumnos,
       selectAlumno,
-      message,
-      templates,
+      // message,
       templateError,
-      isError,
-      cancelar
+      // isError,
+      cancelar,
+      errors
     }
   }
 }

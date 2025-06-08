@@ -15,13 +15,20 @@ export const useEventoStore = defineStore('eventoStore', {
         async fetchEventos() {
             this.loading = true
             this.error = null
+
             try {
                 const response = await api.get('/evento')
-                if (response.data.result) {
-                    const eventos = response.data.data
+                console.log('responses eventos', response)
+                const { data } = response
+                const { result } = data
+            
+                if (result) {
+                    const eventos = data.data
                     this.eventos = eventos
+                    this.result = result
                 }
             } catch (error) {
+                this.result = false
                 console.error('Error fetching eventos: ', error)
             } finally {
                 this.loading = false
@@ -30,12 +37,39 @@ export const useEventoStore = defineStore('eventoStore', {
         async getEventoById(id: number) {
             try {
                 const response = await api.get(`/evento/${id}`)
-                if (response.data.result) {
-                    this.evento = response.data.data
+                const { data } = response
+                const { result, message } = data
+
+                if (result) {
+                    this.result = result
+                    this.evento = data.data
                 } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.message = message || data.error || 'Error desconocido'
                 }
             } catch (error) {
+                this.result = false
+                this.message = "Error al obtener el evento"
+                console.error('Error al obtener el evento: ', error)
+            } finally {
+                this.loading = false
+            }
+        },
+        async getEventoByTitulo(titulo: string) {
+            try {
+                const url = `/evento/titulo/${titulo}`
+                const response = await api.get(`${url}`)
+                const { data } = response
+                const { result, message } = data
+
+                if (result) {
+                    this.result = result
+                    this.evento = data.data
+                } else {
+                    this.evento = null
+                    this.message = message || data.error || 'Error desconocido'
+                }
+            } catch (error) {
+                this.result = false
                 this.message = "Error al obtener el evento"
                 console.error('Error al obtener el evento: ', error)
             } finally {
@@ -45,12 +79,15 @@ export const useEventoStore = defineStore('eventoStore', {
         async createEvento(evento: IEvento) {
             try {
                 const response = await api.post('/evento', evento)
-                this.result = response.data.result 
-                if (this.result) {
-                    this.eventos.push(response.data.data)
-                    this.message = response.data.message
+                const { data } = response
+                const { result, message } = data
+
+                if (result) {
+                    this.result = result
+                    this.eventos.push(data.data)
+                    this.message = message
                 } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.message = message || data.error || 'Error desconocido'
                 }
             } catch (error) {
                 this.message = "Error al crear un nuevo evento"
@@ -61,29 +98,57 @@ export const useEventoStore = defineStore('eventoStore', {
         async updateEvento(idEvento: number, evento: IEvento) {
             try {
                 const response = await api.put(`/evento/${idEvento}`, evento)
-                this.result = response.data.result 
-                if (this.result) {
-                    this.message = response.data.message
+                const { data } = response
+                const { result, message } = data
+                
+                if (result) {
+                    this.result = result
+                    this.message = message
                 } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.message = message || data.error || 'Error desconocido'
                 }
             } catch (error) {
                 this.message = "Error al actualizar el evento"
+                this.result = false
+                console.error('Error updating evento: ', error)
+            }
+        },
+        async updateEstado(idEvento: number, newEstado: boolean) {
+            try {
+                const response = await api.put(`/evento/cambiar-estado/${idEvento}`, {
+                    estado: newEstado
+                })
+                const { data } = response
+                const { result, message, error } = data
+
+                if (result) {
+                    this.result = result
+                    this.message = data.message
+                } else {
+                    this.message = message || error || 'Error desconocido'
+                }
+            } catch (error) {
+                this.result = false
+                this.message = "Error al actualizar el estado"
                 console.error('Error updating evento: ', error)
             }
         },
         async deleteEvento(idEvento: number) {
             try {
                 const response = await api.delete(`/evento/${idEvento}`)
-                this.result = response.data.result 
-                if (this.result) {
+                const { data } = response
+                const { result, message, error } = data
+                
+                if (result) {
+                    this.result = result
                     this.eventos = this.eventos.filter((ev) => ev.id !== idEvento)
-                    this.message = response.data.message
+                    this.message = message
                 } else {
-                    this.message = response.data.message || response.data.error || 'Error desconocido'
+                    this.message = message || error || 'Error desconocido'
                 }
             } catch (error) {
                 this.message = 'Error al eliminar el evento'
+                this.result = false
                 console.error('Error deleting evento: ', error)
             }
         }
