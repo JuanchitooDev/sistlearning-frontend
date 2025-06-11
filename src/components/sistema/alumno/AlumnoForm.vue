@@ -1,16 +1,5 @@
 <template>
   <div class="px-6 py-4">
-    <!--
-    <div v-if="message" :class="{ 'bg-green-100 text-green-800': !isError, 'bg-red-100 text-red-800': isError }"
-      class="p-4 mb-6 rounded-md">
-      <div class="flex items-center">
-        <span class="font-semibold mr-2">
-          {{ isError ? 'Error' : 'Éxito' }}:
-        </span>
-        <span>{{ message }}</span>
-      </div>
-    </div>
-  -->
     <form @submit.prevent="submitForm">
       <div class="grid grid-cols-2 gap-4">
         <div class="mb-1">
@@ -53,7 +42,7 @@
         <div class="mb-1">
           <label for="nombres" class="block text-sm font-medium text-gray-700">Nombres: <span
               class="text-red-500">*</span></label>
-          <input v-model="alumno.nombres" type="text" id="nombres" autocomplete="off" maxlength="30"
+          <input v-model="alumno.nombres" type="text" id="nombres" autocomplete="off" maxlength="40"
             placeholder="Ejm: José Carlos"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           <div v-if="errors.nombres" class="text-red-600 text-sm mt-1">{{ errors.nombres }}</div>
@@ -78,7 +67,7 @@
         <div class="mb-1">
           <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono: <span
               class="text-red-500">*</span></label>
-          <input v-model="alumno.telefono" type="text" id="telefono" autocomplete="off" maxlength="12"
+          <input v-model="alumno.telefono" type="text" id="telefono" autocomplete="off" maxlength="15"
             placeholder="Ejm: 995511224"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           <div v-if="errors.telefono" class="text-red-600 text-sm mt-1">{{ errors.telefono }}</div>
@@ -110,11 +99,6 @@
           Cancelar
         </button>
       </div>
-      <!--
-      <div v-if="isDuplicated" class="text-red-500 mt-2">
-        El alumno ya existe
-      </div>
-      -->
     </form>
   </div>
 </template>
@@ -151,10 +135,6 @@ export default {
     const isDuplicated = ref(false);
     const errors = ref({})
     const notificationAction = ref("")
-    // const message = ref("")
-    // const isError = ref(false)
-    // const message = computed(() => storeAlumno.message);
-    // const isError = computed(() => storeAlumno.message && storeAlumno.message.includes('Error'));
 
     const registerAlumno = ref(false)
     const registerPersona = ref(false)
@@ -204,8 +184,6 @@ export default {
 
       loading.value = true
       notificationAction.value = 'Cargando...'
-      // message.value = ""
-      // isError.value = false
       isDuplicated.value = false
 
       try {
@@ -213,12 +191,6 @@ export default {
           await storeAlumno.updateAlumno(alumno.value.id, alumno.value)
           const classToast = (storeAlumno.result) ? 'success' : 'error'
           storeToast.addToast(storeAlumno.message, classToast)
-          // if (storeAlumno.result) {
-          //   isError.value = false
-          // } else {
-          //   isError.value = true
-          // }
-          // message.value = storeAlumno.message
           isDuplicated.value = false
         } else {
           if (registerAlumno.value && !registerPersona.value) {
@@ -226,14 +198,10 @@ export default {
             await storeAlumno.createAlumno(alumno.value);
 
             if (storeAlumno.result) {
-              // message.value = storeAlumno.message
-              // isError.value = false
               storeToast.addToast(storeAlumno.message, 'success')
               isDuplicated.value = false
               resetForm()
             } else {
-              // message.value = 'No se pudo registrar al alumno'
-              // isError.value = true
               storeToast.addToast('No se pudo registrar al alumno', 'error')
               isDuplicated.value = false
               return
@@ -258,14 +226,10 @@ export default {
             await storePersona.createPersona(dataPersona)
 
             if (storePersona.result) {
-              // message.value = 'Alumno registrado exitosamente'
-              // isError.value = false
               storeToast.addToast('Alumno registrado exitosamente', 'success')
               isDuplicated.value = false
               resetForm()
             } else {
-              // message.value = 'No se pudo registrar al alumno'
-              // isError.value = true
               storeToast.addToast('No se pudo registrar al alumno', 'error')
               isDuplicated.value = false
               return
@@ -273,8 +237,6 @@ export default {
           }
         }
       } catch (error) {
-        // message.value = 'Falló al registrar alumno'
-        // isError.value = true
         storeToast.addToast('Falló al registrar alumno', 'error')
         isDuplicated.value = false
       } finally {
@@ -285,8 +247,6 @@ export default {
     const fetchPersona = async () => {
       loading.value = true; // Activa el estado de carga
       notificationAction.value = 'Buscar persona...'
-      // message.value = ""
-      // isError.value = false
       isDuplicated.value = false
 
       try {
@@ -316,8 +276,6 @@ export default {
             alumno.value.sexo = getAlumno.sexo || '';
             alumno.value.telefono = getAlumno.telefono
 
-            // message.value = storeAlumno.message
-            // isError.value = true
             storeToast.addToast(storeAlumno.message, 'warning')
             isDuplicated.value = true
 
@@ -337,7 +295,6 @@ export default {
             alumno.value.fecha_nacimiento = fechaNacimiento;
             alumno.value.sexo = getPersona.sexo || '';
 
-            // isError.value = false
             isDuplicated.value = false
 
             registerAlumno.value = true
@@ -357,8 +314,6 @@ export default {
             alumno.value.sexo = getAlumno.sexo || '';
             alumno.value.telefono = getAlumno.telefono
 
-            // message.value = storeAlumno.message
-            // isError.value = true
             storeToast.addToast(storeAlumno.message, 'warning')
             isDuplicated.value = true
 
@@ -383,17 +338,12 @@ export default {
               alumno.value.fecha_nacimiento = fechaNacimiento;
               alumno.value.sexo = persona.sexo || '';
 
-              // message.value = storePersona.message
-              // isError.value = false
-
               storeToast.addToast(storePersona.message, 'success')
               isDuplicated.value = false
 
               registerAlumno.value = true
               registerPersona.value = false
             } else {
-              // message.value = storePersona.message
-              // isError.value = true
               storeToast.addToast(storePersona.message, 'error')
               isDuplicated.value = false
 
@@ -404,8 +354,6 @@ export default {
         }
       } catch (error) {
         console.error(error);
-        // message.value = 'Falló al buscar la persona'
-        // isError.value = true
         storeToast.addToast('Falló al buscar persona', 'error')
         isDuplicated.value = false
 
@@ -428,8 +376,6 @@ export default {
         sexo: '',
       }
       isDuplicated.value = false
-      // message.value = ""
-      // isError.value = false
     }
 
     const resetForm = () => {
@@ -472,8 +418,6 @@ export default {
       fetchPersona,
       isDuplicated,
       loading,
-      // message,
-      // isError,
       cancelar,
       errors,
       notificationAction,

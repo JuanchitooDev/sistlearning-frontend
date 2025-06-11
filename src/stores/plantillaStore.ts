@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-const BASE_URL = import.meta.env.VITE_BASE_URL || 'http://localhost:3000'
+const BASE_URL = process.env.VUE_APP_BASE || 'http://localhost:3000'
 
 export const usePlantillaStore = defineStore('plantillaStore', {
     state: () => ({
@@ -39,6 +39,11 @@ export const usePlantillaStore = defineStore('plantillaStore', {
                 id: 'plantilla_g',
                 titulo: 'Plantilla G',
                 imagen: `${BASE_URL}/img/plantillas/plantilla_g.png`
+            },
+            {
+                id: 'congreso_internacional_cuy_2025',
+                titulo: 'Plantilla Congreso Internacional Cuy 2025',
+                imagen: `${BASE_URL}/img/plantillas/congreso_internacional_cuy_2025_estudiantes.png`
             }
         ]
     }),

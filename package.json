@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview"
+    "lint": "vue-cli-service lint",
+    "build": "vue-cli-service build",
+    "serve": "vue-cli-service serve"
   },
   "dependencies": {
     "@heroicons/vue": "^1.0.6",

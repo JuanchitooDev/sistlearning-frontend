@@ -1,16 +1,5 @@
 <template>
   <div class="px-6 py-4">
-    <!--
-    <div v-if="message" :class="{ 'bg-green-100 text-green-800': !isError, 'bg-red-100 text-red-800': isError }"
-      class="p-4 mb-6 rounded-md">
-      <div class="flex items-center">
-        <span class="font-semibold mr-2">
-          {{ isError ? 'Error' : 'Éxito' }}:
-        </span>
-        <span>{{ message }}</span>
-      </div>
-    </div>
-    -->
     <form @submit.prevent="submitForm">
       <div class="grid grid-cols-2 gap-4">
         <div class="mb-1">
@@ -38,7 +27,7 @@
           <label for="apellido_paterno" class="block text-sm font-medium text-gray-700">Apellido paterno: <span
               class="text-red-500">*</span></label>
           <input v-model="instructor.apellido_paterno" type="text" id="apellido_paterno" autocomplete="off"
-            maxlength="20" placeholder="Ejm: Pérez"
+            maxlength="30" placeholder="Ejm: Pérez"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           <div v-if="errors.apellido_paterno" class="text-red-600 text-sm mt-1">{{ errors.apellido_paterno }}</div>
         </div>
@@ -46,14 +35,14 @@
           <label for="apellido_materno" class="block text-sm font-medium text-gray-700">Apellido materno: <span
               class="text-red-500">*</span></label>
           <input v-model="instructor.apellido_materno" type="text" id="apellido_materno" autocomplete="off"
-            maxlength="20" placeholder="Ejm: Pérez"
+            maxlength="30" placeholder="Ejm: Pérez"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           <div v-if="errors.apellido_materno" class="text-red-600 text-sm mt-1">{{ errors.apellido_materno }}</div>
         </div>
         <div class="mb-1">
           <label for="nombres" class="block text-sm font-medium text-gray-700">Nombres: <span
               class="text-red-500">*</span></label>
-          <input v-model="instructor.nombres" type="text" id="nombres" autocomplete="off" maxlength="30"
+          <input v-model="instructor.nombres" type="text" id="nombres" autocomplete="off" maxlength="40"
             placeholder="Ejm: José Carlos"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           <div v-if="errors.nombres" class="text-red-600 text-sm mt-1">{{ errors.nombres }}</div>
@@ -79,7 +68,7 @@
         <div class="mb-1">
           <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono: <span
               class="text-red-500">*</span></label>
-          <input v-model="instructor.telefono" type="text" id="telefono" autocomplete="off" maxlength="12"
+          <input v-model="instructor.telefono" type="text" id="telefono" autocomplete="off" maxlength="15"
             placeholder="Ejm: 995511224"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           <div v-if="errors.telefono" class="text-red-600 text-sm mt-1">{{ errors.telefono }}</div>
@@ -99,7 +88,7 @@
         <div class="mb-1">
           <label for="email" class="block text-sm font-medium text-gray-700">Email: <span
               class="text-red-500">*</span></label>
-          <input v-model="instructor.email" type="text" id="email" autocomplete="off" maxlength="30"
+          <input v-model="instructor.email" type="text" id="email" autocomplete="off" maxlength="50"
             placeholder="Ejm: jose.perez@email.com"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           <div v-if="errors.email" class="text-red-600 text-sm mt-1">{{ errors.email }}</div>
@@ -171,8 +160,6 @@ export default {
     const isDuplicated = ref(false);
     const errors = ref({})
     const notificationAction = ref("")
-    // const message = ref("")
-    // const isError = ref(false)
 
     const registerInstructor = ref(false)
     const registerPersona = ref(false)
@@ -230,8 +217,6 @@ export default {
 
       loading.value = true
       notificationAction.value = 'Cargando...'
-      // message.value = ""
-      // isError.value = false
       isDuplicated.value = false
 
       try {
@@ -274,77 +259,17 @@ export default {
             await storeInstructor.createInstructor(dataInstructor)
 
             if (storeInstructor.result) {
-              // message.value = 'Alumno registrado exitosamente'
-              // isError.value = false
               storeToast.addToast('Instructor registrado exitosamente', 'success')
               isDuplicated.value = false
               resetForm()
             } else {
-              // message.value = 'No se pudo registrar al alumno'
-              // isError.value = true
               storeToast.addToast('No se pudo registrar al instructor', 'error')
               isDuplicated.value = false
               return
             }
           }
         }
-
-
-        // const idTipoDoc = instructor.value.id_tipodocumento
-        // const numDoc = instructor.value.numero_documento
-
-        // await storeInstructor.getInstructorByTipoDocNumDoc(idTipoDoc, numDoc)
-
-        // if (storeInstructor.instructor) {
-        //   message.value = 'El instructor ya existe'
-        //   isError.value = true
-        //   isDuplicated.value = true
-        //   return
-        // }
-
-        // if (instructor.value.id) {
-        //   await storeInstructor.updateInstructor(instructor.value.id, instructor.value);
-        //   if (storeInstructor.result) {
-        //     isError.value = false
-        //   } else {
-        //     isError.value = true
-        //   }
-        //   message.value = storeInstructor.message
-        //   isDuplicated.value = false
-        // } else {
-        //   await storeInstructor.createInstructor(instructor.value);
-        //   if (storeInstructor.result) {
-        //     if (!storePersona.persona) {
-        //       const nombreCompleto = `${instructor.value.apellido_paterno.trim()} ${instructor.value.apellido_materno.trim()}, ${instructor.value.nombres.trim()}`
-        //       const dataPersona = {
-        //         id_tipodocumento: instructor.value.id_tipodocumento,
-        //         numero: instructor.value.numero_documento,
-        //         nombres: instructor.value.nombres,
-        //         apellido_paterno: instructor.value.apellido_paterno,
-        //         apellido_materno: instructor.value.apellido_materno,
-        //         fecha_nacimiento: instructor.value.fecha_nacimiento,
-        //         sexo: instructor.value.sexo,
-        //         nombre_completo: nombreCompleto,
-        //         origen: 'Web'
-        //       }
-        //       console.log('dataPersona', dataPersona)
-        //       await storePersona.createPersona(dataPersona)
-        //     }
-        //     message.value = storeInstructor.message
-        //     isError.value = false
-        //     isDuplicated.value = false
-        //     resetForm()
-        //   } else {
-        //     message.value = 'No se pudo registrar el instructor'
-        //     isError.value = true
-        //     isDuplicated.value = false
-        //     return
-        //   }
-        // }
       } catch (error) {
-        // console.log('error creating instructor', error);
-        // message.value = 'Falló al registrar instructor'
-        // isError.value = true
         storeToast.addToast('Falló al registrar instructor', 'error')
         isDuplicated.value = false
       } finally {
@@ -355,8 +280,6 @@ export default {
     const fetchPersona = async () => {
       loading.value = true; // Activa el estado de carga
       notificationAction.value = "Buscar persona..."
-      // message.value = ""
-      // isError.value = false
       isDuplicated.value = false
 
       try {
@@ -386,8 +309,6 @@ export default {
             instructor.value.sexo = getInstructor.sexo || '';
             instructor.value.telefono = getInstructor.telefono
 
-            // message.value = storeInstructor.message
-            // isError.value = true
             storeToast.addToast(storeInstructor.message, 'warning')
             isDuplicated.value = true
 
@@ -407,7 +328,6 @@ export default {
             instructor.value.fecha_nacimiento = fechaNacimiento;
             instructor.value.sexo = getPersona.sexo || '';
 
-            // isError.value = false
             isDuplicated.value = false
 
             registerInstructor.value = true
@@ -427,8 +347,6 @@ export default {
             instructor.value.sexo = getInstructor.sexo || '';
             instructor.value.telefono = getInstructor.telefono
 
-            // message.value = storeInstructor.message
-            // isError.value = true
             storeToast.addToast(storeInstructor.message, 'warning')
             isDuplicated.value = true
 
@@ -453,17 +371,12 @@ export default {
               instructor.value.fecha_nacimiento = fechaNacimiento;
               instructor.value.sexo = persona.sexo || '';
 
-              // message.value = storePersona.message
-              // isError.value = false
-
               storeToast.addToast(storePersona.message, 'success')
               isDuplicated.value = false
 
               registerInstructor.value = true
               registerPersona.value = false
             } else {
-              // message.value = storePersona.message
-              // isError.value = true
               storeToast.addToast(storePersona.message, 'error')
               isDuplicated.value = false
 
@@ -474,8 +387,6 @@ export default {
         }
       } catch (error) {
         console.error(error);
-        // message.value = 'Falló al buscar la persona'
-        // isError.value = true
         storeToast.addToast('Falló al buscar persona', 'error')
         isDuplicated.value = false
 
@@ -484,48 +395,6 @@ export default {
       } finally {
         loading.value = false
       }
-      /*
-      if (instructor.value.id_tipodocumento && instructor.value.numero_documento) {
-        try {
-          const idTipoDoc = instructor.value.id_tipodocumento
-          const numDoc = instructor.value.numero_documento
-
-
-
-          await storePersona.getDocumentoInfo(idTipoDoc, numDoc);
-          const persona = storePersona.persona;
-          console.log('persona fetchPersona', persona)
-
-          if (persona) {
-            let fechaNacimiento = '';
-            if (persona.fecha_nacimiento) {
-              const partsFechaNacimiento = persona.fecha_nacimiento.split('/');
-              fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`;
-            }
-            instructor.value.nombres = persona.nombres || '';
-            instructor.value.apellido_paterno = persona.apellido_paterno || '';
-            instructor.value.apellido_materno = persona.apellido_materno || '';
-            instructor.value.fecha_nacimiento = fechaNacimiento;
-            instructor.value.sexo = persona.sexo || '';
-
-            message.value = storePersona.message
-            isError.value = false
-            isDuplicated.value = false
-          } else {
-            message.value = storePersona.message
-            isError.value = true
-            isDuplicated.value = false
-          }
-        } catch (error) {
-          console.error(error);
-          message.value = "Falló al buscar la persona"
-          isError.value = true
-          isDuplicated.value = false
-        } finally {
-          loading.value = false; // Desactiva el estado de carga
-        }
-      }
-        */
     }
 
     const cancelar = () => {
@@ -542,8 +411,6 @@ export default {
         sexo: '',
       }
       isDuplicated.value = false
-      // message.value = ""
-      // isError.value = false
     }
 
     const resetForm = () => {
@@ -561,8 +428,6 @@ export default {
         sexo: '',
       };
       isDuplicated.value = false;
-      // message.value = ""
-      // isError.value = false
     };
 
     onMounted(async () => {
@@ -590,8 +455,6 @@ export default {
       fetchPersona,
       isDuplicated,
       loading,
-      // message,
-      // isError,
       cancelar,
       errors,
       notificationAction,

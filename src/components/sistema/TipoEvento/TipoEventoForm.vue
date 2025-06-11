@@ -1,22 +1,12 @@
 <template>
   <div class="px-6 py-4">
-    <!--
-    <div v-if="message" :class="{ 'bg-green-100 text-green-800': !isError, 'bg-red-100 text-red-800': isError }"
-      class="p-4 mb-6 rounded-md">
-      <div class="flex items-center">
-        <span class="font-semibold mr-2">
-          {{ isError ? 'Error' : 'Éxito' }}:
-        </span>
-        <span>{{ message }}</span>
-      </div>
-    </div>
-  -->
     <form @submit.prevent="submitForm">
       <div class="mb-1">
         <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre: <span
             class="text-red-500">*</span></label>
         <input v-model="tipoEvento.nombre" type="text" id="nombre" autocomplete="off" placeholder="Ejm: Capacitación"
-          class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
+          class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+          maxlength="40" />
         <div v-if="errors.nombre" class="text-red-600 text-sm mt-1">{{ errors.nombre }}</div>
       </div>
       <div class="mb-1">
@@ -76,9 +66,6 @@ export default {
 
     const route = useRoute()
 
-    // const message = ref("")
-    // const isError = ref(false)
-
     const validateForm = () => {
       errors.value = {}
 
@@ -105,15 +92,11 @@ export default {
 
       try {
         loading.value = true;
-        // message.value = ""
-        // isError.value = false
         isDuplicated.value = false
 
         await storeTipoEvento.getTipoEventoByNombre(tipoEvento.value.nombre)
 
         if (storeTipoEvento.tipoEvento) {
-          // message.value = 'Tipo de evento ya existe'
-          // isError.value = true
           storeToast.addToast('Tipo de evento ya existe', 'warning')
           isDuplicated.value = false
           return
@@ -125,18 +108,6 @@ export default {
           const classToast = (storeTipoEvento.result) ? 'success' : 'error'
           storeToast.addToast(storeTipoEvento.message, classToast)
 
-          // if (storeTipoEvento.result) {
-          //   storeToast.addToast(storeTipoEvento.message, 'success')
-          // } else {
-          //   storeToast.addToast(storeTipoEvento.message, 'error')
-          // }
-
-          // if (storeTipoEvento.result) {
-          //   isError.value = false
-          // } else {
-          //   isError.value = true
-          // }
-          // message.value = storeTipoEvento.message
           isDuplicated.value = false
         } else {
           await storeTipoEvento.createTipoEvento(tipoEvento.value);
@@ -144,27 +115,10 @@ export default {
           const classToast = (storeTipoEvento.result) ? 'success' : 'error'
           storeToast.addToast(storeTipoEvento.message, classToast)
           if (storeTipoEvento.result) resetForm()
-
-          // if (storeTipoEvento.result) {
-          //   storeToast.addToast(storeTipoEvento.message, 'success')
-          //   resetForm()
-          // } else {
-          //   storeToast.addToast(storeTipoEvento.message, 'error')
-          // }
-
-          // if (storeTipoEvento.result) {
-          //   isError.value = false
-          //   resetForm();
-          // } else {
-          //   isError.value = true
-          // }
-          // message.value = storeTipoEvento.message
           isDuplicated.value = false
         }
       } catch (error) {
         console.log('error creating tipo evento', error);
-        // message.value = 'Falló al registrar tipo de evento'
-        // isError.value = true
         storeToast.addToast('Falló al registrar el tipo de evento', 'error')
         isDuplicated.value = false
       } finally {
@@ -178,8 +132,6 @@ export default {
         descripcion: ''
       }
       isDuplicated.value = false
-      // isError.value = false
-      // message.value = ""
     }
 
     const resetForm = () => {
@@ -189,16 +141,12 @@ export default {
         descripcion: '',
       };
       isDuplicated.value = false
-      // isError.value = false
-      // message.value = ""
     };
 
     return {
       tipoEvento,
       loading,
       submitForm,
-      // message,
-      // isError,
       cancelar,
       errors,
       isDuplicated

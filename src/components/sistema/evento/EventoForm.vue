@@ -1,16 +1,5 @@
 <template>
   <div class="px-6 py-4">
-    <!--
-    <div v-if="message" :class="{ 'bg-green-100 text-green-800': !isError, 'bg-red-100 text-red-800': isError }"
-      class="p-4 mb-6 rounded-md">
-      <div class="flex items-center">
-        <span class="font-semibold mr-2">
-          {{ isError ? 'Error' : 'Éxito' }}:
-        </span>
-        <span>{{ message }}</span>
-      </div>
-    </div>
-    -->
     <form @submit.prevent="submitForm">
       <div class="grid grid-cols-2 gap-4">
         <div class="mb-1">
@@ -28,7 +17,7 @@
         <div class="mb-1">
           <label for="titulo" class="block text-sm font-medium text-gray-700">Nombre: <span
               class="text-red-500">*</span></label>
-          <input v-model="evento.titulo" type="text" id="titulo" autocomplete="off" maxlength="70"
+          <input v-model="evento.titulo" type="text" id="titulo" autocomplete="off" maxlength="120"
             placeholder="Ejm: Crianza de ganado"
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           <div v-if="errors.titulo" class="text-red-600 text-sm mt-1">{{ errors.titulo }}</div>
@@ -181,9 +170,6 @@ export default {
 
     const plantillas = computed(() => storePlantilla.plantillas)
 
-    // const message = ref("")
-    // const isError = ref(false)
-
     const validateForm = () => {
       errors.value = {}
 
@@ -246,8 +232,6 @@ export default {
       if (!validateForm()) return
 
       loading.value = true
-      // message.value = ""
-      // isError.value = false
       isDuplicated.value = false
 
       try {
@@ -255,8 +239,6 @@ export default {
         await storeEvento.getEventoByTitulo(evento.value.titulo)
 
         if (storeEvento.evento) {
-          // message.value = 'El evento ya existe'
-          // isError.value = true
           storeToast.addToast('El evento ya existe', 'warning')
           isDuplicated.value = false
           return
@@ -268,18 +250,6 @@ export default {
           const classToast = (storeEvento.result) ? 'success' : 'error'
           storeToast.addToast(storeEvento.message, classToast)
 
-          // if (storeEvento.result) {
-          //   storeToast.addToast(storeEvento.message, 'success')
-          // } else {
-          //   storeToast.addToast(storeEvento.message, 'error')
-          // }
-
-          // if (storeEvento.result) {
-          //   isError.value = false
-          // } else {
-          //   isError.value = true
-          // }
-          // message.value = storeEvento.message
           isDuplicated.value = false
         } else {
           await storeEvento.createEvento(evento.value);
@@ -288,26 +258,10 @@ export default {
           storeToast.addToast(storeEvento.message, classToast)
           if (storeEvento.result) resetForm()
 
-          // if (storeEvento.result) {
-          //   storeToast.addToast(storeEvento.message, 'success')
-          //   resetForm()
-          // } else {
-          //   storeToast.addToast(storeEvento.message, 'error')
-          // }
-
-          // if (storeEvento.result) {
-          //   isError.value = false
-          //   resetForm()
-          // } else {
-          //   isError.value = true
-          // }
-          // message.value = storeEvento.message
           isDuplicated.value = false
         }
       } catch (error) {
         console.log('error creating evento', error);
-        // message.value = 'Falló al registrar evento'
-        // isError.value = true
         storeToast.addToast('Falló al registrar el evento', 'error')
         isDuplicated.value = false
       } finally {
@@ -327,8 +281,6 @@ export default {
         plantilla_certificado: null
       }
       isDuplicated.value = false
-      // isError.value = false
-      // message.value = ""
     }
 
     const resetForm = () => {
@@ -344,8 +296,6 @@ export default {
         plantilla_certificado: null
       };
       isDuplicated.value = false
-      // isError.value = false
-      // message.value = ""
     };
 
     return {
@@ -353,8 +303,6 @@ export default {
       evento,
       loading,
       submitForm,
-      // message,
-      // isError,
       cancelar,
       plantillas,
       selectPlantilla,

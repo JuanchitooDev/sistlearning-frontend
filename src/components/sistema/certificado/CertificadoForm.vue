@@ -1,19 +1,7 @@
 <template>
   <div class="px-6 py-8">
-    <!--
-    <div v-if="message" :class="{ 'bg-green-100 text-green-800': !isError, 'bg-red-100 text-red-800': isError }"
-      class="p-4 mb-6 rounded-md">
-      <div class="flex items-center">
-        <span class="font-semibold mr-2">
-          {{ isError ? 'Error' : 'Éxito' }}:
-        </span>
-        <span>{{ message }}</span>
-      </div>
-    </div>
-    -->
     <form @submit.prevent="submitForm">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Columna izquierda: búsqueda -->
         <div class="space-y-4">
           <!-- Buscar alumno -->
           <div>
@@ -53,7 +41,8 @@
             <label class="block text-sm font-medium text-gray-700">Nombre alumno (para impresión): <span
                 class="text-red-500">*</span></label>
             <input v-model="certificado.nombre_alumno_impresion" type="text" placeholder="Ej. Juan Pérez Rodríguez"
-              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
+              class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300"
+              maxlength="100" />
             <div v-if="errors.nombre_alumno_impresion" class="text-red-600 text-sm mt-1">{{
               errors.nombre_alumno_impresion }}</div>
           </div>
@@ -126,8 +115,6 @@ export default {
     const isNombreAlumnoDisabled = ref(true)
     const errors = ref({})
 
-    // const message = computed(() => storeCertificado.message);
-    // const isError = computed(() => storeCertificado.message && storeCertificado.message.includes('Error'));
     const templateError = ref(false);
 
     const filteredAlumnos = computed(() => {
@@ -229,12 +216,8 @@ export default {
             const classToast = (storeCertificado.result) ? 'success' : 'error'
             storeToast.addToast(storeCertificado.message, classToast)
             if (storeCertificado.result) resetForm()
-            // if (storeCertificado.result) {
-            //   resetForm();
-            // }
           } else {
             storeToast.addToast(storeAlumno.message, 'error')
-            // console.error(storeAlumno.message)
           }
         }
       } catch (error) {
@@ -254,7 +237,6 @@ export default {
         template: 'template_uno',
       };
 
-      // Volver a deshabilitar el campo al resetear
       isNombreAlumnoDisabled.value = true;
     }
 
@@ -268,7 +250,6 @@ export default {
         template: 'template_uno',
       };
 
-      // Volver a deshabilitar el campo al resetear
       isNombreAlumnoDisabled.value = true;
     };
 
@@ -283,9 +264,7 @@ export default {
       filteredAlumnos,
       filterAlumnos,
       selectAlumno,
-      // message,
       templateError,
-      // isError,
       cancelar,
       errors
     }
