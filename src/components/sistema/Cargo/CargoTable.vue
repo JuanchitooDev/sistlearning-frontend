@@ -47,7 +47,8 @@
           <p class="text-xs xsm:text-sm text-black dark:text-white">{{ cargo.nombre }}</p>
         </div>
         <div class="items-center justify-center p-2.5 sm:flex xl:p-5">
-          <button @click="requestToggleEstado(cargo.id)" class="focus:outline-none hover:scale-105 transition-transform">
+          <button @click="requestToggleEstado(cargo.id)"
+            class="focus:outline-none hover:scale-105 transition-transform">
             <svg v-if="cargo.estado" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none"
               viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -60,7 +61,8 @@
         </div>
         <div class="p-2.5 xl:p-5 flex justify-center relative">
           <div class="relative">
-            <button @click="toggleDropdown(cargo.id)" class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
+            <button @click="toggleDropdown(cargo.id)"
+              class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
               <svg class="w-5 h-5 text-gray-600 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -69,20 +71,14 @@
             </button>
 
             <!-- Dropdown -->
-            <div
-              v-if="dropdownVisibleId === cargo.id"
-              class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600"
-            >
-              <router-link
-                :to="{ name: 'editCargo', params: { id: cargo.id } }"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-              >
+            <div v-if="dropdownVisibleId === cargo.id"
+              class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600">
+              <router-link :to="{ name: 'editCargo', params: { id: cargo.id } }"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
                 Editar
               </router-link>
-              <button
-                @click="() => { requestDeleteCargo(cargo.id); dropdownVisibleId = null }"
-                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400"
-              >
+              <button @click="() => { requestDeleteCargo(cargo.id); dropdownVisibleId = null }"
+                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
                 Eliminar
               </button>
             </div>
@@ -113,14 +109,12 @@
     <ConfirmDialog :isVisible="isEstadoConfirmVisible" title="Confirmar cambio de estado"
       message="¿Estás seguro que deseas cambiar el estado de este cargo?" @confirmed="toggleEstado"
       @canceled="isEstadoConfirmVisible = false" />
-    <Notification v-if="notificationMessage" :message="notificationMessage" :duration="4000"
-      @hide="notificationMessage = ''"></Notification>
   </div>
 </template>
 
 <script>
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
-import { useCargoStore } from '@/stores'
+import { useCargoStore, useToastStore } from '@/stores'
 import ConfirmDialog from "@/components/Common/ConfirmDialog.vue"
 import Notification from "@/components/Common/Notification.vue"
 
@@ -131,6 +125,8 @@ export default {
   },
   setup() {
     const cargoStore = useCargoStore()
+    const storeToast = useToastStore()
+
     const cargos = computed(() => cargoStore.cargos)
     const message = computed(() => cargoStore.message)
 
@@ -141,7 +137,6 @@ export default {
     const itemsPerPage = 5
 
     const isConfirmVisible = ref(false)
-    const notificationMessage = ref('')
     const cargoToDelete = ref(null)
 
     const isEstadoConfirmVisible = ref(false)
@@ -183,7 +178,8 @@ export default {
       const cargo = cargos.value.find(c => c.id === cargoToToggleEstado.value)
       const nuevoEstado = !cargo.estado
       await cargoStore.updateEstado(cargoToToggleEstado.value, nuevoEstado)
-      notificationMessage.value = message
+      const classToast = (cargoStore.result) ? 'success' : 'error'
+      storeToast.addToast(message, classToast)
       isEstadoConfirmVisible.value = false
       cargoToToggleEstado.value = null
       cargoStore.fetchCargos()
@@ -197,7 +193,8 @@ export default {
     const deleteCargo = async () => {
       if (cargoToDelete.value) {
         await cargoStore.deleteCargo(cargoToDelete.value);
-        notificationMessage.value = message;
+        const classToast = (cargoStore.result) ? 'success' : 'error'
+        storeToast.addToast(message, classToast)
         isConfirmVisible.value = false; // Cerrar el diálogo
         cargoToDelete.value = null; // Resetear el ID a eliminar
         cargoStore.fetchCargos()
@@ -233,7 +230,6 @@ export default {
       requestDeleteCargo,
       isConfirmVisible,
       deleteCargo,
-      notificationMessage,
       totalPages,
       paginatedCargos,
       filteredCargos,

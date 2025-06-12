@@ -7,7 +7,8 @@ import {
     CalendarIcon,
     ClipboardCheckIcon,
     UserAddIcon,
-    
+    TableIcon
+
 } from "@heroicons/vue/outline"
 
 export const MENU_ITEMS = [
@@ -21,4 +22,5 @@ export const MENU_ITEMS = [
     { label: 'Certificado', icon: DocumentIcon, route: '/certificado', roles: ['estudiante', 'instructor', 'administrador'] },
     { label: 'Adjunto', icon: PaperClipIcon, route: '/adjunto', roles: ['estudiante', 'administrador'] },
     { label: 'Usuario', icon: UserAddIcon, route: '/usuario', roles: ['administrador'] },
+    { label: 'Reporte', icon: TableIcon, route: '/reporte', roles: ['administrador'] }
 ]

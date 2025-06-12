@@ -1,6 +1,6 @@
 <template>
     <div class="bg-white p-5 rounded-lg shadow-lg hover:shadow-xl cursor-pointer transition-all"
-        @click="downloadCumpleanios()">
+        @click="downloadAlumnos()">
         <h3 class="text-xl font-semibold">{{ report.title }}</h3>
         <p class="text-gray-600">{{ report.description }}</p>
     </div>
@@ -10,7 +10,7 @@
 import { useReporteStore, useToastStore } from '@/stores'
 
 export default {
-    name: 'CumpleaniosAlumnos',
+    name: 'ListAlumnos',
     props: {
         report: {
             type: Object
@@ -20,14 +20,14 @@ export default {
         const reporteStore = useReporteStore()
         const storeToast = useToastStore()
 
-        const downloadCumpleanios = async () => {
-            await reporteStore.downloadCumpleaniosExcel()
+        const downloadAlumnos = async () => {
+            await reporteStore.downloadAlumnosExcel()
             const classToast = (storeToast.result) ? 'success' : 'error'
             storeToast.addToast(storeToast.message, classToast)
         }
 
         return {
-            downloadCumpleanios
+            downloadAlumnos
         }
     }
 }

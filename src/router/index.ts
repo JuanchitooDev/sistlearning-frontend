@@ -11,6 +11,7 @@ import certificadoRoutes from './modules/certificado.routes'
 import instructorRoutes from './modules/instructor.routes'
 import trabajadorRoutes from './modules/trabajador.routes'
 import usuarioRoutes from './modules/usuario.routes'
+import reporteRoutes from './modules/reporte.routes'
 import NotAuthorizedRoutes from './modules/401.routes'
 import NotFoundRoutes from './modules/404.routes'
 import { useAuthStore } from "@/stores/authStore"
@@ -37,6 +38,7 @@ const routes = [
     ...instructorRoutes,
     ...trabajadorRoutes,
     ...usuarioRoutes,
+    ...reporteRoutes,
     ...NotAuthorizedRoutes,
     ...NotFoundRoutes
 ]

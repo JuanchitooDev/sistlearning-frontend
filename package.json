@@ -13,6 +13,7 @@
     "@vueuse/core": "^12.5.0",
     "axios": "^1.7.7",
     "core-js": "^3.8.3",
+    "dayjs": "^1.11.13",
     "pinia": "^2.2.4",
     "vue": "^3.2.13",
     "vue-class-component": "^8.0.0-0",

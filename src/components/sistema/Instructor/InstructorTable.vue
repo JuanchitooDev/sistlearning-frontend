@@ -43,7 +43,8 @@
       </div>
 
       <!-- Filas -->
-      <div v-if="filteredInstructores.length === 0" class="flex justify-center py-6 text-sm text-gray-500 dark:text-gray-300">
+      <div v-if="filteredInstructores.length === 0"
+        class="flex justify-center py-6 text-sm text-gray-500 dark:text-gray-300">
         No se encontraron instructores.
       </div>
 
@@ -63,13 +64,15 @@
           <p class="text-xs xsm:text-sm text-black dark:text-white">{{ instructor.numero_documento }}</p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <p class="text-xs xsm:text-sm text-black dark:text-white">{{ instructor.apellido_paterno }} {{ instructor.apellido_materno }}</p>
+          <p class="text-xs xsm:text-sm text-black dark:text-white">{{ instructor.apellido_paterno }} {{
+            instructor.apellido_materno }}</p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
           <p class="text-xs xsm:text-sm text-black dark:text-white">{{ instructor.nombres }}</p>
         </div>
         <div class="items-center justify-center p-2.5 sm:flex xl:p-5">
-          <button @click="requestToggleEstado(instructor.id)" class="focus:outline-none hover:scale-105 transition-transform">
+          <button @click="requestToggleEstado(instructor.id)"
+            class="focus:outline-none hover:scale-105 transition-transform">
             <svg v-if="instructor.estado" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none"
               viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -82,7 +85,8 @@
         </div>
         <div class="p-2.5 xl:p-5 flex justify-center relative">
           <div class="relative">
-            <button @click="toggleDropdown(instructor.id)" class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
+            <button @click="toggleDropdown(instructor.id)"
+              class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
               <svg class="w-5 h-5 text-gray-600 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -91,20 +95,14 @@
             </button>
 
             <!-- Dropdown -->
-            <div
-              v-if="dropdownVisibleId === instructor.id"
-              class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600"
-            >
-              <router-link
-                :to="{ name: 'editInstructor', params: { id: instructor.id } }"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-              >
+            <div v-if="dropdownVisibleId === instructor.id"
+              class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600">
+              <router-link :to="{ name: 'editInstructor', params: { id: instructor.id } }"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
                 Editar
               </router-link>
-              <button
-                @click="() => { requestDeleteInstructor(instructor.id); dropdownVisibleId = null }"
-                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400"
-              >
+              <button @click="() => { requestDeleteInstructor(instructor.id); dropdownVisibleId = null }"
+                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
                 Eliminar
               </button>
             </div>
@@ -157,14 +155,12 @@
     <ConfirmDialog :isVisible="isEstadoConfirmVisible" title="Confirmar cambio de estado"
       message="¿Estás seguro que deseas cambiar el estado de este instructor?" @confirmed="toggleEstado"
       @canceled="isEstadoConfirmVisible = false" />
-    <Notification v-if="notificationMessage" :message="notificationMessage" :duration="4000"
-      @hide="notificationMessage = ''"></Notification>
   </div>
 </template>
 
 <script>
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
-import { useInstructorStore } from '@/stores'
+import { useInstructorStore, useToastStore } from '@/stores'
 import ConfirmDialog from "@/components/Common/ConfirmDialog.vue"
 import Notification from "@/components/Common/Notification.vue"
 
@@ -175,8 +171,10 @@ export default {
   },
   setup() {
     const instructorStore = useInstructorStore()
+
     const instructores = computed(() => instructorStore.instructores)
     const message = computed(() => instructorStore.message)
+    const storeToast = useToastStore()
 
     const searchInput = ref('')
     const searchQuery = ref('')
@@ -185,7 +183,6 @@ export default {
     const itemsPerPage = 5
 
     const isConfirmVisible = ref(false)
-    const notificationMessage = ref('')
     const instructorToDelete = ref(null)
 
     const isEstadoConfirmVisible = ref(false)
@@ -227,7 +224,8 @@ export default {
       const instructor = instructores.value.find(a => a.id === instructorToToggleEstado.value)
       const nuevoEstado = !instructor.estado
       await instructorStore.updateEstado(instructorToToggleEstado.value, nuevoEstado)
-      notificationMessage.value = message
+      const classToast = (instructorStore) ? 'success' : 'error'
+      storeToast.addToast(message, classToast)
       isEstadoConfirmVisible.value = false
       instructorToToggleEstado.value = null
       instructorStore.fetchInstructores()
@@ -241,7 +239,8 @@ export default {
     const deleteInstructor = async () => {
       if (instructorToDelete.value) {
         await instructorStore.deleteInstructor(instructorToDelete.value);
-        notificationMessage.value = message;
+        const classToast = (instructorStore.result) ? 'success' : 'error'
+        storeToast.addToast(message, classToast)
         isConfirmVisible.value = false; // Cerrar el diálogo
         instructorToDelete.value = null; // Resetear el ID a eliminar
         instructorStore.fetchInstructores()
@@ -277,7 +276,6 @@ export default {
       requestDeleteInstructor,
       isConfirmVisible,
       deleteInstructor,
-      notificationMessage,
       totalPages,
       paginatedInstructores,
       filteredInstructores,

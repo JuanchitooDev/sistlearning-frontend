@@ -43,7 +43,7 @@ export const usePlantillaStore = defineStore('plantillaStore', {
             {
                 id: 'congreso_internacional_cuy_2025',
                 titulo: 'Plantilla Congreso Internacional Cuy 2025',
-                imagen: `${BASE_URL}/img/plantillas/congreso_internacional_cuy_2025_estudiantes.png`
+                imagen: `${BASE_URL}/img/plantillas/congreso_internacional_cuy_2025.png`
             }
         ]
     }),

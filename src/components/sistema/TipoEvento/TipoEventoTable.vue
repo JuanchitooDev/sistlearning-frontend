@@ -66,7 +66,8 @@
         </div>
         <div class="p-2.5 xl:p-5 flex justify-center relative">
           <div class="relative">
-            <button @click="toggleDropdown(tipo.id)" class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
+            <button @click="toggleDropdown(tipo.id)"
+              class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
               <svg class="w-5 h-5 text-gray-600 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -75,20 +76,14 @@
             </button>
 
             <!-- Dropdown -->
-            <div
-              v-if="dropdownVisibleId === tipo.id"
-              class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600"
-            >
-              <router-link
-                :to="{ name: 'editTipoEvento', params: { id: tipo.id } }"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-              >
+            <div v-if="dropdownVisibleId === tipo.id"
+              class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600">
+              <router-link :to="{ name: 'editTipoEvento', params: { id: tipo.id } }"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
                 Editar
               </router-link>
-              <button
-                @click="() => { requestDeleteTipoEvento(tipo.id); dropdownVisibleId = null }"
-                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400"
-              >
+              <button @click="() => { requestDeleteTipoEvento(tipo.id); dropdownVisibleId = null }"
+                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
                 Eliminar
               </button>
             </div>
@@ -119,14 +114,12 @@
     <ConfirmDialog :isVisible="isEstadoConfirmVisible" title="Confirmar cambio de estado"
       message="¿Estás seguro que deseas cambiar el estado de este tipo de evento?" @confirmed="toggleEstado"
       @canceled="isEstadoConfirmVisible = false" />
-    <Notification v-if="notificationMessage" :message="notificationMessage" :duration="4000"
-      @hide="notificationMessage = ''"></Notification>
   </div>
 </template>
 
 <script>
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
-import { useTipoEventoStore } from '@/stores'
+import { useTipoEventoStore, useToastStore } from '@/stores'
 import ConfirmDialog from "@/components/Common/ConfirmDialog.vue"
 import Notification from "@/components/Common/Notification.vue"
 
@@ -137,6 +130,8 @@ export default {
   },
   setup() {
     const tipoEventoStore = useTipoEventoStore()
+    const storeToast = useToastStore()
+
     const tipos = computed(() => tipoEventoStore.tipos)
     const message = computed(() => tipoEventoStore.message)
 
@@ -147,7 +142,6 @@ export default {
     const itemsPerPage = 5
 
     const isConfirmVisible = ref(false)
-    const notificationMessage = ref('')
     const tipoEventoToDelete = ref(null)
 
     const isEstadoConfirmVisible = ref(false)
@@ -189,7 +183,8 @@ export default {
       const tipo = tipos.value.find(t => t.id === tipoEventoToToggleEstado.value)
       const nuevoEstado = !tipo.estado
       await tipoEventoStore.updateEstado(tipoEventoToToggleEstado.value, nuevoEstado)
-      notificationMessage.value = message
+      const classToast = (tipoEventoStore.result) ? 'success' : 'error'
+      storeToast.addToast(message, classToast)
       isEstadoConfirmVisible.value = false
       tipoEventoToToggleEstado.value = null
       tipoEventoStore.fetchTipoEventos()
@@ -203,7 +198,8 @@ export default {
     const deleteTipoEvento = async () => {
       if (tipoEventoToDelete.value) {
         await tipoEventoStore.deleteTipoEvento(tipoEventoToDelete.value);
-        notificationMessage.value = message;
+        const classToast = (tipoEventoStore.result) ? 'success' : 'error'
+        storeToast.addToast(message, classToast)
         isConfirmVisible.value = false; // Cerrar el diálogo
         tipoEventoToDelete.value = null; // Resetear el ID a eliminar
         tipoEventoStore.fetchTipoEventos()
@@ -239,7 +235,6 @@ export default {
       requestDeleteTipoEvento,
       isConfirmVisible,
       deleteTipoEvento,
-      notificationMessage,
       totalPages,
       paginatedTipos,
       filteredTipos,

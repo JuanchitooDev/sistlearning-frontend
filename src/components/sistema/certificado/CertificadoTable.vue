@@ -66,8 +66,8 @@
           </p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <p v-if="certificado.fecha_envio" class="text-xs xsm:text-sm text-black dark:text-white">{{
-            certificado.fecha_envio }}</p>
+          <p v-if="certificado.fecha_envio" class="text-xs xsm:text-sm text-black dark:text-white">
+            {{ formatDate(certificado.fecha_envio) }}</p>
           <p v-else class="text-xs xsm:text-sm text-black dark:text-white">--</p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
@@ -176,17 +176,16 @@
     <ConfirmDialog :isVisible="isEstadoConfirmVisible" title="Confirmar cambio de estado"
       message="¿Estás seguro que deseas cambiar el estado de este certificado?" @confirmed="toggleEstado"
       @canceled="isEstadoConfirmVisible = false" />
-    <Notification v-if="notificationMessage" :message="notificationMessage" :duration="4000"
-      @hide="notificationMessage = ''"></Notification>
   </div>
 </template>
 
 <script>
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
-import { useCertificadoStore } from '@/stores'
+import { useCertificadoStore, useToastStore } from '@/stores'
 import ConfirmDialog from "@/components/Common/ConfirmDialog.vue"
 import Notification from "@/components/Common/Notification.vue"
 import { DownloadIcon } from "@heroicons/vue/outline"
+import { formatDate } from '@/utils/date.utils'
 
 export default {
   components: {
@@ -196,6 +195,8 @@ export default {
   },
   setup() {
     const certificadoStore = useCertificadoStore()
+    const storeToast = useToastStore()
+
     const certificados = computed(() => certificadoStore.certificados)
     const message = computed(() => certificadoStore.message)
 
@@ -206,7 +207,6 @@ export default {
     const itemsPerPage = 5
 
     const isConfirmVisible = ref(false)
-    const notificationMessage = ref('')
     const certificadoToDelete = ref(null)
 
     const isEstadoConfirmVisible = ref(false)
@@ -248,7 +248,8 @@ export default {
       const certificado = certificados.value.find(a => a.id === certificadoToToggleEstado.value)
       const nuevoEstado = !certificado.estado
       await certificadoStore.updateEstado(certificadoToToggleEstado.value, nuevoEstado)
-      notificationMessage.value = message
+      const classToast = (certificadoStore.result) ? 'success' : 'error'
+      storeToast.addToast(message, classToast)
       isEstadoConfirmVisible.value = false
       certificadoToToggleEstado.value = null
       certificadoStore.fetchCertificados()
@@ -262,7 +263,8 @@ export default {
     const deleteCertificado = async () => {
       if (certificadoToDelete.value) {
         await certificadoStore.deleteCertificado(certificadoToDelete.value);
-        notificationMessage.value = message;
+        const classToast = (certificadoStore.result) ? 'success' : 'error'
+        storeToast.addToast(message, classToast)
         isConfirmVisible.value = false; // Cerrar el diálogo
         certificadoToDelete.value = null; // Resetear el ID a eliminar
         certificadoStore.fetchCertificados()
@@ -303,7 +305,6 @@ export default {
       requestDeleteCertificado,
       isConfirmVisible,
       deleteCertificado,
-      notificationMessage,
       totalPages,
       paginatedCertificados,
       filteredCertificados,
@@ -317,7 +318,8 @@ export default {
       certificadoToToggleEstado,
       dropdownVisibleId,
       toggleDropdown,
-      downloadCertificado
+      downloadCertificado,
+      formatDate
     }
   }
 }

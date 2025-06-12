@@ -79,7 +79,8 @@
         </div>
         <div class="p-2.5 xl:p-5 flex justify-center relative">
           <div class="relative">
-            <button @click="toggleDropdown(evento.id)" class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
+            <button @click="toggleDropdown(evento.id)"
+              class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
               <svg class="w-5 h-5 text-gray-600 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -88,20 +89,14 @@
             </button>
 
             <!-- Dropdown -->
-            <div
-              v-if="dropdownVisibleId === evento.id"
-              class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600"
-            >
-              <router-link
-                :to="{ name: 'editEvento', params: { id: evento.id } }"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-              >
+            <div v-if="dropdownVisibleId === evento.id"
+              class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600">
+              <router-link :to="{ name: 'editEvento', params: { id: evento.id } }"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
                 Editar
               </router-link>
-              <button
-                @click="() => { requestDeleteEvento(evento.id); dropdownVisibleId = null }"
-                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400"
-              >
+              <button @click="() => { requestDeleteEvento(evento.id); dropdownVisibleId = null }"
+                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
                 Eliminar
               </button>
             </div>
@@ -132,14 +127,12 @@
     <ConfirmDialog :isVisible="isEstadoConfirmVisible" title="Confirmar cambio de estado"
       message="¿Estás seguro que deseas cambiar el estado de este evento?" @confirmed="toggleEstado"
       @canceled="isEstadoConfirmVisible = false" />
-    <Notification v-if="notificationMessage" :message="notificationMessage" :duration="4000"
-      @hide="notificationMessage = ''"></Notification>
   </div>
 </template>
 
 <script>
 import { computed, ref, onMounted, onUnmounted, watch } from 'vue'
-import { useTipoEventoStore, useEventoStore } from '@/stores'
+import { useTipoEventoStore, useEventoStore, useToastStore } from '@/stores'
 import ConfirmDialog from "@/components/Common/ConfirmDialog.vue"
 import Notification from "@/components/Common/Notification.vue"
 
@@ -151,6 +144,7 @@ export default {
   setup() {
     const tipoEventoStore = useTipoEventoStore()
     const eventoStore = useEventoStore()
+    const storeToast = useToastStore()
 
     const tipos = computed(() => {
       return [...tipoEventoStore.tipos].sort((a, b) => a.nombre.localeCompare(b.nombre))
@@ -166,20 +160,19 @@ export default {
     const itemsPerPage = 5
 
     const isConfirmVisible = ref(false)
-    const notificationMessage = ref('')
     const eventoToDelete = ref(null)
 
     const isEstadoConfirmVisible = ref(false)
     const eventoToToggleEstado = ref(null)
 
     const filteredEventos = computed(() => {
-        console.log('selectedTipoEvento.value', selectedTipoEvento.value)
-        console.log('searchQuery.value', searchQuery.value)
-        return eventos.value.filter(evento =>
-          evento.titulo.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
-          (selectedTipoEvento.value ? evento.id_tipoevento === parseInt(selectedTipoEvento.value) : true)
-        )
-      }
+      console.log('selectedTipoEvento.value', selectedTipoEvento.value)
+      console.log('searchQuery.value', searchQuery.value)
+      return eventos.value.filter(evento =>
+        evento.titulo.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
+        (selectedTipoEvento.value ? evento.id_tipoevento === parseInt(selectedTipoEvento.value) : true)
+      )
+    }
     )
 
     const totalPages = computed(() => Math.ceil(filteredEventos.value.length / itemsPerPage))
@@ -212,7 +205,8 @@ export default {
       const evento = eventos.value.find(e => e.id === eventoToToggleEstado.value)
       const nuevoEstado = !evento.estado
       await eventoStore.updateEstado(eventoToToggleEstado.value, nuevoEstado)
-      notificationMessage.value = message
+      const classToast = (eventoStore.result) ? 'success' : 'false'
+      storeToast.addToast(message, classToast)
       isEstadoConfirmVisible.value = false
       eventoToToggleEstado.value = null
       eventoStore.fetchEventos()
@@ -226,7 +220,8 @@ export default {
     const deleteEvento = async () => {
       if (eventoToDelete.value) {
         await eventoStore.deleteEvento(eventoToDelete.value)
-        notificationMessage.value = message
+        const classToast = (eventoStore.result) ? 'success' : 'error'
+        storeToast.addToast(message, classToast)
         isConfirmVisible.value = false
         eventoToDelete.value = null
         eventoStore.fetchEventos()
@@ -268,7 +263,6 @@ export default {
       requestDeleteEvento,
       isConfirmVisible,
       deleteEvento,
-      notificationMessage,
       totalPages,
       paginatedEventos,
       filteredEventos,
