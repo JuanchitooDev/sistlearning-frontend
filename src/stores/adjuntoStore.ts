@@ -17,7 +17,6 @@ export const useAdjuntoStore = defineStore('adjuntoStore', {
             this.error = null
             try {
                 const response = await api.get('/adjunto')
-                console.log('response fetchAdjuntos', response)
                 const { data } = response
                 const { result } = data
 
@@ -42,7 +41,7 @@ export const useAdjuntoStore = defineStore('adjuntoStore', {
                 const response = await api.get(`/adjunto/${id}`)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.adjunto = data.data
@@ -64,11 +63,10 @@ export const useAdjuntoStore = defineStore('adjuntoStore', {
                         'Content-Type': 'multipart/form-data'
                     }
                 })
-                
-                console.log('response createAdjunto', response)
+
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.adjuntos.push(data.data)
@@ -87,7 +85,7 @@ export const useAdjuntoStore = defineStore('adjuntoStore', {
                 const response = await api.put(`/adjunto/${idAdjunto}`, adjunto)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.message = message
@@ -108,7 +106,6 @@ export const useAdjuntoStore = defineStore('adjuntoStore', {
                     responseType: 'blob'
                 })
 
-                console.log('response downloadAdjuntoStore', response)
                 const { status, data } = response
 
                 if (status === 200) {
@@ -116,13 +113,12 @@ export const useAdjuntoStore = defineStore('adjuntoStore', {
                     this.message = "Adjunto descargado correctamente"
 
                     const responseAdjunto = await this.getAdjuntoById(idAdjunto)
-                    console.log('responseAdjunto downloadAdjunto', responseAdjunto)
 
                     const fileName = 'prueba-de-flores'
 
                     const url = window.URL.createObjectURL(new Blob([data]));
                     const link = document.createElement('a');
-                    
+
                     link.href = url;
                     link.setAttribute('download', `${fileName}`);
                     document.body.appendChild(link);
@@ -145,7 +141,7 @@ export const useAdjuntoStore = defineStore('adjuntoStore', {
                 })
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.message = message

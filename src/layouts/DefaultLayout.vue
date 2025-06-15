@@ -20,7 +20,6 @@
 </template>
 
 <script>
-// import HeaderArea from '@/components/Header/HeaderArea.vue';
 import Header from "@/components/Header/Header.vue"
 import SidebarArea from '@/components/Sidebar/SidebarArea.vue';
 

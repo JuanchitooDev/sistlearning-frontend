@@ -112,7 +112,6 @@ export default {
           isDuplicated.value = false
         }
       } catch (error) {
-        console.log('error creating cargo', error);
         storeToast.addToast('Falló al registrar el cargo', 'error')
         isDuplicated.value = false
       } finally {

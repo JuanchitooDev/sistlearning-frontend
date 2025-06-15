@@ -60,7 +60,6 @@ export const useInstructorStore = defineStore('instructorStore', {
                 const url = `/instructor/tipo-documento/${idTipoDoc}/numero-documento/${numDoc}`
                 const response = await api.get(`${url}`)
 
-                console.log('response getInstructorByTipoDocNumDoc', response)
                 const { data } = response
                 const { result, message, error } = data
 
@@ -86,7 +85,7 @@ export const useInstructorStore = defineStore('instructorStore', {
                 const response = await api.post('/instructor', instructor)
                 const { data } = response
                 const { result, message, error } = data
-                
+
                 if (result) {
                     this.result = result
                     this.instructores.push(response.data.data)
@@ -143,7 +142,7 @@ export const useInstructorStore = defineStore('instructorStore', {
                 const response = await api.delete(`/instructor/${idInstructor}`)
                 const { data } = response
                 const { result, message, error } = data
-                
+
                 if (result) {
                     this.result = result
                     this.instructores = this.instructores.filter((a) => a.id !== idInstructor)

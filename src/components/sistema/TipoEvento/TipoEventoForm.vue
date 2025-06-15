@@ -118,7 +118,6 @@ export default {
           isDuplicated.value = false
         }
       } catch (error) {
-        console.log('error creating tipo evento', error);
         storeToast.addToast('Falló al registrar el tipo de evento', 'error')
         isDuplicated.value = false
       } finally {

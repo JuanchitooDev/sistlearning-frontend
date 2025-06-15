@@ -5,7 +5,7 @@
         </h3>
         <nav>
             <ol class="flex items-center gap-2">
-                <li v-for="option in props.options">
+                <li v-for="option in props.options" :key="option.title">
                     <router-link class="font-medium" :to="option.url">{{ option.title }}</router-link><span
                         class="ml-2 d-block">/</span>
                 </li>

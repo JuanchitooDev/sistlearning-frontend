@@ -46,7 +46,8 @@
       </div>
 
       <!-- Filas -->
-      <div v-if="filteredTrabajadores.length === 0" class="flex justify-center py-6 text-sm text-gray-500 dark:text-gray-300">
+      <div v-if="filteredTrabajadores.length === 0"
+        class="flex justify-center py-6 text-sm text-gray-500 dark:text-gray-300">
         No se encontraron trabajadores|.
       </div>
 
@@ -73,13 +74,15 @@
           <p class="text-xs xsm:text-sm text-black dark:text-white">{{ trabajador.numero_documento }}</p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
-          <p class="text-xs xsm:text-sm text-black dark:text-white">{{ trabajador.apellido_paterno }} {{ trabajador.apellido_materno }}</p>
+          <p class="text-xs xsm:text-sm text-black dark:text-white">{{ trabajador.apellido_paterno }} {{
+            trabajador.apellido_materno }}</p>
         </div>
         <div class="p-2.5 xl:p-5 flex items-center justify-start">
           <p class="text-xs xsm:text-sm text-black dark:text-white">{{ trabajador.nombres }}</p>
         </div>
         <div class="items-center justify-center p-2.5 sm:flex xl:p-5">
-          <button @click="requestToggleEstado(trabajador.id)" class="focus:outline-none hover:scale-105 transition-transform">
+          <button @click="requestToggleEstado(trabajador.id)"
+            class="focus:outline-none hover:scale-105 transition-transform">
             <svg v-if="trabajador.estado" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none"
               viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -92,7 +95,8 @@
         </div>
         <div class="p-2.5 xl:p-5 flex justify-center relative">
           <div class="relative">
-            <button @click="toggleDropdown(trabajador.id)" class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
+            <button @click="toggleDropdown(trabajador.id)"
+              class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none">
               <svg class="w-5 h-5 text-gray-600 dark:text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -101,47 +105,19 @@
             </button>
 
             <!-- Dropdown -->
-            <div
-              v-if="dropdownVisibleId === trabajador.id"
-              class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600"
-            >
-              <router-link
-                :to="{ name: 'editTrabajador', params: { id: trabajador.id } }"
-                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700"
-              >
+            <div v-if="dropdownVisibleId === trabajador.id"
+              class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600">
+              <router-link :to="{ name: 'editTrabajador', params: { id: trabajador.id } }"
+                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
                 Editar
               </router-link>
-              <button
-                @click="() => { requestDeleteTrabajador(trabajador.id); dropdownVisibleId = null }"
-                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400"
-              >
+              <button @click="() => { requestDeleteTrabajador(trabajador.id); dropdownVisibleId = null }"
+                class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-red-400">
                 Eliminar
               </button>
             </div>
           </div>
         </div>
-        <!--
-        <div class="p-2.5 xl:p-5 flex justify-center gap-2">
-          <router-link :to="{ name: 'editTrabajador', params: { id: trabajador.id } }"
-            class="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm"
-            title="Editar">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4l4 4-8 8H8v-4l8-8z" />
-            </svg>
-            Editar
-          </router-link>
-          <button @click="requestDeleteTrabajador(trabajador.id)"
-            class="flex items-center gap-1 text-red-600 hover:text-red-800 transition-colors duration-200 text-sm"
-            title="Eliminar">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            Eliminar
-          </button>
-        </div>
-        -->
       </div>
     </div>
     <!-- Paginación -->
@@ -229,8 +205,6 @@ export default {
     const requestToggleEstado = (id) => {
       trabajadorToToggleEstado.value = id
       isEstadoConfirmVisible.value = true
-      console.log('trabajadorToToggleEstado.value', trabajadorToToggleEstado.value)
-      console.log('isEstadoConfirmVisible.value', isEstadoConfirmVisible.value)
     }
 
     const toggleEstado = async () => {

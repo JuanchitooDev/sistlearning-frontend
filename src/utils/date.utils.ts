@@ -9,8 +9,7 @@ export const formatDate = (dateParam: string) => {
 }
 
 export const currentDate = () => {
-    console.log('date', new Date())
     const today = new Date().toISOString().split('T')[0];
-    console.log('today', today)
+
     return `${today}`
 }

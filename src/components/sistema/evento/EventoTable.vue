@@ -166,8 +166,6 @@ export default {
     const eventoToToggleEstado = ref(null)
 
     const filteredEventos = computed(() => {
-      console.log('selectedTipoEvento.value', selectedTipoEvento.value)
-      console.log('searchQuery.value', searchQuery.value)
       return eventos.value.filter(evento =>
         evento.titulo.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
         (selectedTipoEvento.value ? evento.id_tipoevento === parseInt(selectedTipoEvento.value) : true)
@@ -197,8 +195,6 @@ export default {
     const requestToggleEstado = (id) => {
       eventoToToggleEstado.value = id
       isEstadoConfirmVisible.value = true
-      console.log('eventoToToggleEstado.value', eventoToToggleEstado.value)
-      console.log('isEstadoConfirmVisible.value', isEstadoConfirmVisible.value)
     }
 
     const toggleEstado = async () => {

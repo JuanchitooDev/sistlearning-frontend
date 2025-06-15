@@ -170,8 +170,6 @@ export default {
     const requestToggleEstado = (id) => {
       cargoToToggleEstado.value = id
       isEstadoConfirmVisible.value = true
-      console.log('cargoToToggleEstado.value', cargoToToggleEstado.value)
-      console.log('isEstadoConfirmVisible.value', isEstadoConfirmVisible.value)
     }
 
     const toggleEstado = async () => {

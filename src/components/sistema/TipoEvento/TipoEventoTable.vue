@@ -175,8 +175,6 @@ export default {
     const requestToggleEstado = (id) => {
       tipoEventoToToggleEstado.value = id
       isEstadoConfirmVisible.value = true
-      console.log('tipoEventoToToggleEstado.value', tipoEventoToToggleEstado.value)
-      console.log('isEstadoConfirmVisible.value', isEstadoConfirmVisible.value)
     }
 
     const toggleEstado = async () => {

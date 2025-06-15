@@ -67,24 +67,6 @@
                 <div class="p-2.5 xl:p-5 flex items-center justify-start">
                     <button @click="downloadAdjunto(adjunto)" class="text-green-500 hover:text-green-700">
                         <DownloadIcon class="h-6 w-6 text-red-500" />
-                        <!--
-                        <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                            xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve">
-                            <circle style="fill:#FAA85F;" cx="376" cy="400" r="112" />
-                            <polygon style="fill:#FFFFFF;"
-                                points="392,400 392,336 360,336 360,400 328,400 376,464 424,400 " />
-                            <path style="fill:#00384E;" d="M256.352,480H56V32h192v128h128v96c11.008,0,21.696,1.36,32,3.712V137.376L270.624,0H24v512h261.696
-	C274.384,502.864,264.464,492.096,256.352,480z M280,54.624L353.376,128H280V54.624z" />
-                            <path style="fill:#72C6EF;" d="M232,400c0-68.384,47.968-125.68,112-140.288V160h-96V64H88v384h152.4
-	C235.056,432.96,232,416.848,232,400z" />
-                            <g>
-                                <rect x="136" y="240" style="fill:#00384D;" width="160" height="32" />
-                                <path style="fill:#00384D;"
-                                    d="M268.976,304H136v32h111.2C253.008,324.336,260.352,313.6,268.976,304z" />
-                                <path style="fill:#00384D;" d="M136,368v32h96c0-11.008,1.36-21.696,3.712-32H136z" />
-                            </g>
-                        </svg>
-                        -->
                     </button>
                 </div>
                 <div class="items-center justify-center p-2.5 sm:flex xl:p-5">
@@ -180,8 +162,6 @@ export default {
         const adjuntos = computed(() => adjuntoStore.adjuntos)
         const message = computed(() => adjuntos.message)
 
-        // console.log('eventos', eventos)
-
         const searchInput = ref('')
         const searchQuery = ref('')
         const selectedEvento = ref('')
@@ -197,8 +177,6 @@ export default {
         const adjuntoToToggleEstado = ref(null)
 
         const filteredAdjuntos = computed(() => {
-            // console.log('selectedEvento.value', selectedEvento.value)
-            // console.log('searchQuery.value', searchQuery.value)
             return adjuntos.value.filter(adjunto =>
                 adjunto.titulo.toLowerCase().includes(searchQuery.value.toLowerCase()) &&
                 (selectedEvento.value ? adjunto.id_tipoadjunto === parseInt(selectedEvento.value) : true)
@@ -227,8 +205,6 @@ export default {
         const requestToggleEstado = (id) => {
             adjuntoToToggleEstado.value = id
             isEstadoConfirmVisible.value = true
-            // console.log('adjuntoToToggleEstado.value', adjuntoToToggleEstado.value)
-            // console.log('isEstadoConfirmVisible.value', isEstadoConfirmVisible.value)
         }
 
         const toggleEstado = async () => {

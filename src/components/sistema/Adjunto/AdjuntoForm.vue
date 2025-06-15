@@ -1,16 +1,5 @@
 <template>
     <div class="px-6 py-4">
-        <!--
-        <div v-if="message" :class="{ 'bg-green-100 text-green-800': !isError, 'bg-red-100 text-red-800': isError }"
-            class="p-4 mb-6 rounded-md">
-            <div class="flex items-center">
-                <span class="font-semibold mr-2">
-                    {{ isError ? 'Error' : 'Éxito' }}:
-                </span>
-                <span>{{ message }}</span>
-            </div>
-        </div>
-        -->
         <form @submit.prevent="submitForm">
             <div class="grid grid-cols-2 gap-4">
                 <div class="mb-1">
@@ -104,8 +93,6 @@ export default {
         const loading = ref(false)
         const isDuplicated = ref(false)
         const errors = ref({})
-        // const message = ref("")
-        // const isError = ref(false)
 
         const storeAdjunto = useAdjuntoStore()
         const storeEvento = useEventoStore()
@@ -161,7 +148,6 @@ export default {
         })
 
         const handleFile = (e) => {
-            // console.log('e', e)
             const selectedFile = e.target.files[0]
             file.value = selectedFile
 
@@ -193,8 +179,6 @@ export default {
             const formData = new FormData()
 
             loading.value = true
-            // message.value = ""
-            // isError.value = false
             isDuplicated.value = false
 
             try {
@@ -202,37 +186,19 @@ export default {
                 formData.append('id_evento', adjunto.value.id_evento)
                 formData.append('titulo', adjunto.value.titulo)
                 formData.append('file', file.value)
-                // console.log('formData', formData)
-
-                // await storeAdjunto.getAdjuntoByTitulo
-                // if (storeAdjunto.adjunto) {}
 
                 if (adjunto.value.id) {
-                    // console.log('update adjunto')
                     await storeAdjunto.updateAdjunto(adjunto.value.id, adjunto.value)
                     const classToast = (storeAdjunto.result) ? 'success' : 'error'
                     storeToast.addToast(storeAdjunto.message, classToast)
                 } else {
-                    // console.log('create adjunto')
                     await storeAdjunto.createAdjunto(formData)
                     const classToast = (storeAdjunto.result) ? 'success' : 'error'
                     storeToast.addToast(storeAdjunto.message, classToast)
                     if (storeAdjunto.result) resetForm()
-                    // if (storeAdjunto.result) {
-                    //     // console.log('result true')
-                    //     // isError.value = false
-                    //     resetForm()
-                    // } else {
-                    //     // console.log('result false')
-                    //     // isError.value = true
-                    // }
-                    // message.value = storeAdjunto.message
                     isDuplicated.value = false
                 }
             } catch (error) {
-                // console.log('error creating evento', error)
-                // message.value = 'Falló al registrar adjunto'
-                // isError.value = true
                 storeToast.addToast('Falló al registrar adjunto', 'error')
                 isDuplicated.value = false
             } finally {
@@ -249,8 +215,6 @@ export default {
                 es_visible: true
             }
             isDuplicated.value = false
-            // isError.value = false
-            // message.value = ""
         }
 
         const resetForm = () => {
@@ -262,8 +226,6 @@ export default {
                 es_visible: true
             }
             isDuplicated.value = false
-            // isError.value = false
-            // message.value = ""
         }
 
         return {
@@ -275,7 +237,6 @@ export default {
             handleFile,
             errors,
             cancelar,
-            // message
         }
     }
 }

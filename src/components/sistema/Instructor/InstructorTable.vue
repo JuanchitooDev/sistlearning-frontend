@@ -108,28 +108,6 @@
             </div>
           </div>
         </div>
-        <!--
-        <div class="p-2.5 xl:p-5 flex justify-center gap-2">
-          <router-link :to="{ name: 'editInstructor', params: { id: instructor.id } }"
-            class="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors duration-200 text-sm"
-            title="Editar">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4l4 4-8 8H8v-4l8-8z" />
-            </svg>
-            Editar
-          </router-link>
-          <button @click="requestDeleteInstructor(instructor.id)"
-            class="flex items-center gap-1 text-red-600 hover:text-red-800 transition-colors duration-200 text-sm"
-            title="Eliminar">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            Eliminar
-          </button>
-        </div>
-        -->
       </div>
     </div>
     <!-- Paginación -->
@@ -216,8 +194,6 @@ export default {
     const requestToggleEstado = (id) => {
       instructorToToggleEstado.value = id
       isEstadoConfirmVisible.value = true
-      console.log('instructorToToggleEstado.value', instructorToToggleEstado.value)
-      console.log('isEstadoConfirmVisible.value', isEstadoConfirmVisible.value)
     }
 
     const toggleEstado = async () => {

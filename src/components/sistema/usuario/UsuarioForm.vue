@@ -1,16 +1,5 @@
 <template>
     <div class="px-6 py-4">
-        <!--
-        <div v-if="message" :class="{ 'bg-green-100 text-green-800': !isError, 'bg-red-100 text-red-800': isError }"
-            class="p-4 mb-6 rounded-md">
-            <div class="flex items-center">
-                <span class="font-semibold mr-2">
-                    {{ isError ? 'Error' : 'Éxito' }}:
-                </span>
-                <span>{{ message }}</span>
-            </div>
-        </div>
-        -->
         <form @submit.prevent="submitForm">
             <div class="grid grid-cols-2 gap-4">
                 <div class="mb-1">
@@ -73,7 +62,7 @@
                             maxlength="70" placeholder="Ejm: juan.jose" disabled
                             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
                         <div v-if="errors.password" class="text-red-600 text-sm mt-1">{{ errors.password }}</div>
-                    
+
                         <label for="id_perfil" class="block text-sm font-medium text-gray-700 mt-2">Perfil: <span
                                 class="text-red-500">*</span></label>
                         <select name="id_perfil" id="id_perfil" v-model="usuario.id_perfil"
@@ -176,7 +165,7 @@ export default {
         const tipoCargoSeleccionado = computed(() => {
             let nombreCargo = 'Persona'
             const idCargo = usuario.value.id_cargo
-            
+
             if (idCargo) {
                 if (typeof idCargo === 'string' && idCargo === 'i') {
                     nombreCargo = 'Instructor'
@@ -202,7 +191,6 @@ export default {
         }
 
         const seleccionarPersona = (persona) => {
-            console.log('persona seleccionarPersona', persona)
             personaSeleccionada.value = persona
             usuario.value.id_persona = persona.id
 
@@ -304,8 +292,6 @@ export default {
 
         // Detectar cambios en el perfil seleccionado
         watch(() => usuario.value.id_cargo, async (nuevoCargoId) => {
-            console.log('nuevoCargoId', nuevoCargoId)
-
             if (!nuevoCargoId) {
                 personas.value = []
                 return

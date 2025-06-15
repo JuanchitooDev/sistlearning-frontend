@@ -1,8 +1,5 @@
 <template>
     <div class="file-icon">
-        <!--
-        <Icon :icon="iconName" :style="{ fontSize: '36px', color: iconColor }" />
-        -->
         <Icon icon="teenyicons:pdf-solid" width="15" height="15" />
     </div>
 </template>
@@ -25,8 +22,6 @@ export default {
         }
 
         const iconData = computed(() => iconMap[props.fileType] || iconMap.default)
-
-        console.log('iconData', iconData.value)
 
         const iconName = computed(() => iconData.value.icon)
 

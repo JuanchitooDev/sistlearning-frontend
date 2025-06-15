@@ -74,8 +74,6 @@ export const useAuthStore = defineStore({
                         ? '/certificado'
                         : '/dashboard'
 
-                    // this.usuario = usuario
-                    // Object.assign(this.usuario, usuario)
                     this.message = message
                     localStorage.setItem('auth', JSON.stringify(dataLogin))
                     router.push(this.returnUrl || urlRedireccion)

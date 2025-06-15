@@ -32,11 +32,6 @@
           <span v-else>Verificando...</span>
         </button>
       </form>
-      <!--
-      <p v-if="errorMessage" class="mt-4 text-center text-red-500">
-        {{ errorMessage }}
-      </p>
-      -->
     </div>
   </div>
 </template>
@@ -56,11 +51,9 @@ export default {
       password: '',
     });
 
-    // const errorMessage = ref('');
     const loading = ref(false)
 
     const login = async () => {
-      // errorMessage.value = ''
       loading.value = true
 
       try {
@@ -70,7 +63,6 @@ export default {
       } catch (error) {
         const message = error.message || "Credenciales incorrectas"
         toastStore.addToast(message, "error")
-        // errorMessage.value = error.errorMessage || 'Credenciales incorrectas'
       } finally {
         loading.value = false
       }
@@ -78,7 +70,6 @@ export default {
 
     return {
       usuario,
-      // errorMessage,
       login,
       loading
     };

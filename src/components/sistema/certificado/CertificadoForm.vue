@@ -186,7 +186,6 @@ export default {
           certificado.value.fecha_envio = partFecha[0]
         }
         storeCertificado.message = ""
-        console.log('certificado.value', certificado.value)
       }
     })
 

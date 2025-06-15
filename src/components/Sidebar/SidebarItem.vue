@@ -2,12 +2,11 @@
     <li>
         <router-link :to="item.route"
             class="group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-greenwhite-700 dark:hover:bg-meta-4"
-            :class="{ 'bg-greenwhite-700 dark:bg-meta-4': sidebarStore.page === item.label }"
-            @click="handleItemClick">
+            :class="{ 'bg-greenwhite-700 dark:bg-meta-4': sidebarStore.page === item.label }" @click="handleItemClick">
 
             <span v-html="item.icon"></span>
             {{ item.label }}
-            
+
             <svg v-if="item.children" class="absolute right-4 top-1/2 -translate-y-1/2 fill-current"
                 :class="{ 'rotate-180': sidebarStore.page === item.label }" width="20" height="20" viewBox="0 0 20 20"
                 fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -54,7 +53,6 @@ export default {
         const currentPage = useRoute().name
 
         const handleItemClick = () => {
-            // const pageName = sidebarStore.page === props.item.label ? '' : props.item.label
             sidebarStore.page = props.item.label
         }
 

@@ -18,10 +18,9 @@ export const useUsuarioStore = defineStore('usuarioStore', {
 
             try {
                 const response = await api.get('/usuario')
-                console.log('response fetchUsuarios', response)
                 const { data } = response
                 const { result } = data
-            
+
                 if (result) {
                     const usuarios = data.data.map((u: any) => ({
                         ...u,
@@ -30,7 +29,7 @@ export const useUsuarioStore = defineStore('usuarioStore', {
                         instructor: u.Instructor,
                         trabajador: u.Trabajador
                     }))
-                    
+
                     this.result = result
                     this.usuarios = usuarios
                 }
@@ -46,7 +45,7 @@ export const useUsuarioStore = defineStore('usuarioStore', {
                 const response = await api.get(`/usuario/${id}`)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.usuario = data.data
@@ -66,7 +65,7 @@ export const useUsuarioStore = defineStore('usuarioStore', {
                 const response = await api.post('/usuario', usuario)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.usuarios.push(data.data)
@@ -85,7 +84,7 @@ export const useUsuarioStore = defineStore('usuarioStore', {
                 const response = await api.put(`/usuario/${idUsuario}`, usuario)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.message = message

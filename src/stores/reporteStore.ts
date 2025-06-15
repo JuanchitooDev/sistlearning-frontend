@@ -20,8 +20,6 @@ export const useReporteStore = defineStore('reporteStore', {
                     responseType: 'blob'
                 })
 
-                console.log('response downloadCumpleaniosExcel', response)
-
                 const { status, data } = response
 
                 if (status === 200) {
@@ -58,8 +56,6 @@ export const useReporteStore = defineStore('reporteStore', {
                     responseType: 'blob'
                 })
 
-                console.log('response downloadAlumnosExcel', response)
-
                 const { status, data } = response
 
                 if (status === 200) {
@@ -95,8 +91,6 @@ export const useReporteStore = defineStore('reporteStore', {
                 const response = await api.get(urlApi, {
                     responseType: 'blob'
                 })
-
-                console.log('response downloadPersonasExcel', response)
 
                 const { status, data } = response
 

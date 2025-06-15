@@ -19,7 +19,7 @@
                     fill="currentColor" />
             </svg>
         </button>
-        
+
         <!-- Dropdown -->
         <div v-show="dropdownOpen"
             class="absolute right-0 mt-4 w-64 rounded-md border border-stroke bg-white shadow-md dark:border-strokedark dark:bg-boxdark">
@@ -95,6 +95,5 @@ export default {
 
 .dropdown-link:hover {
     color: #3b82f6;
-    /* Tailwind primary */
 }
 </style>

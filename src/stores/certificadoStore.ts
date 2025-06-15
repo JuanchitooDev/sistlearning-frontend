@@ -23,7 +23,7 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 const response = await api.get('/certificado')
                 const { data } = response
                 const { result } = data
-                
+
                 if (result) {
                     const certificados = data.data.map((c: any) => ({
                         ...c,
@@ -49,8 +49,6 @@ export const useCertificadoStore = defineStore('certificadoStore', {
 
                 const auth = JSON.parse(localStorage.getItem('auth') || '{}')
                 const { usuario } = auth
-                console.log('usuario fetchCertificadosByAlumno', usuario)
-
                 const { id_alumno, id_instructor, id_trabajador, id_perfil } = usuario
 
                 if (id_perfil === 2) {
@@ -64,8 +62,6 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                         id_alumno: idLogueado
                     }
                 })
-
-                console.log('response fetchCertificadosByAlumno', response)
 
                 const { data } = response
 
@@ -99,7 +95,6 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     responseType: 'blob'
                 })
 
-                console.log('response createCertificado', response)
                 const { status, data } = response
 
                 if (status === 200) {
@@ -137,7 +132,7 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 if (response.data.result) {
                     const certificado = data.data
                     const index = this.certificados.findIndex((c) => c.id === certificado.id)
-                    
+
                     if (index !== -1) {
                         this.certificados[index] = certificado
                     } else {
@@ -165,11 +160,11 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 const response = await api.get(urlApi)
                 const { data } = response
                 const { result, message, error } = data
-            
+
                 if (result) {
                     const certificado = response.data.data
                     const index = this.certificados.findIndex((c) => c.id === certificado.id)
-                    
+
                     if (index !== -1) {
                         this.certificados[index] = certificado
                     } else {
@@ -200,7 +195,7 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                 if (status === 200) {
                     this.result = true
                     this.message = "Certificado descargado correctamente"
-                    
+
                     const responseCertificado = await this.getCertificadoById(idCertificado)
                     const alumno = responseCertificado.Alumno
                     const nombreCompleto = alumno?.nombre_capitalized as string
@@ -231,7 +226,6 @@ export const useCertificadoStore = defineStore('certificadoStore', {
                     responseType: 'blob'
                 })
 
-                console.log('response updateCertificado', response)
                 const { status, data } = response
 
                 if (status == 200) {
@@ -243,7 +237,6 @@ export const useCertificadoStore = defineStore('certificadoStore', {
 
                     await storeAlumno.getAlumnoById(certificado.id_alumno as number)
                     const alumno = storeAlumno.alumno as IAlumno | null
-                    console.log('alumno', alumno)
                     const nombreCompleto = alumno?.nombre_capitalized as string
                     const sanitizedAlumno = sanitizeFileName(nombreCompleto)
                     const fileName = `certificado_${sanitizedAlumno}.pdf`

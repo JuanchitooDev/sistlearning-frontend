@@ -18,10 +18,9 @@ export const useEventoStore = defineStore('eventoStore', {
 
             try {
                 const response = await api.get('/evento')
-                console.log('responses eventos', response)
                 const { data } = response
                 const { result } = data
-            
+
                 if (result) {
                     const eventos = data.data
                     this.eventos = eventos
@@ -100,7 +99,7 @@ export const useEventoStore = defineStore('eventoStore', {
                 const response = await api.put(`/evento/${idEvento}`, evento)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.message = message
@@ -138,7 +137,7 @@ export const useEventoStore = defineStore('eventoStore', {
                 const response = await api.delete(`/evento/${idEvento}`)
                 const { data } = response
                 const { result, message, error } = data
-                
+
                 if (result) {
                     this.result = result
                     this.eventos = this.eventos.filter((ev) => ev.id !== idEvento)

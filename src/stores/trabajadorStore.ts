@@ -17,7 +17,7 @@ export const useTrabajadorStore = defineStore('trabajadorStore', {
             this.error = null
             try {
                 const response = await api.get('/trabajador')
-                console.log('response trabajadores', response)
+
                 const { data } = response
                 const { result } = data
 
@@ -42,7 +42,7 @@ export const useTrabajadorStore = defineStore('trabajadorStore', {
                 const response = await api.get(`/trabajador/${id}`)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.trabajador = data.data
@@ -88,11 +88,10 @@ export const useTrabajadorStore = defineStore('trabajadorStore', {
         async createTrabajador(trabajador: ITrabajador) {
             try {
                 const response = await api.post('/trabajador', trabajador)
-                console.log('response createTrabajador', response)
-                
+
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.trabajadores.push(data.data)
@@ -110,7 +109,7 @@ export const useTrabajadorStore = defineStore('trabajadorStore', {
                 const response = await api.put(`/trabajador/${idTrabajador}`, trabajador)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.message = message
@@ -128,7 +127,7 @@ export const useTrabajadorStore = defineStore('trabajadorStore', {
                 const response = await api.delete(`/trabajador/${idTrabajador}`)
                 const { data } = response
                 const { result, message } = data
-                
+
                 if (result) {
                     this.result = result
                     this.trabajadores = this.trabajadores.filter((trabajador) => trabajador.id !== idTrabajador)
