@@ -20,7 +20,7 @@ export const MENU_ITEMS = [
     { label: 'Tipo de Evento', icon: ClipboardCheckIcon, route: '/tipo-evento', roles: ['administrador'] },
     { label: 'Evento', icon: CalendarIcon, route: '/evento', roles: ['administrador'] },
     { label: 'Certificado', icon: DocumentIcon, route: '/certificado', roles: ['estudiante', 'instructor', 'administrador'] },
-    { label: 'Adjunto', icon: PaperClipIcon, route: '/adjunto', roles: ['estudiante', 'administrador'] },
+    { label: 'Adjunto', icon: PaperClipIcon, route: '/adjunto', roles: ['administrador'] },
     { label: 'Usuario', icon: UserAddIcon, route: '/usuario', roles: ['administrador'] },
     { label: 'Reporte', icon: TableIcon, route: '/reporte', roles: ['administrador'] }
 ]
