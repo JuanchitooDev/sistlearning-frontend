@@ -1,5 +1,7 @@
 <template>
-  <div class="login-background min-h-screen flex items-center justify-center px-4">
+  <div class="min-h-screen flex items-center justify-center px-4
+           bg-gray-800 md:bg-[url('@/assets/images/login-background.jpg')]
+           md:bg-cover md:bg-center">
     <div class="w-full max-w-md">
       <h2 class="text-2xl font-semibold text-center text-white mb-6">INICIAR SESIÓN</h2>
       <p v-if="reasonMessage" class="error">{{ reasonMessage }}</p>
@@ -22,8 +24,14 @@ export default {
     const route = useRoute()
 
     const reasonMessage = computed(() => {
-      if (route.query.reason === 'Token expirado') return 'Tu sesión ha expirado. Por favor inicia sesión nuevamente.'
-      if (route.query.reason === 'Token inválido') return 'Tu token es inválido. Por favor inicia sesión nuevamente.'
+      const { query } = route
+
+      const { reason } = query
+
+      if (reason === 'Token expirado') return 'Tu sesión ha expirado. Por favor inicia sesión nuevamente.'
+
+      if (reason === 'Token inválido') return 'Tu token es inválido. Por favor inicia sesión nuevamente.'
+
       return ''
     })
 
@@ -35,12 +43,6 @@ export default {
 </script>
 
 <style scoped>
-.login-background {
-  background: url('@/assets/images/login-background.jpg') no-repeat center center;
-  background-size: cover;
-  min-height: 100vh;
-}
-
 .error {
   color: red;
   margin-bottom: 10px;
