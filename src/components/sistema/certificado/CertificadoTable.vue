@@ -4,8 +4,9 @@
     <!-- Encabezado con búsqueda y botón -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
       <input v-model="searchInput" @keyup.enter="applySearch" type="text" placeholder="Buscar por nombre..."
+        :disabled="isEstudiante"
         class="w-full sm:w-1/3 px-4 py-2 text-sm border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
-      <router-link to="/certificado/nuevo"
+      <router-link v-if="!isEstudiante" to="/certificado/nuevo"
         class="inline-flex items-center gap-2 self-end md:self-auto rounded bg-greenwhite-600 px-4 py-2 text-sm font-medium text-white shadow hover:bg-greenwhite-700">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd"
@@ -76,7 +77,7 @@
           </button>
         </div>
         <div class="items-center justify-center p-2.5 sm:flex xl:p-5">
-          <button @click="requestToggleEstado(certificado.id)"
+          <button @click="requestToggleEstado(certificado.id)" :disabled="isEstudiante"
             class="focus:outline-none hover:scale-105 transition-transform">
             <svg v-if="certificado.estado" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500" fill="none"
               viewBox="0 0 24 24" stroke="currentColor">
@@ -100,7 +101,7 @@
             </button>
 
             <!-- Dropdown -->
-            <div v-if="dropdownVisibleId === certificado.id"
+            <div v-if="dropdownVisibleId === certificado.id && !isEstudiante"
               class="absolute right-0 z-10 mt-2 w-28 bg-white border border-gray-200 rounded-md shadow-lg dark:bg-gray-800 dark:border-gray-600">
               <router-link :to="{ name: 'editCertificado', params: { id: certificado.id } }"
                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
@@ -174,10 +175,22 @@ export default {
     const isEstadoConfirmVisible = ref(false)
     const certificadoToToggleEstado = ref(null)
 
+    const userData = JSON.parse(localStorage.getItem('auth') || '{}')
+    const isEstudiante = userData?.usuario?.slug_perfil === 'estudiante'
+
     const filteredCertificados = computed(() =>
-      certificados.value.filter(certificado =>
-        certificado?.alumno.apellido_paterno.toLowerCase().includes(searchQuery.value.toLowerCase())
-      )
+      // certificados.value.filter(certificado =>
+      //   certificado?.alumno.apellido_paterno.toLowerCase().includes(searchQuery.value.toLowerCase())
+      // )
+      certificados.value.filter(certificado => {
+        const nombreCompleto = [
+          certificado?.alumno?.apellido_paterno,
+          certificado?.alumno?.apellido_materno,
+          certificado?.alumno?.nombres
+        ].filter(Boolean).join(' ').toLowerCase()
+
+        return nombreCompleto.includes(searchQuery.value.toLowerCase())
+      })
     )
 
     const totalPages = computed(() => Math.ceil(filteredCertificados.value.length / itemsPerPage))
@@ -278,7 +291,8 @@ export default {
       dropdownVisibleId,
       toggleDropdown,
       downloadCertificado,
-      formatDate
+      formatDate,
+      isEstudiante
     }
   }
 }
