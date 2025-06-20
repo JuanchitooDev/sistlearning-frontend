@@ -19,7 +19,7 @@ export const useAlumnoStore = defineStore('alumnoStore', {
                 const response = await api.get('/alumno')
                 const { data } = response
                 const { result } = data
-                
+
                 if (result) {
                     const alumnos = data.data
                     if (estado) {
@@ -108,7 +108,7 @@ export const useAlumnoStore = defineStore('alumnoStore', {
                 const response = await api.put(`/alumno/${idAlumno}`, alumno)
                 const { data } = response
                 const { result, message, error } = data
-                
+
                 if (result) {
                     this.result = result
                     this.message = response.data.message
@@ -128,7 +128,7 @@ export const useAlumnoStore = defineStore('alumnoStore', {
                 })
                 const { data } = response
                 const { result, message, error } = data
-                
+
                 if (result) {
                     this.result = result
                     this.message = data.message
@@ -146,7 +146,7 @@ export const useAlumnoStore = defineStore('alumnoStore', {
                 const response = await api.delete(`/alumno/${idAlumno}`)
                 const { data } = response
                 const { result, message, error } = data
-                
+
                 if (result) {
                     this.result = result
                     this.alumnos = this.alumnos.filter((a) => a.id !== idAlumno)

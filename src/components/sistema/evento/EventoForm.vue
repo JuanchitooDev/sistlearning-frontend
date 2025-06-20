@@ -79,7 +79,8 @@
             class="border rounded p-2 hover:shadow-lg cursor-pointer transition"
             :class="{ 'ring-2 ring-blue-500': evento.plantilla_certificado === plantilla.id }"
             @click="selectPlantilla(plantilla)">
-            <img :src="plantilla.imagen" :alt="plantilla.titulo" class="w-full h-32 object-cover rounded mb-2" />
+            <img :src="getImagenUrl(plantilla.imagen)" :alt="plantilla.titulo"
+              class="w-full h-32 object-cover rounded mb-2" />
             <p class="text-sm font-medium text-center text-gray-800">{{ plantilla.titulo }}</p>
           </div>
         </div>
@@ -205,28 +206,9 @@ export default {
       vistaPreviaPlantilla.value = plantilla
     }
 
-    onMounted(async () => {
-      storeTipoEvento.fetchTipoEventos()
-      storeInstructor.fetchInstructores()
-
-      const eventoId = route.params.id
-      if (eventoId) {
-
-        await storeEvento.getEventoById(eventoId)
-        evento.value = storeEvento.evento || {}
-
-        if (evento.value) {
-          if (evento.value.plantilla_certificado.includes("plantillas/")) {
-            const partsPlantilla = evento.value.plantilla_certificado.split("/")
-            const partsNombrePlantilla = partsPlantilla[1].split(".")
-            evento.value.plantilla_certificado = partsNombrePlantilla[0]
-          }
-          const partFecha = evento.value.fecha.split("T")
-          evento.value.fecha = partFecha[0]
-        }
-      }
-      storeEvento.message = ""
-    })
+    const getImagenUrl = (filename) => {
+      return new URL(`../../../assets/images/plantillas/${filename}`, import.meta.url).href
+    }
 
     const submitForm = async () => {
       if (!validateForm()) return
@@ -298,6 +280,29 @@ export default {
       isDuplicated.value = false
     };
 
+    onMounted(async () => {
+      storeTipoEvento.fetchTipoEventos()
+      storeInstructor.fetchInstructores()
+
+      const eventoId = route.params.id
+      if (eventoId) {
+
+        await storeEvento.getEventoById(eventoId)
+        evento.value = storeEvento.evento || {}
+
+        if (evento.value) {
+          if (evento.value.plantilla_certificado.includes("plantillas/")) {
+            const partsPlantilla = evento.value.plantilla_certificado.split("/")
+            const partsNombrePlantilla = partsPlantilla[1].split(".")
+            evento.value.plantilla_certificado = partsNombrePlantilla[0]
+          }
+          const partFecha = evento.value.fecha.split("T")
+          evento.value.fecha = partFecha[0]
+        }
+      }
+      storeEvento.message = ""
+    })
+
     return {
       tipos,
       evento,
@@ -309,7 +314,8 @@ export default {
       vistaPreviaPlantilla,
       errors,
       isDuplicated,
-      instructores
+      instructores,
+      getImagenUrl
     }
   }
 }

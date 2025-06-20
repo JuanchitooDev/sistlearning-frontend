@@ -26,25 +26,26 @@
         <div class="mb-1">
           <label for="apellido_paterno" class="block text-sm font-medium text-gray-700">Apellido paterno: <span
               class="text-red-500">*</span></label>
-          <input v-model="alumno.apellido_paterno" type="text" id="apellido_paterno" autocomplete="off" maxlength="20"
-            placeholder="Ejm: Pérez"
-            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
+          <input v-model="alumno.apellido_paterno" @input="alumno.nombres = alumno.nombres.toUpperCase()" type="text"
+            id="apellido_paterno" autocomplete="off" maxlength="20" placeholder="PÉREZ"
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 uppercase" />
           <div v-if="errors.apellido_paterno" class="text-red-600 text-sm mt-1">{{ errors.apellido_paterno }}</div>
         </div>
         <div class="mb-1">
           <label for="apellido_materno" class="block text-sm font-medium text-gray-700">Apellido materno: <span
               class="text-red-500">*</span></label>
-          <input v-model="alumno.apellido_materno" type="text" id="apellido_materno" autocomplete="off" maxlength="20"
-            placeholder="Ejm: Pérez"
-            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
+          <input v-model="alumno.apellido_materno"
+            @input="alumno.apellido_materno = alumno.apellido_materno.toUpperCase()" type="text" id="apellido_materno"
+            autocomplete="off" maxlength="20" placeholder="PÉREZ"
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 uppercase" />
           <div v-if="errors.apellido_materno" class="text-red-600 text-sm mt-1">{{ errors.apellido_materno }}</div>
         </div>
         <div class="mb-1">
           <label for="nombres" class="block text-sm font-medium text-gray-700">Nombres: <span
               class="text-red-500">*</span></label>
-          <input v-model="alumno.nombres" type="text" id="nombres" autocomplete="off" maxlength="40"
-            placeholder="Ejm: José Carlos"
-            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
+          <input v-model="alumno.nombres" @input="alumno.nombres = alumno.nombres.toUpperCase()" type="text"
+            id="nombres" autocomplete="off" maxlength="40" placeholder="JOSÉ CARLO"
+            class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300 uppercase" />
           <div v-if="errors.nombres" class="text-red-600 text-sm mt-1">{{ errors.nombres }}</div>
         </div>
         <div class="mb-1">
@@ -72,8 +73,17 @@
             class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring focus:ring-blue-300" />
           <div v-if="errors.telefono" class="text-red-600 text-sm mt-1">{{ errors.telefono }}</div>
         </div>
+        <div class="mb-1" v-if="showPais">
+          <label for="id_pais" class="block text-sm font-medium text-gray-700">País: <span
+              class="text-red-500">*</span></label>
+          <select id="id_pais" v-model="alumno.id_pais" class="mt-1 p-2 border border-gray-300 rounded w-full">
+            <option value="">- SELECCIONE -</option>
+            <option v-for="pais in paises" :key="pais.id" :value="pais.id">{{ pais.nombre }}</option>
+          </select>
+          <div v-if="errors.pais" class="text-red-600 text-sm mt-1">{{ errors.pais }}</div>
+        </div>
       </div>
-      <div class="flex justify-between">
+      <div class="flex justify-between mt-2">
         <button type="submit"
           class="flex items-center px-4 py-2 bg-greenwhite-600 text-white rounded-md hover:bg-greenwhite-700 disabled:bg-greenwhite-300 disabled:cursor-not-allowed"
           :class="{ 'opacity-50 cursor-not-allowed': isDuplicated }" :disabled="isDuplicated || loading">
@@ -104,9 +114,11 @@
 </template>
 
 <script>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, watch } from 'vue'
 import { useRoute } from "vue-router"
-import { useAlumnoStore, useTipoDocumentoStore, usePersonaStore, useToastStore } from '@/stores'
+import { useAlumnoStore, useTipoDocumentoStore, usePersonaStore, useToastStore, usePaisStore } from '@/stores'
+import { IPais } from "@/interfaces/paisInterface"
+import { IAlumno } from "@/interfaces/alumnoInterface"
 
 export default {
   setup() {
@@ -120,9 +132,10 @@ export default {
       telefono: '',
       fecha_nacimiento: null,
       sexo: '',
-
+      id_pais: null
     });
 
+    const storePais = usePaisStore()
     const storeAlumno = useAlumnoStore();
     const storeTipoDocumento = useTipoDocumentoStore();
     const storePersona = usePersonaStore();
@@ -130,6 +143,8 @@ export default {
     const route = useRoute()
 
     const tipos = computed(() => storeTipoDocumento.tipos);
+
+    const paises = computed(() => storePais.paises)
 
     const loading = ref(false);
     const isDuplicated = ref(false);
@@ -140,6 +155,19 @@ export default {
     const registerPersona = ref(false)
 
     const isReadOnly = ref(false)
+
+    const showPais = ref(false)
+
+    watch(() => alumno.value.id_tipodocumento, (nuevoTipo) => {
+      const tiposEspeciales = ['CE', 'OTROS']
+
+      // Mostrar o no el select de país
+      const tipoDocSeleccionado = tipos.value.find(t => t.id === nuevoTipo)
+      if (tipoDocSeleccionado) {
+        const { abreviatura } = tipoDocSeleccionado
+        showPais.value = tiposEspeciales.includes(abreviatura || '')
+      }
+    })
 
     const validateForm = () => {
       errors.value = {}
@@ -176,191 +204,194 @@ export default {
         errors.value.telefono = 'El teléfono es obligatorio'
       }
 
+      if (showPais.value && !alumno.value.id_pais) {
+        errors.value.pais = 'El país es obligatorio'
+      }
+
       return Object.keys(errors.value).length === 0
     }
 
+    const handleResult = (result, message) => {
+      if (result) {
+        storeToast.addToast(message, 'success')
+        isDuplicated.value = false
+        resetForm()
+      } else {
+        storeToast.addToast(message || 'Ocurrió un error', "error")
+        isDuplicated.value = false
+      }
+    }
+
     const submitForm = async () => {
-      if (!validateForm()) return
+      if (!validateForm()) return;
 
       loading.value = true
-      notificationAction.value = 'Cargando...'
+      notificationAction.value = "Cargando..."
       isDuplicated.value = false
 
       try {
-        if (alumno.value.id) {
-          await storeAlumno.updateAlumno(alumno.value.id, alumno.value)
-          const classToast = (storeAlumno.result) ? 'success' : 'error'
-          storeToast.addToast(storeAlumno.message, classToast)
-          isDuplicated.value = false
+        const { value } = alumno
+        const {
+          id,
+          id_tipodocumento,
+          numero_documento,
+          apellido_paterno,
+          apellido_materno,
+          nombres,
+          fecha_nacimiento,
+          sexo,
+          telefono,
+          id_pais
+        } = value
+
+        if (id) {
+          // Actualización del alumno existente
+          await storeAlumno.updateAlumno(id, value)
+          const { result, message } = storeAlumno
+          const classToast = result ? 'success' : 'error'
+          storeToast.addToast(message, classToast)
         } else {
+          const nombreCompleto = `${apellido_paterno.trim()} ${apellido_materno.trim()} ${nombres.trim()}`
+
+          // Registrar nuevo alumno
           if (registerAlumno.value && !registerPersona.value) {
-
-            await storeAlumno.createAlumno(alumno.value);
-
-            if (storeAlumno.result) {
-              storeToast.addToast(storeAlumno.message, 'success')
-              isDuplicated.value = false
-              resetForm()
-            } else {
-              storeToast.addToast('No se pudo registrar al alumno', 'error')
-              isDuplicated.value = false
-              return
-            }
+            await storeAlumno.createAlumno(value)
+            const { result, message } = storeAlumno
+            handleResult(result, message)
           }
 
+          // Registrar nueva persona
           if (!registerAlumno.value && registerPersona.value) {
-            const nombreCompleto = `${alumno.value.apellido_paterno.trim()} ${alumno.value.apellido_materno.trim()}, ${alumno.value.nombres.trim()}`
-
             const dataPersona = {
-              id_tipodocumento: alumno.value.id_tipodocumento,
-              numero: alumno.value.numero_documento,
-              nombres: alumno.value.nombres,
-              apellido_paterno: alumno.value.apellido_paterno,
-              apellido_materno: alumno.value.apellido_materno,
-              fecha_nacimiento: alumno.value.fecha_nacimiento,
-              sexo: alumno.value.sexo,
+              id_tipodocumento,
+              numero: numero_documento,
+              nombres,
+              apellido_paterno,
+              apellido_materno,
+              fecha_nacimiento,
+              sexo,
               nombre_completo: nombreCompleto,
               origen: 'Web'
             }
 
             await storePersona.createPersona(dataPersona)
+            const { result } = storePersona
+            handleResult(result, result ? 'Alumno registrado exitosamente' : 'No se pudo registrar al alumno')
+          }
 
-            if (storePersona.result) {
-              storeToast.addToast('Alumno registrado exitosamente', 'success')
-              isDuplicated.value = false
-              resetForm()
-            } else {
-              storeToast.addToast('No se pudo registrar al alumno', 'error')
-              isDuplicated.value = false
-              return
+          // Crear alumno
+          if (!registerAlumno.value && !registerPersona.value) {
+            let dataAlumno = { ...value }
+
+            if (id_pais) {
+              await storePais.getPaisById(id_pais)
+              const { result, pais } = storePais
+              if (result && pais) {
+                const { nombre } = pais
+                dataAlumno.nombre_pais = nombre
+              }
             }
+
+            await storeAlumno.createAlumno(dataAlumno);
+            handleResult(storeAlumno.result, storeAlumno.message);
           }
         }
       } catch (error) {
+        console.error(error)
         storeToast.addToast('Falló al registrar alumno', 'error')
         isDuplicated.value = false
       } finally {
-        loading.value = false; // Desactivar el spinner
+        loading.value = false
       }
     }
 
     const fetchPersona = async () => {
-      loading.value = true; // Activa el estado de carga
-      notificationAction.value = 'Buscar persona...'
-      isDuplicated.value = false
+      loading.value = true;
+      notificationAction.value = 'Buscar persona...';
+      isDuplicated.value = false;
 
       try {
-        if (alumno.value.id_tipodocumento && alumno.value.numero_documento) {
-          const idTipoDoc = alumno.value.id_tipodocumento
-          const numDoc = alumno.value.numero_documento
+        const { value } = alumno
 
-          await storePersona.getPersonaByTipoDocNumDoc(idTipoDoc, numDoc)
-          await storeAlumno.getAlumnoByTipoDocNumDoc(idTipoDoc, numDoc)
+        const { id_tipodocumento, numero_documento } = value
 
-          const getPersona = storePersona.persona
-          const getAlumno = storeAlumno.alumno
+        if (!id_tipodocumento || !numero_documento) return;
 
-          if (getPersona && getAlumno) {
-            let fechaNacimiento = '';
+        await Promise.all([
+          storePersona.getPersonaByTipoDocNumDoc(id_tipodocumento, numero_documento),
+          storeAlumno.getAlumnoByTipoDocNumDoc(id_tipodocumento, numero_documento)
+        ]);
 
-            if (getAlumno.fecha_nacimiento) {
-              const partsFechaNacimiento = getAlumno.fecha_nacimiento.split('T');
-              const partsFecha = partsFechaNacimiento[0].split("-")
-              fechaNacimiento = `${partsFecha[0]}-${partsFecha[1]}-${partsFecha[2]}`;
-            }
+        const persona = storePersona.persona;
+        const alumnoData = storeAlumno.alumno;
 
-            alumno.value.nombres = getAlumno.nombres || '';
-            alumno.value.apellido_paterno = getAlumno.apellido_paterno || '';
-            alumno.value.apellido_materno = getAlumno.apellido_materno || '';
-            alumno.value.fecha_nacimiento = fechaNacimiento;
-            alumno.value.sexo = getAlumno.sexo || '';
-            alumno.value.telefono = getAlumno.telefono
+        const setAlumnoFields = (data, fechaFormato = 'T') => {
+          if (!data) return;
 
-            storeToast.addToast(storeAlumno.message, 'warning')
-            isDuplicated.value = true
+          const fecha = data.fecha_nacimiento
+          let fecha_nacimiento = ''
 
-            registerAlumno.value = false
-            registerPersona.value = false
-          } else if (!getAlumno && getPersona) {
-            let fechaNacimiento = '';
+          if (fecha) {
+            const base = fechaFormato === 'T' ? fecha.split('T')[0] : fecha;
+            const parts = base.split(fechaFormato === 'T' ? '-' : '/');
+            fecha_nacimiento = fechaFormato === 'T'
+              ? `${parts[0]}-${parts[1]}-${parts[2]}`
+              : `${parts[2]}-${parts[1]}-${parts[0]}`;
+          }
 
-            if (getPersona.fecha_nacimiento) {
-              const partsFechaNacimiento = getPersona.fecha_nacimiento.split('/');
-              fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`;
-            }
+          Object.assign(alumno.value, {
+            nombres: data.nombres || '',
+            apellido_paterno: data.apellido_paterno || '',
+            apellido_materno: data.apellido_materno || '',
+            fecha_nacimiento,
+            sexo: data.sexo || '',
+            telefono: data.telefono ?? alumno.value.telefono
+          });
+        }
 
-            alumno.value.nombres = getPersona.nombres || '';
-            alumno.value.apellido_paterno = getPersona.apellido_paterno || '';
-            alumno.value.apellido_materno = getPersona.apellido_materno || '';
-            alumno.value.fecha_nacimiento = fechaNacimiento;
-            alumno.value.sexo = getPersona.sexo || '';
+        if (persona && alumnoData) {
+          setAlumnoFields(alumnoData, 'T');
+          storeToast.addToast(storeAlumno.message, 'warning');
+          isDuplicated.value = true;
+          registerAlumno.value = false;
+          registerPersona.value = false;
+        } else if (persona && !alumnoData) {
+          setAlumnoFields(persona, '/');
+          isDuplicated.value = false;
+          registerAlumno.value = true;
+          registerPersona.value = false;
+        } else if (!persona && alumnoData) {
+          setAlumnoFields(alumnoData, '/');
+          storeToast.addToast(storeAlumno.message, 'warning');
+          isDuplicated.value = true;
+          registerAlumno.value = false;
+          registerPersona.value = true;
+        } else {
+          await storePersona.getDocumentoInfo(id_tipodocumento, numero_documento);
+          const extraPersona = storePersona.persona;
 
-            isDuplicated.value = false
-
-            registerAlumno.value = true
-            registerPersona.value = false
-          } else if (getAlumno && !getPersona) {
-            let fechaNacimiento = '';
-
-            if (getAlumno.fecha_nacimiento) {
-              const partsFechaNacimiento = getAlumno.fecha_nacimiento.split('/');
-              fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`;
-            }
-
-            alumno.value.nombres = getAlumno.nombres || '';
-            alumno.value.apellido_paterno = getAlumno.apellido_paterno || '';
-            alumno.value.apellido_materno = getAlumno.apellido_materno || '';
-            alumno.value.fecha_nacimiento = fechaNacimiento;
-            alumno.value.sexo = getAlumno.sexo || '';
-            alumno.value.telefono = getAlumno.telefono
-
-            storeToast.addToast(storeAlumno.message, 'warning')
-            isDuplicated.value = true
-
-            registerAlumno.value = false
-            registerPersona.value = true
+          if (extraPersona) {
+            setAlumnoFields(extraPersona, '/');
+            storeToast.addToast(storePersona.message, 'success');
+            isDuplicated.value = false;
+            registerAlumno.value = true;
+            registerPersona.value = false;
           } else {
-            await storePersona.getDocumentoInfo(idTipoDoc, numDoc);
-
-            const persona = storePersona.persona;
-
-            if (persona) {
-              let fechaNacimiento = '';
-
-              if (persona.fecha_nacimiento) {
-                const partsFechaNacimiento = persona.fecha_nacimiento.split('/');
-                fechaNacimiento = `${partsFechaNacimiento[2]}-${partsFechaNacimiento[1]}-${partsFechaNacimiento[0]}`;
-              }
-
-              alumno.value.nombres = persona.nombres || '';
-              alumno.value.apellido_paterno = persona.apellido_paterno || '';
-              alumno.value.apellido_materno = persona.apellido_materno || '';
-              alumno.value.fecha_nacimiento = fechaNacimiento;
-              alumno.value.sexo = persona.sexo || '';
-
-              storeToast.addToast(storePersona.message, 'success')
-              isDuplicated.value = false
-
-              registerAlumno.value = true
-              registerPersona.value = false
-            } else {
-              storeToast.addToast(storePersona.message, 'error')
-              isDuplicated.value = false
-
-              registerAlumno.value = false
-              registerPersona.value = false
-            }
+            storeToast.addToast(storePersona.message, 'waning');
+            isDuplicated.value = false;
+            registerAlumno.value = false;
+            registerPersona.value = false;
           }
         }
+
       } catch (error) {
         console.error(error);
-        storeToast.addToast('Falló al buscar persona', 'error')
-        isDuplicated.value = false
-
-        registerAlumno.value = false
-        registerPersona.value = false
+        storeToast.addToast('Falló al buscar persona', 'error');
+        isDuplicated.value = false;
+        registerAlumno.value = false;
+        registerPersona.value = false;
       } finally {
-        loading.value = false; // Desactiva el estado de carga
+        loading.value = false
       }
     }
 
@@ -374,8 +405,10 @@ export default {
         telefono: '',
         fecha_nacimiento: null,
         sexo: '',
+        id_pais: ''
       }
       isDuplicated.value = false
+      showPais.value = false
     }
 
     const resetForm = () => {
@@ -389,11 +422,14 @@ export default {
         telefono: '',
         fecha_nacimiento: null,
         sexo: '',
+        id_pais: ''
       };
+      showPais.value = false
     };
 
     onMounted(async () => {
-      storeTipoDocumento.fetchTipos()
+      storeTipoDocumento.fetchTiposPorCategoria('persona')
+      storePais.fetchPaises()
 
       const alumnoId = route.params.id
 
@@ -413,6 +449,7 @@ export default {
 
     return {
       tipos,
+      paises,
       alumno,
       submitForm,
       fetchPersona,
@@ -421,7 +458,8 @@ export default {
       cancelar,
       errors,
       notificationAction,
-      isReadOnly
+      isReadOnly,
+      showPais
     }
   }
 }
